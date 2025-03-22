@@ -1,0 +1,44 @@
+name: Deploy React App
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+        
+      - name: Setup environments
+        uses: ./.github/setup-envs
+        with:
+          expo-token: ${{ secrets.EXPO_TOKEN }}
+        
+      - name: Lint code
+        run: npm run lint
+      
+      # Chạy scan SonarQube
+      
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get code
+      uses: actions/checkout@v4
+      
+    - name: Setup environments
+      uses: ./.github/setup-envs
+      with:
+        expo-token: ${{ secrets.EXPO_TOKEN }}
+      
+    - name: Build app in Android
+      if: false
+      run: eas build --profile preview --platform android --non-interactive --clear-cache --local --output ${{ github.workspace }}/app-release.apk
+      
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-release
+        path: ${{ github.workspace }}/app-release.apk
+
+    - name: Successfull deploy
+      run: echo "Deploy successfully"

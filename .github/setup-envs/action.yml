@@ -1,0 +1,33 @@
+name: Setup & Install dependencies
+description: Setup node, EAS, and install dependencies
+inputs:
+  expo-token:
+    description: 'Expo token'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        
+    - name: Setup EAS
+      uses: expo/expo-github-action@v8
+      with:
+        eas-version: latest
+        expo-version: latest
+        expo-cache: true
+        token: ${{ inputs.expo-token }}
+        
+    - name: Caching
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        
+    - name: Install dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: npm install
+      shell: bash
