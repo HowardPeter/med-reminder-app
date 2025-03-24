@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "chat-app",
-    "slug": "chat-app",
+    "name": "med-reminder-app",
+    "slug": "med-reminder-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -36,6 +36,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "c6ad4d11-6d02-4ccb-bdbc-81402037227f"
+      }
+    },
+    "owner": "peterhoward"
   }
 }

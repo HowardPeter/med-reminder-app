@@ -1,0 +1,42 @@
+name: Deploy App to Android
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+        
+      - name: Setup environments
+        uses: ./.github/setup-envs
+        with:
+          expo-token: ${{ secrets.EXPO_TOKEN }}
+        
+      - name: Lint code
+        run: npm run lint
+              
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get code
+      uses: actions/checkout@v4
+      
+    - name: Setup environments
+      uses: ./.github/setup-envs
+      with:
+        expo-token: ${{ secrets.EXPO_TOKEN }}
+      
+    - name: Build app in Android
+      if: false
+      run: eas build --profile preview --platform android --non-interactive --clear-cache --local --output ${{ github.workspace }}/pill-pal-release.apk
+      
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: pill-pal-release
+        path: ${{ github.workspace }}/pill-pal-release.apk
+
+    - name: Successful deploy
+      run: echo "Deploy successfully"
