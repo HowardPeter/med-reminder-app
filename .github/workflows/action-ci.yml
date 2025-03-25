@@ -1,4 +1,4 @@
-name: Deploy App to Android
+name: Action CI
 
 on:
   pull_request:
