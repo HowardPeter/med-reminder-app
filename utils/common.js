@@ -7,10 +7,10 @@ export const blurhash = '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQf
 // }
 
 export const formatDate = date => {
-    var day = date.getDate();
-    var monthName = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    var month = monthName[date.getMonth()];
+    let day = date.getDate();
+    let monthName = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    let month = monthName[date.getMonth()];
 
-    var formattedDate = day + ' ' + month;
+    let formattedDate = day + ' ' + month;
     return formattedDate;
 }

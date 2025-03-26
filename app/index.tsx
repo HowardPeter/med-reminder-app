@@ -1,4 +1,4 @@
-import { Text, View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator } from "react-native";
 
 export default function StartPage() {
   return (
