@@ -14,5 +14,5 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "nativewind-env.d.ts"
-, "context/authContext.js", "app/signIn.tsx", "components/loading.js", "utils/common.js"  ]
+, "context/authContext.js", "app/(auth)/signIn.tsx", "components/loading.js", "utils/com", "hooks/useAuth.js"  ]
 }
