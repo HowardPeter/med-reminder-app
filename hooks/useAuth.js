@@ -9,9 +9,7 @@ export const AuthContextProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(undefined);
 
     useEffect(() => {
-        setTimeout(() => {
-            setIsAuthenticated(false);
-        }, 1000);
+        setIsAuthenticated(false);
     }, []);
 
     const login = async (email, password) => {

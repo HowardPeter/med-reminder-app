@@ -12,12 +12,9 @@ const MainLayout = () => {
   useEffect(() => {
     // check if user is authenticated or not
     if (typeof isAuthenticated === "undefined") return;
-    if (isAuthenticated == "false") {
+    if (isAuthenticated == false) {
       // redirect to signIn
       router.replace('/(auth)/signIn');
-      // router.replace('/(auth)/signUp');
-      // router.replace('/(auth)/welcome');
-      // router.replace('/(auth)/forgotPassword');
     }
   }, [isAuthenticated]);
 
