@@ -14,7 +14,7 @@ const MainLayout = () => {
     if (typeof isAuthenticated === "undefined") return;
     if (isAuthenticated == false) {
       // redirect to signIn
-      router.replace('/(auth)/signIn');
+      router.replace('/(auth)/signUp');
     }
   }, [isAuthenticated]);
 

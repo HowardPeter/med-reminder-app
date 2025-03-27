@@ -6,7 +6,7 @@ import CustomKeyboardView from '@/components/CustomKeyboardView';
 
 export default function signIn() {
     return (
-        <CustomKeyboardView inChat={false}>
+        <CustomKeyboardView>
             <View className='bg-white'>
                 {/* Chứa logo và tên ứng dụng */}
                 <View style={{ alignItems: 'center' }}>
