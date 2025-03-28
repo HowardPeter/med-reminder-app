@@ -4,9 +4,9 @@ import Octicons from '@expo/vector-icons/Octicons'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
 
-export default function signIn() {
+export default function SignIn() {
     return (
-        <CustomKeyboardView inChat={false}>
+        <CustomKeyboardView>
             <View className='bg-white'>
                 {/* Chứa logo và tên ứng dụng */}
                 <View style={{ alignItems: 'center' }}>
