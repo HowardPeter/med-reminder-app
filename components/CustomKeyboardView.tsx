@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 
 interface CustomKeyboardViewProps {
   children: ReactNode;

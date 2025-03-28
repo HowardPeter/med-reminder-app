@@ -4,19 +4,26 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { Feather, Ionicons, Octicons } from "@expo/vector-icons";
 import CustomKeyboardView from '@/components/CustomKeyboardView';
 import theme from '@/config/theme';
+import CheckBox from '@/components/CheckBox';
+import { Link } from 'expo-router';
 
 export default function signUp() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
 
   return (
     <CustomKeyboardView>
       <View style={{ backgroundColor: theme.colors.background }} className="flex-1 pl-9 pr-9 justify-center w-screen h-screen">
         {/* Back Button */}
-        <View style={{ marginTop: hp(-8) }} className='mb-9'>
-          <TouchableOpacity style={{ maxWidth: wp(10) }}>
+        <View style={{ marginTop: hp(-7) }} className='flex-row justify-between mb-9'>
+          <Link href="/(auth)/signIn" style={{ maxWidth: wp(10) }}>
             <Ionicons name="arrow-back-circle-outline" size={40} color="black" />
-          </TouchableOpacity>
+          </Link>
+          {/* <Image
+            source={require('../../assets/images/logo.jpg')}
+            className='w-[43px] h-[43px] rounded-xl'
+          /> */}
         </View>
 
         {/* Title */}
@@ -26,24 +33,24 @@ export default function signUp() {
 
         {/* Name Input */}
         <View className='mb-4'>
-          <Text style={{ fontSize: hp(2.1) }} className="mb-2">Name</Text>
+          <Text style={styles.inputText} className="mb-2">Name</Text>
           <View className="flex-row items-center border-2 border-gray-300 rounded-2xl p-1.5">
             <Feather name="user" size={22} color="black" className="ml-2 mr-2" />
             <TextInput
               placeholder="ex: Jon Smith"
-              style={{ maxHeight: hp(5.5), fontSize: hp(2.1) }}
+              style={styles.input}
               className="flex-1" />
           </View>
         </View>
 
         {/* Email Input */}
         <View className='mb-4'>
-          <Text style={{ fontSize: hp(2.1) }} className="mb-2">Email</Text>
+          <Text style={styles.inputText} className="mb-2">Email</Text>
           <View className="flex-row items-center border-2 border-gray-300 rounded-2xl p-1.5">
             <Octicons name="mail" size={22} color="black" className="ml-2 mr-2" />
             <TextInput
               placeholder="ex: jon.smith@gmail.com"
-              style={{ maxHeight: hp(5.5), fontSize: hp(2.1) }}
+              style={styles.input}
               multiline={false}
               className="flex-1"
               keyboardType="email-address" />
@@ -52,13 +59,13 @@ export default function signUp() {
 
         {/* Password Input */}
         <View className='mb-4'>
-          <Text style={{ fontSize: hp(2.1) }} className="mb-2">Password</Text>
+          <Text style={styles.inputText} className="mb-2">Password</Text>
           <View className="flex-row items-center border-2 border-gray-300 rounded-2xl p-1.5">
             <Octicons name="lock" size={22} color="black" className="ml-2 mr-2" />
             <TextInput
               placeholder="********"
               secureTextEntry={!passwordVisible}
-              style={{ maxHeight: hp(5.5), fontSize: hp(2.1) }}
+              style={styles.input}
               className="flex-1"
             />
             <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} className='mr-2'>
@@ -69,13 +76,13 @@ export default function signUp() {
 
         {/* Confirm Password Input */}
         <View className='mb-4'>
-          <Text style={{ fontSize: hp(2.1) }} className="mb-2">Confirm password</Text>
+          <Text style={styles.inputText} className="mb-2">Confirm password</Text>
           <View className="flex-row items-center border-2 border-gray-300 rounded-2xl p-1.5">
             <Octicons name="lock" size={22} color="black" className="ml-2 mr-2" />
             <TextInput
               placeholder="********"
               secureTextEntry={!confirmPasswordVisible}
-              style={{ maxHeight: hp(5.5), fontSize: hp(2.1) }}
+              style={styles.input}
               className="flex-1"
             />
             <TouchableOpacity onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)} className='mr-2'>
@@ -86,8 +93,8 @@ export default function signUp() {
 
         {/* Terms and Policy */}
         <View className="flex-row items-center mb-4">
-          <TouchableOpacity className="w-5 h-5 border border-gray-400 rounded-sm mr-2" />
-          <Text>
+          <CheckBox isChecked={isChecked} onToggle={() => setIsChecked(!isChecked)} size={24} color={theme.colors.primary} />
+          <Text className='ml-1'>
             I understood the <Text style={{ color: theme.colors.primary }} className="font-semibold">terms & policy</Text>
           </Text>
         </View>
@@ -98,13 +105,25 @@ export default function signUp() {
         </TouchableOpacity>
 
         {/* Sign In Link */}
-        <Text className="text-center font-semibold text-gray-400 mt-4">
+        <Text style={{ fontSize: hp(2) }} className="text-center font-semibold text-gray-400 mt-4">
           Have an account?
-          <Text style={{ color: theme.colors.primary }} className="font-semibold">
-            {' '}Sign In
-          </Text>
+          <Link href="/(auth)/signIn">
+            <Text style={{ color: theme.colors.primary }} className="font-semibold">
+              {' '}Sign In
+            </Text>
+          </Link>
         </Text>
       </View>
     </CustomKeyboardView>
   )
+}
+
+const styles = {
+  inputText: {
+    fontSize: hp(2.1),
+  },
+  input: {
+    maxHeight: hp(5.5),
+    fontSize: hp(2.1),
+  }
 }
