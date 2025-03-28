@@ -7,7 +7,7 @@ import theme from '@/config/theme';
 import CheckBox from '@/components/CheckBox';
 import { Link } from 'expo-router';
 
-export default function signUp() {
+export default function SignUp() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [isChecked, setIsChecked] = useState(false);

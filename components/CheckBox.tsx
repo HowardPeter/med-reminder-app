@@ -1,7 +1,6 @@
-import { View, Text, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import { View, TouchableOpacity } from 'react-native'
+import React from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons';
-import theme from '@/config/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface CheckBoxProps {
