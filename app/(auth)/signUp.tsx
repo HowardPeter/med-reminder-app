@@ -1,16 +1,58 @@
-import { View, Text, TextInput, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, TextInput, TouchableOpacity, Alert, Image } from 'react-native'
+import React, { useRef, useState } from 'react'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { Feather, Ionicons, Octicons } from "@expo/vector-icons";
 import CustomKeyboardView from '@/components/CustomKeyboardView';
 import theme from '@/config/theme';
 import CheckBox from '@/components/CheckBox';
 import { Link } from 'expo-router';
+import { useAuth } from '@/hooks/useAuth';
+import Loading from '@/components/loading';
 
 export default function SignUp() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [isPasswordConfirmed, setIsPasswordConfirmed] = useState(true);
   const [isChecked, setIsChecked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { register } = useAuth();
+
+  const userNameRef = useRef("");
+  const emailRef = useRef("");
+  const passwordRef = useRef("");
+  const confirmPasswordRef = useRef("");
+
+  const handlePasswordConfirmation = () => {
+    if (passwordRef.current === "" || confirmPasswordRef.current === "") {
+      setIsPasswordConfirmed(true);
+      return;
+    }
+    // Check if the password and confirm password match
+    if (passwordRef.current !== confirmPasswordRef.current) {
+      setIsPasswordConfirmed(false);
+    } else {
+      setIsPasswordConfirmed(true);
+    }
+  }
+
+  const handleRegister = async () => {
+    if (!userNameRef.current || !emailRef.current || !passwordRef.current || !confirmPasswordRef.current) {
+      Alert.alert('Sign Up', 'Please fill all fields!');
+      return;
+    }
+
+    if (!isChecked || !isPasswordConfirmed) {
+      return;
+    }
+    setIsLoading(true);
+
+    const response = await register(userNameRef.current, emailRef.current, passwordRef.current);
+    setIsLoading(false)
+    console.log("get.respond:", response)
+    if (!response.success) {
+      Alert.alert('Sign Up', response.msg);
+    }
+  }
 
   return (
     <CustomKeyboardView>
@@ -20,10 +62,10 @@ export default function SignUp() {
           <Link href="/(auth)/signIn" style={{ maxWidth: wp(10) }}>
             <Ionicons name="arrow-back-circle-outline" size={40} color="black" />
           </Link>
-          {/* <Image
+          <Image
             source={require('../../assets/images/logo.jpg')}
             className='w-[43px] h-[43px] rounded-xl'
-          /> */}
+          />
         </View>
 
         {/* Title */}
@@ -37,6 +79,7 @@ export default function SignUp() {
           <View className="flex-row items-center border-2 border-gray-300 rounded-2xl p-1.5">
             <Feather name="user" size={22} color="black" className="ml-2 mr-2" />
             <TextInput
+              onChangeText={value => userNameRef.current = value}
               placeholder="ex: Jon Smith"
               style={styles.input}
               className="flex-1" />
@@ -49,6 +92,7 @@ export default function SignUp() {
           <View className="flex-row items-center border-2 border-gray-300 rounded-2xl p-1.5">
             <Octicons name="mail" size={22} color="black" className="ml-2 mr-2" />
             <TextInput
+              onChangeText={value => emailRef.current = value}
               placeholder="ex: jon.smith@gmail.com"
               style={styles.input}
               multiline={false}
@@ -63,6 +107,9 @@ export default function SignUp() {
           <View className="flex-row items-center border-2 border-gray-300 rounded-2xl p-1.5">
             <Octicons name="lock" size={22} color="black" className="ml-2 mr-2" />
             <TextInput
+              onChangeText={text => {
+                passwordRef.current = text;
+              }}
               placeholder="********"
               secureTextEntry={!passwordVisible}
               style={styles.input}
@@ -76,19 +123,48 @@ export default function SignUp() {
 
         {/* Confirm Password Input */}
         <View className='mb-4'>
-          <Text style={styles.inputText} className="mb-2">Confirm password</Text>
-          <View className="flex-row items-center border-2 border-gray-300 rounded-2xl p-1.5">
-            <Octicons name="lock" size={22} color="black" className="ml-2 mr-2" />
-            <TextInput
-              placeholder="********"
-              secureTextEntry={!confirmPasswordVisible}
-              style={styles.input}
-              className="flex-1"
-            />
-            <TouchableOpacity onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)} className='mr-2'>
-              <Feather name={confirmPasswordVisible ? "eye-off" : "eye"} size={18} color="gray" />
-            </TouchableOpacity>
-          </View>
+          {isPasswordConfirmed ?
+            <View>
+              <Text style={styles.inputText} className="mb-2">Confirm password</Text>
+              <View className="flex-row items-center border-2 border-gray-300 rounded-2xl p-1.5">
+                <Octicons name="lock" size={22} color="black" className="ml-2 mr-2" />
+                <TextInput
+                  onChangeText={text => {
+                    confirmPasswordRef.current = text;
+                    handlePasswordConfirmation();
+                  }}
+                  placeholder="********"
+                  secureTextEntry={!confirmPasswordVisible}
+                  style={styles.input}
+                  className="flex-1"
+                />
+                <TouchableOpacity onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)} className='mr-2'>
+                  <Feather name={confirmPasswordVisible ? "eye-off" : "eye"} size={18} color="gray" />
+                </TouchableOpacity>
+              </View>
+            </View>
+            :
+            <View>
+              <Text style={styles.inputText} className="mb-2 text-red-600">Confirm password</Text>
+              <View className="flex-row items-center border-2 border-red-600 rounded-2xl p-1.5">
+                <Octicons name="lock" size={22} color="red" className="ml-2 mr-2" />
+                <TextInput
+                  onChangeText={text => {
+                    confirmPasswordRef.current = text;
+                    handlePasswordConfirmation();
+                  }}
+                  placeholder="********"
+                  secureTextEntry={!confirmPasswordVisible}
+                  style={styles.input}
+                  className="flex-1"
+                />
+                <TouchableOpacity onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)} className='mr-2'>
+                  <Feather name={confirmPasswordVisible ? "eye-off" : "eye"} size={18} color="red" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          }
+
         </View>
 
         {/* Terms and Policy */}
@@ -100,9 +176,17 @@ export default function SignUp() {
         </View>
 
         {/* Sign Up Button */}
-        <TouchableOpacity className="bg-teal-500 p-4 rounded-3xl items-center">
-          <Text className="text-white font-bold text-lg">Sign Up</Text>
-        </TouchableOpacity>
+        <View>
+          {isLoading ?
+            <View className='flex-row justify-center'>
+              <Loading size={hp(7)} />
+            </View>
+            :
+            <TouchableOpacity onPress={handleRegister} style={{ backgroundColor: theme.colors.primary }} className="p-4 rounded-3xl items-center">
+              <Text className="text-white font-bold text-lg">Sign Up</Text>
+            </TouchableOpacity>
+          }
+        </View>
 
         {/* Sign In Link */}
         <Text style={{ fontSize: hp(2) }} className="text-center font-semibold text-gray-400 mt-4">
