@@ -12,9 +12,9 @@ import Loading from '@/components/loading';
 export default function SignUp() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
-  const [isPasswordConfirmed, setPasswordConfirmed] = useState(true);
+  const [isPasswordConfirmed, setIsPasswordConfirmed] = useState(true);
   const [isChecked, setIsChecked] = useState(false);
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
 
   const userNameRef = useRef("");
@@ -24,14 +24,14 @@ export default function SignUp() {
 
   const handlePasswordConfirmation = () => {
     if (passwordRef.current === "" || confirmPasswordRef.current === "") {
-      setPasswordConfirmed(true);
+      setIsPasswordConfirmed(true);
       return;
     }
     // Check if the password and confirm password match
     if (passwordRef.current !== confirmPasswordRef.current) {
-      setPasswordConfirmed(false);
+      setIsPasswordConfirmed(false);
     } else {
-      setPasswordConfirmed(true);
+      setIsPasswordConfirmed(true);
     }
   }
 
@@ -44,10 +44,10 @@ export default function SignUp() {
     if (!isChecked || !isPasswordConfirmed) {
       return;
     }
-    setLoading(true);
+    setIsLoading(true);
 
     const response = await register(userNameRef.current, emailRef.current, passwordRef.current);
-    setLoading(false)
+    setIsLoading(false)
     console.log("get.respond:", response)
     if (!response.success) {
       Alert.alert('Sign Up', response.msg);

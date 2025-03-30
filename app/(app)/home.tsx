@@ -4,7 +4,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { useAuth } from '@/hooks/useAuth'
 import theme from '@/config/theme';
 
-export default function home() {
+export default function Home() {
   const { logout } = useAuth();
   const handleLogout = async () => {
     await logout();

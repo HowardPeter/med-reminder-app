@@ -9,11 +9,11 @@ import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'expo-router'
 import Loading from '@/components/loading';
 
-export default function signIn() {
+export default function SignIn() {
     const router = useRouter();
     const { login } = useAuth();
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-    const [isLoading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -22,9 +22,9 @@ export default function signIn() {
             Alert.alert('Sign In', 'Please fill all fields!');
             return;
         }
-        setLoading(true)
+        setIsLoading(true)
         const response = await login(email, password);
-        setLoading(false)
+        setIsLoading(false)
         if (response.success) {
             Alert.alert('Sign In', 'Login successfully!');
             setEmail("");
