@@ -16,7 +16,7 @@ export default function SignIn() {
     const [isLoading, setIsLoading] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
+    // Hàm xử lý đăng nhập
     const handleLogin = async () => {
         if (!email || !password) {
             Alert.alert('Sign In', 'Please fill all fields!');
