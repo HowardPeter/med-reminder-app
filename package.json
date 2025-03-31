@@ -39,6 +39,8 @@
     "react-dom": "18.3.1",
     "react-native": "0.76.7",
     "react-native-gesture-handler": "~2.20.2",
+    "react-native-modal": "^14.0.0-rc.1",
+    "react-native-modals": "^0.22.3",
     "react-native-popup-menu": "^0.16.1",
     "react-native-reanimated": "^3.16.2",
     "react-native-responsive-screen": "^1.4.2",

@@ -8,6 +8,7 @@ import CustomKeyboardView from '@/components/CustomKeyboardView';
 import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'expo-router'
 import Loading from '@/components/loading';
+import { Feather } from '@expo/vector-icons';
 
 export default function SignIn() {
     const router = useRouter();
@@ -83,9 +84,9 @@ export default function SignIn() {
                             />
                             <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
                                 {isPasswordVisible ? (
-                                    <AntDesign name="eye" size={20} color="black" />
+                                    <Feather name="eye" size={18} color="gray" />
                                 ) : (
-                                    <Entypo name="eye-with-line" size={20} color="black" />
+                                    <Feather name="eye-off" size={18} color="gray" />
                                 )}
                             </TouchableOpacity>
                         </View>
