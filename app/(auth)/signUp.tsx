@@ -1,5 +1,5 @@
-import { View, Text, TextInput, TouchableOpacity, Alert, Image, StyleSheet } from 'react-native'
-import React, { useRef, useState } from 'react'
+import { View, Text, TextInput, TouchableOpacity, Alert, Image } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { AntDesign, Feather, Ionicons, Octicons } from "@expo/vector-icons";
 import CustomKeyboardView from '@/components/CustomKeyboardView';
@@ -14,11 +14,10 @@ export default function SignUp() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [isPasswordConfirmed, setIsPasswordConfirmed] = useState(true);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isVerificationSucceed, setIsVerificationSucceed] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
+  const [userRegister, setUserRegister] = useState();
 
   const userNameRef = useRef("");
   const emailRef = useRef("");
@@ -27,8 +26,6 @@ export default function SignUp() {
 
   const [verification, setVerification] = useState({
     state: "default",
-    error: "",
-    code: "",
   });
 
   const handlePasswordConfirmation = () => {
@@ -55,22 +52,37 @@ export default function SignUp() {
     }
     setIsLoading(true);
 
-    // Send verification email
+    const response = await register(userNameRef.current, emailRef.current, passwordRef.current);
+    setUserRegister(response);
 
     setVerification({
-      ...verification,
       state: "pending",
     });
     setIsLoading(false)
-    // console.log("get.respond:", response)
-    // if (!response.success) {
-    //   Alert.alert('Sign Up', response.msg);
-    // }
+
+    if (!response.success) {
+      Alert.alert('Sign Up', response.msg);
+    }
   }
 
-  const handleRegister = () => {
-    // Handle register user
-  }
+  const checkVerification = async () => {
+    try {
+      await userRegister?.data?.reload();
+      var emailVerified = userRegister?.data?.emailVerified;
+      console.log("Checking emailVerified:", emailVerified)
+
+      if (emailVerified) {
+        setVerification({ state: "success" });
+        console.log("Verification state updated!");
+      }
+      else {
+        Alert.alert('Your email has not verified yet!', 'Check your email or resend OTP to verify your email.')
+      }
+    } catch (error) {
+      console.error("Error checking verification:", error);
+    }
+  };
+  console.log("user.register: ", userRegister);
 
   return (
     <CustomKeyboardView>
@@ -196,7 +208,7 @@ export default function SignUp() {
         </View>
 
         <ReactNativeModal
-          isVisible={isModalVisible}
+          isVisible={verification.state === "pending"}
           animationIn={"slideInRight"}
           animationOut={"slideOutRight"}
           style={{ margin: 0 }}
@@ -204,7 +216,7 @@ export default function SignUp() {
           <View style={{ backgroundColor: "white" }} className='flex-1 text-center px-7'>
             {/* Back Button */}
             <View style={{ marginTop: hp(5), maxWidth: wp(10) }} className='mb-5'>
-              <TouchableOpacity onPress={() => setIsModalVisible(false)}>
+              <TouchableOpacity onPress={() => setVerification({ state: "default" })}>
                 <Ionicons name="arrow-back-circle-outline" size={40} color="black" />
               </TouchableOpacity>
             </View>
@@ -219,22 +231,25 @@ export default function SignUp() {
             <View className="w-full items-center mt-9">
               <Text style={{ fontSize: wp(5.5) }} className='font-semibold'>Confirm your email address</Text>
               <Text style={{ fontSize: wp(4.3) }} className="text-gray-500 text-center w-90 mt-3">
-                We send a confirmation email to your email:
+                We sent a confirmation email to your email:
               </Text>
-              <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="mt-2 font-bold">email@gmail.com</Text>
+              <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="mt-2 font-bold">{userRegister?.data?.email}</Text>
               <Text style={{ fontSize: wp(4.3) }} className='text-gray-500 text-center text-lg mt-2'>Check your email and click on the confirmation link to continue.</Text>
             </View>
 
-            <View className="flex-row justify-center mt-[170px]">
+            <View className="flex-row justify-between mt-[170px]">
               <TouchableOpacity>
-                <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="font-bold">Resend OTP</Text>
+                <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="font-bold">Resend</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={checkVerification}>
+                <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="font-bold">CONFIRM</Text>
               </TouchableOpacity>
             </View>
           </View>
         </ReactNativeModal>
 
         <ReactNativeModal
-          isVisible={isVerificationSucceed}
+          isVisible={verification.state === "success"}
           animationIn={"slideInUp"}
         >
           <View style={{ backgroundColor: theme.colors.primary }} className='flex items-center w-[350px] h-[340px] rounded-2xl'>
@@ -254,8 +269,6 @@ export default function SignUp() {
         </ReactNativeModal>
       </View>
     </CustomKeyboardView>
-
-
   )
 }
 

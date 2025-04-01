@@ -91,7 +91,7 @@ export default function SignIn() {
                             </TouchableOpacity>
                         </View>
                         {/* Forgot password */}
-                        <TouchableOpacity onPress={() => router.push('/(auth)/forgotPassword')}>
+                        <TouchableOpacity onPress={() => router.push('/(auth)/emailVerified')}>
                             <Text style={styles.forgotPass}>Forgot password?</Text>
                         </TouchableOpacity>
                     </View>
