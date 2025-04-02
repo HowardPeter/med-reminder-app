@@ -5,9 +5,10 @@ import { Feather, Ionicons, Octicons } from "@expo/vector-icons";
 import CustomKeyboardView from '@/components/CustomKeyboardView';
 import theme from '@/config/theme';
 import CheckBox from '@/components/CheckBox';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import Loading from '@/components/loading';
+import { ReactNativeModal } from "react-native-modal";
 
 export default function SignUp() {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -16,11 +17,16 @@ export default function SignUp() {
   const [isChecked, setIsChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
+  const [userRegister, setUserRegister] = useState();
 
   const userNameRef = useRef("");
   const emailRef = useRef("");
   const passwordRef = useRef("");
   const confirmPasswordRef = useRef("");
+
+  const [verification, setVerification] = useState({
+    state: "default",
+  });
 
   const handlePasswordConfirmation = () => {
     if (passwordRef.current === "" || confirmPasswordRef.current === "") {
@@ -35,7 +41,7 @@ export default function SignUp() {
     }
   }
 
-  const handleRegister = async () => {
+  const handleSignUpPress = async () => {
     if (!userNameRef.current || !emailRef.current || !passwordRef.current || !confirmPasswordRef.current) {
       Alert.alert('Sign Up', 'Please fill all fields!');
       return;
@@ -47,12 +53,36 @@ export default function SignUp() {
     setIsLoading(true);
 
     const response = await register(userNameRef.current, emailRef.current, passwordRef.current);
+    setUserRegister(response);
+
+    setVerification({
+      state: "pending",
+    });
     setIsLoading(false)
-    console.log("get.respond:", response)
+
     if (!response.success) {
       Alert.alert('Sign Up', response.msg);
     }
   }
+
+  const checkVerification = async () => {
+    try {
+      await userRegister?.data?.reload();
+      let emailVerified = userRegister?.data?.emailVerified;
+      console.log("Checking emailVerified:", emailVerified)
+
+      if (emailVerified) {
+        setVerification({ state: "success" });
+        console.log("Verification state updated!");
+      }
+      else {
+        Alert.alert('Your email has not verified yet!', 'Check your email or resend OTP to verify your email.')
+      }
+    } catch (error) {
+      console.error("Error checking verification:", error);
+    }
+  };
+  console.log("user.register: ", userRegister);
 
   return (
     <CustomKeyboardView>
@@ -93,7 +123,7 @@ export default function SignUp() {
             <Octicons name="mail" size={22} color="black" className="ml-2 mr-2" />
             <TextInput
               onChangeText={value => emailRef.current = value}
-              placeholder="ex: jon.smith@gmail.com"
+              placeholder="ex: jonsmith@gmail.com"
               style={styles.input}
               multiline={false}
               className="flex-1"
@@ -123,48 +153,25 @@ export default function SignUp() {
 
         {/* Confirm Password Input */}
         <View className='mb-4'>
-          {isPasswordConfirmed ?
-            <View>
-              <Text style={styles.inputText} className="mb-2">Confirm password</Text>
-              <View className="flex-row items-center border-2 border-gray-300 rounded-2xl p-1.5">
-                <Octicons name="lock" size={22} color="black" className="ml-2 mr-2" />
-                <TextInput
-                  onChangeText={text => {
-                    confirmPasswordRef.current = text;
-                    handlePasswordConfirmation();
-                  }}
-                  placeholder="********"
-                  secureTextEntry={!confirmPasswordVisible}
-                  style={styles.input}
-                  className="flex-1"
-                />
-                <TouchableOpacity onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)} className='mr-2'>
-                  <Feather name={confirmPasswordVisible ? "eye-off" : "eye"} size={18} color="gray" />
-                </TouchableOpacity>
-              </View>
+          <View>
+            <Text style={styles.inputText} className={`mb-2 ${isPasswordConfirmed ? 'text-black' : 'text-red-600'}`}>Confirm password</Text>
+            <View className={`flex-row items-center border-2 ${isPasswordConfirmed ? 'border-gray-300' : 'border-red-600'} rounded-2xl p-1.5`}>
+              <Octicons name="lock" size={22} color={"black"} className="ml-2 mr-2" />
+              <TextInput
+                onChangeText={text => {
+                  confirmPasswordRef.current = text;
+                  handlePasswordConfirmation();
+                }}
+                placeholder="********"
+                secureTextEntry={!confirmPasswordVisible}
+                style={styles.input}
+                className="flex-1"
+              />
+              <TouchableOpacity onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)} className='mr-2'>
+                <Feather name={confirmPasswordVisible ? "eye-off" : "eye"} size={18} color="gray" />
+              </TouchableOpacity>
             </View>
-            :
-            <View>
-              <Text style={styles.inputText} className="mb-2 text-red-600">Confirm password</Text>
-              <View className="flex-row items-center border-2 border-red-600 rounded-2xl p-1.5">
-                <Octicons name="lock" size={22} color="red" className="ml-2 mr-2" />
-                <TextInput
-                  onChangeText={text => {
-                    confirmPasswordRef.current = text;
-                    handlePasswordConfirmation();
-                  }}
-                  placeholder="********"
-                  secureTextEntry={!confirmPasswordVisible}
-                  style={styles.input}
-                  className="flex-1"
-                />
-                <TouchableOpacity onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)} className='mr-2'>
-                  <Feather name={confirmPasswordVisible ? "eye-off" : "eye"} size={18} color="red" />
-                </TouchableOpacity>
-              </View>
-            </View>
-          }
-
+          </View>
         </View>
 
         {/* Terms and Policy */}
@@ -182,21 +189,84 @@ export default function SignUp() {
               <Loading size={hp(7)} />
             </View>
             :
-            <TouchableOpacity onPress={handleRegister} style={{ backgroundColor: theme.colors.primary }} className="p-4 rounded-3xl items-center">
+            <TouchableOpacity onPress={handleSignUpPress} style={{ backgroundColor: theme.colors.primary }} className="p-4 rounded-3xl items-center">
               <Text className="text-white font-bold text-lg">Sign Up</Text>
             </TouchableOpacity>
           }
         </View>
 
         {/* Sign In Link */}
-        <Text style={{ fontSize: hp(2) }} className="text-center font-semibold text-gray-400 mt-4">
-          Have an account?
-          <Link href="/(auth)/signIn">
-            <Text style={{ color: theme.colors.primary }} className="font-semibold">
-              {' '}Sign In
-            </Text>
-          </Link>
-        </Text>
+        <View>
+          <Text style={{ fontSize: hp(2) }} className="text-center font-semibold text-gray-400 mt-4">
+            Have an account?
+            <Link href="/(auth)/signIn">
+              <Text style={{ color: theme.colors.primary }} className="font-semibold">
+                {' '}Sign In
+              </Text>
+            </Link>
+          </Text>
+        </View>
+
+        <ReactNativeModal
+          isVisible={verification.state === "pending"}
+          animationIn={"slideInRight"}
+          animationOut={"slideOutRight"}
+          style={{ margin: 0 }}
+        >
+          <View style={{ backgroundColor: "white" }} className='flex-1 text-center px-7'>
+            {/* Back Button */}
+            <View style={{ marginTop: hp(5), maxWidth: wp(10) }} className='mb-5'>
+              <TouchableOpacity onPress={() => setVerification({ state: "default" })}>
+                <Ionicons name="arrow-back-circle-outline" size={40} color="black" />
+              </TouchableOpacity>
+            </View>
+
+            <View className='flex items-center mt-15'>
+              <Image
+                style={{ height: hp(35), width: hp(35), resizeMode: 'contain' }}
+                source={require('../../assets/images/verify-email.png')}
+              />
+            </View>
+
+            <View className="w-full items-center mt-9">
+              <Text style={{ fontSize: wp(5.5) }} className='font-semibold'>Confirm your email address</Text>
+              <Text style={{ fontSize: wp(4.3) }} className="text-gray-500 text-center w-90 mt-3">
+                We sent a confirmation email to your email:
+              </Text>
+              <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="mt-2 font-bold">{userRegister?.data?.email}</Text>
+              <Text style={{ fontSize: wp(4.3) }} className='text-gray-500 text-center text-lg mt-2'>Check your email and click on the confirmation link to continue.</Text>
+            </View>
+
+            <View className="flex-row justify-between mt-[170px]">
+              <TouchableOpacity>
+                <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="font-bold">Resend</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={checkVerification}>
+                <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="font-bold">CONFIRM</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ReactNativeModal>
+
+        <ReactNativeModal
+          isVisible={verification.state === "success"}
+          animationIn={"slideInUp"}
+        >
+          <View style={{ backgroundColor: theme.colors.primary }} className='flex items-center w-[350px] h-[340px] rounded-2xl'>
+            <Image
+              source={require('../../assets/images/Verify.png')}
+              style={{ width: hp(11), height: hp(11) }}
+              className='mt-12'
+            />
+            <View className='flex justify-center items-center mt-5'>
+              <Text style={{ fontSize: wp(5.5) }} className='text-white font-bold text-center'>Verified!</Text>
+              <Text style={{ fontSize: wp(4.2) }} className='text-white font-medium text-center text-lg mt-2'>Congratulation! You have successfully verify your email.</Text>
+            </View>
+            <TouchableOpacity onPress={() => router.replace('/(app)/home')} className='bg-white pt-4 pb-4 pl-[100px] pr-[100px] rounded-3xl items-center mt-10'>
+              <Text style={{ fontSize: wp(4), color: theme.colors.primary }} className='font-semibold'>Go to Home</Text>
+            </TouchableOpacity>
+          </View>
+        </ReactNativeModal>
       </View>
     </CustomKeyboardView>
   )

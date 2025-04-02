@@ -2,12 +2,11 @@ import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Alert } fro
 import React, { useState } from 'react'
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import Octicons from '@expo/vector-icons/Octicons'
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Entypo from '@expo/vector-icons/Entypo';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
 import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'expo-router'
 import Loading from '@/components/loading';
+import { Feather } from '@expo/vector-icons';
 
 export default function SignIn() {
     const router = useRouter();
@@ -83,14 +82,14 @@ export default function SignIn() {
                             />
                             <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
                                 {isPasswordVisible ? (
-                                    <AntDesign name="eye" size={20} color="black" />
+                                    <Feather name="eye" size={18} color="gray" />
                                 ) : (
-                                    <Entypo name="eye-with-line" size={20} color="black" />
+                                    <Feather name="eye-off" size={18} color="gray" />
                                 )}
                             </TouchableOpacity>
                         </View>
                         {/* Forgot password */}
-                        <TouchableOpacity onPress={() => router.push('/(auth)/forgotPassword')}>
+                        <TouchableOpacity onPress={() => router.push('/(auth)/emailVerified')}>
                             <Text style={styles.forgotPass}>Forgot password?</Text>
                         </TouchableOpacity>
                     </View>

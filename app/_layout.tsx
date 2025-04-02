@@ -6,7 +6,7 @@ import { MenuProvider } from 'react-native-popup-menu';
 import { AuthContextProvider, useAuth } from "@/hooks/useAuth";
 
 const MainLayout = () => {
-  const { isAuthenticated } = useAuth();
+  const { verified, isAuthenticated } = useAuth();
   const segments = useSegments();
   const router = useRouter();
 
@@ -14,7 +14,7 @@ const MainLayout = () => {
     // check if user is authenticated or not
     if (typeof isAuthenticated === "undefined") return;
     const inApp = segments[0] === '(app)';
-    if (isAuthenticated && !inApp) {
+    if (verified && !inApp) {
       // redirect to home
       router.replace('../(app)/home');
     }
@@ -22,7 +22,9 @@ const MainLayout = () => {
       // redirect to signIn
       router.replace('/(auth)/signIn');
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, verified]);
+  console.log("Is authenticated: ", isAuthenticated)
+  console.log("Is verifed: ", verified)
 
   return < Slot />
 }
