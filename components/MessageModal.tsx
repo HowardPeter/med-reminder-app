@@ -2,6 +2,7 @@ import { Modal, Pressable, View, StyleSheet, Text, Touchable, TouchableOpacity }
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useRouter } from "expo-router";
+import { useAuth } from '../hooks/useAuth'
 
     interface MessageModalProps {
         isVisible: boolean;
@@ -11,6 +12,17 @@ import { useRouter } from "expo-router";
 
 const MessageModal: React.FC<MessageModalProps> = ({ isVisible, onClose, email }) => {
     const router = useRouter();
+    const { resetPassword } = useAuth();
+    const handleResetPassword = async () => {
+        const response = await resetPassword(email); // Gọi hàm resetPassword
+        if (response.success) {
+            onClose();
+            router.replace(`/signIn`); // Chuyển trang thông báo kiểm tra email
+        } else {
+            console.error(response.msg);
+        }
+    };
+
     return <Modal animationType="slide" visible={isVisible} transparent={true}>
         <Pressable style={styles.container} onPress={onClose}>
             <View style={styles.modalView}>
@@ -28,8 +40,9 @@ const MessageModal: React.FC<MessageModalProps> = ({ isVisible, onClose, email }
                     >Please continue to reset your password!!</Text>
                     <TouchableOpacity 
                         onPress={() => { 
+                            handleResetPassword()
                             onClose();
-                            router.replace({pathname: '/enterNewPassword', params: { email }});
+                            router.replace(`/signIn`);
                         }}
                         className="bg-teal-500 rounded-3xl py-3 mt-6 px-5 h-14 justify-center items-center" 
                         style={{width: wp(40)}}

@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState, useContext } from "react";
-import { createUserWithEmailAndPassword, onAuthStateChanged, sendEmailVerification, signInWithEmailAndPassword, signOut, updatePassword } from "firebase/auth"
+import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updatePassword } from "firebase/auth"
 import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
 import { auth, db } from "../firebaseConfig";
 
@@ -74,15 +74,17 @@ export const AuthContextProvider = ({ children }) => {
                 await user.reload();
                 if (!user.emailVerified) {
                     await deleteUser(user);
+                    console.log('user is not verifed')
                 }
                 else if (user.emailVerified) {
                     await setDoc(doc(db, "users", response?.user?.uid), {
                         username,
-                        userId: response?.user?.uid
+                        userId: response?.user?.uid,
+                        userEmail: response?.user?.email,
                     });
+                    console.log('user created:', response?.user)
                 }
-            }, 2 * 60 * 1000);
-
+            },  2 * 60 * 1000);
             return { success: true, data: user };
         } catch (error) {
             let msg = error.message;
@@ -122,23 +124,38 @@ export const AuthContextProvider = ({ children }) => {
     };
 
     //ham cap nhat mat khau sau khi nhap ma OTP
-    const changePassword = async (newPassword) => {
-        if (!email) {
-            console.error("No user is logged in.");
-            return;
-        }
+    // const changePassword = async (newPassword) => {
+    //     const auth = getAuth();
+    //     const user = auth.currentUser; // Lấy user hiện tại từ Firebase Authentication
+    
+    //     if (!user) {
+    //         console.error("No user is logged in.");
+    //         return;
+    //     }
+    
+    //     try {
+    //         await updatePassword(user, newPassword); // Dùng user thay vì email
+    //         console.log("Password updated successfully");
+    //     } catch (error) {
+    //         console.error("Failed to change password:", error);
+    //         throw error;
+    //     }
+    // };
 
+    const resetPassword = async (email) => {
+        console.log(`Attempting to reset password for email: ${email}`);
         try {
-            await updatePassword(email, newPassword);
-            console.log("Password updated successfully");
+            await sendPasswordResetEmail(auth, email);
+            console.log("Password reset email sent successfully.");
+            return { success: true };
         } catch (error) {
-            console.error("Failed to change password:", error);
-            throw error;
+            console.error("Error sending password reset email:", error.message);
+            return { success: false, msg: error.message };
         }
-    };
+    }
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, verified, login, logout, register, checkIfEmailExists, changePassword }}>
+        <AuthContext.Provider value={{ user, isAuthenticated, verified, login, logout, register, checkIfEmailExists, resetPassword }}>
             {children}
         </AuthContext.Provider>
     );

@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, TextInput, Alert } from 'react-native';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { AntDesign } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -10,6 +10,7 @@ import CustomKeyboardView from '@/components/CustomKeyboardView';
 
 export default function vertifiedOTP() {
   const router = useRouter();
+  const otpRefs = useRef<(TextInput | null)[]>([]);
 
   //vi email lay tu useLocalSearch params la string[] nen khi truyen vao email phai tra ve dang string
   //o day se viet mot cai ham chuyen tu array ve string lai
@@ -24,6 +25,16 @@ export default function vertifiedOTP() {
     let newOtp = [...otpInput];
     newOtp[index] = text;
     setOtpInput(newOtp);
+
+    // Nếu có nhập và không phải ô cuối cùng -> Chuyển focus sang ô tiếp theo
+    if (text && index < otpInput.length - 1) {
+      otpRefs.current[index + 1]?.focus();
+    }
+  
+    // Nếu xóa số và không phải ô đầu tiên -> Quay lại ô trước
+    if (!text && index > 0) {
+      otpRefs.current[index - 1]?.focus();
+    }
   };
 
   const handleVerifyOTP = async () => {
@@ -75,7 +86,6 @@ export default function vertifiedOTP() {
 
   return (
     <CustomKeyboardView>
-
       <View className='flex-1 px-7 mt-10'>
         <TouchableOpacity onPress={() => router.push('/emailVerified')}>
           <View className='w-12 h-12 border border-gray-500 rounded-2xl justify-center items-center'>
@@ -104,6 +114,7 @@ export default function vertifiedOTP() {
             {otpInput.map((digit, index) => (
               <TextInput
                 key={index}
+                ref={(el) => (otpRefs.current[index] = el)}
                 style={{ width: wp(12), height: hp(7) }}
                 className="text-center text-lg text-black border border-gray-500 rounded-2xl bg-white mx-2"
                 maxLength={1}

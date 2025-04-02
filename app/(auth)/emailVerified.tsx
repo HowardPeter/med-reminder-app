@@ -5,7 +5,7 @@ import "../../global.css";
 import { Fontisto } from "@expo/vector-icons"
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth'
-import { doc, setDoc, serverTimestamp, deleteDoc, Timestamp } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp, deleteDoc, Timestamp, getDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import emailjs from '@emailjs/react-native';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
@@ -42,7 +42,7 @@ export default function ForgetPasswordScreen() {
       );
 
       // chay Test bang Alert
-      console.log('Your OTP is:', otp);
+      // console.log('Your OTP is:', otp);
 
       return otp; //tra otp ve de luu vao firebase
     } catch (err) {
@@ -53,47 +53,72 @@ export default function ForgetPasswordScreen() {
 
   const handleCheckEmailExist = async () => {
     if (!email) {
-      Alert.alert("Error", "Please enter your email address");
-      return;
+        Alert.alert("Error", "Please enter your email address");
+        return;
     }
 
-    setIsSending(true); //neu da gui ma OTP thi chay
+    setIsSending(true);
     try {
-      const exists = await checkIfEmailExists(email);
+        const exists = await checkIfEmailExists(email);
 
-      if (exists) { //co email trong firebase thi thuc hien
-        const expiresAt = new Date(Date.now() + 5 * 60 * 1000); //het hang ma otp sau 5p
+        if (!exists) {
+            Alert.alert(
+                "Email Verification Failed",
+                "Email does not exist or is not valid, please check and try again!"
+            );
+            return;
+        }
 
-        const otp = await sendOTPEmail(email); //thuc hien send OTP qua gmail
+        //kiem tra xem OTP cu con ton tai k
+        const otpRef = doc(db, "otps", email);
+        const otpDoc = await getDoc(otpRef);
 
-        await setDoc(doc(db, "otps", email), {
-          otp,
-          createdAt: serverTimestamp(),
-          expiresAt: Timestamp.fromDate(expiresAt),
+        if (otpDoc.exists()) { //neu co ma OTP
+            const otpData = otpDoc.data();
+            const expiresAt = otpData.expiresAt.toDate(); //chuyen timestamp tren firestore ve dang date
+            const now = new Date();
+
+            if (expiresAt > now) { //neu ma OTP van con thoi gian 
+                const remainingTime = Math.ceil((expiresAt.getTime() - now.getTime()) / 1000);
+                Alert.alert(
+                    "OTP Already Sent",
+                    `An OTP has already been sent. Please wait ${remainingTime} seconds before trying again.`
+                );
+                return;
+            }
+
+            //OTP het han thi xoa no di
+            await deleteDoc(otpRef);
+        }
+
+        //khoi tao OTP moi
+        const newOtp = await sendOTPEmail(email);
+        const expiresAt = new Date(Date.now() + 5 * 60 * 1000); //OTP se het han sau 5 phut
+
+        await setDoc(otpRef, {
+            otp: newOtp,
+            createdAt: serverTimestamp(),
+            expiresAt: Timestamp.fromDate(expiresAt),
         });
 
         Alert.alert(
-          "OTP Sent",
-          `An OTP has been sent to ${email}. Please check your inbox.`
+            "OTP Sent",
+            `An OTP has been sent to ${email}. Please check your inbox.`
         );
-        router.push({ pathname: "/otpVerified", params: { email } }); //day qua trang moi cung voi email
+        router.push({ pathname: "/otpVerified" , params: { email }}); //sau khi kiem tra thay ok co email thi gui OTP va chuyen sang trang nhap ma OTP
 
-        //xoa otp sau 10 phut
+        // xoa OTP sau 5 phut
         setTimeout(async () => {
-          await deleteDoc(doc(db, "otps", email));
-          console.log("OTP expired and deleted");
-        }, 10 * 60 * 1000);
-      } else {
-        Alert.alert(
-          "Email Verification Failed",
-          "Email does not exist or is not valid, please check and try again!"
-        );
-      }
+            await deleteDoc(otpRef);
+            console.log("OTP expired and deleted");
+        }, 5 * 60 * 1000);
     } catch (error) {
+        console.error("Error checking email and sending OTP:", error);
     } finally {
-      setIsSending(false); //neu sending khong dc thi boolean bang false tra ve loi
+        setIsSending(false);
     }
-  };
+};
+
 
 
   return (
