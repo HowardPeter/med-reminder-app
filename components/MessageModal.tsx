@@ -1,6 +1,6 @@
-import { Modal, Pressable, View, StyleSheet, Text, Touchable, TouchableOpacity } from "react-native";
+import { Modal, Pressable, View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { useRouter } from "expo-router";
 import { useAuth } from '../hooks/useAuth'
 

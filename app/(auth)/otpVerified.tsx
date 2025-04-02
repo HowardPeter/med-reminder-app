@@ -8,7 +8,7 @@ import { db } from '../../firebaseConfig';
 import { doc, getDoc, deleteDoc } from 'firebase/firestore';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
 
-export default function vertifiedOTP() {
+export default function VertifiedOTP() {
   const router = useRouter();
   const otpRefs = useRef<(TextInput | null)[]>([]);
 
@@ -19,6 +19,7 @@ export default function vertifiedOTP() {
 
   const [otpInput, setOtpInput] = useState(["", "", "", "", "", ""]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const otpFields = ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6'];
 
   // xu ly va gop OTP tu cac input thanh mot chuoi
   const handleOTPChange = (text: string, index: number) => {
@@ -111,15 +112,15 @@ export default function vertifiedOTP() {
 
         <View className="justify-center items-center mt-16 mx-2">
           <View className="flex-row">
-            {otpInput.map((digit, index) => (
+            {otpFields.map((id, index) => (
               <TextInput
-                key={index}
+                key={id}
                 ref={(el) => (otpRefs.current[index] = el)}
                 style={{ width: wp(12), height: hp(7) }}
                 className="text-center text-lg text-black border border-gray-500 rounded-2xl bg-white mx-2"
                 maxLength={1}
                 keyboardType="number-pad"
-                value={digit}
+                value={otpInput[index]}
                 onChangeText={(text) => handleOTPChange(text, index)}
               />
             ))}

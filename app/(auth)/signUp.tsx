@@ -1,7 +1,7 @@
 import { View, Text, TextInput, TouchableOpacity, Alert, Image } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
-import { AntDesign, Feather, Ionicons, Octicons } from "@expo/vector-icons";
+import { Feather, Ionicons, Octicons } from "@expo/vector-icons";
 import CustomKeyboardView from '@/components/CustomKeyboardView';
 import theme from '@/config/theme';
 import CheckBox from '@/components/CheckBox';
@@ -68,7 +68,7 @@ export default function SignUp() {
   const checkVerification = async () => {
     try {
       await userRegister?.data?.reload();
-      var emailVerified = userRegister?.data?.emailVerified;
+      let emailVerified = userRegister?.data?.emailVerified;
       console.log("Checking emailVerified:", emailVerified)
 
       if (emailVerified) {

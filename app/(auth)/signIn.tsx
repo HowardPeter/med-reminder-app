@@ -2,8 +2,6 @@ import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Alert } fro
 import React, { useState } from 'react'
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import Octicons from '@expo/vector-icons/Octicons'
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Entypo from '@expo/vector-icons/Entypo';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
 import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'expo-router'
