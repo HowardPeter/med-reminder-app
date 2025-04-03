@@ -16,7 +16,7 @@ export default function VertifiedOTP() {
   //vi email lay tu useLocalSearch params la string[] nen khi truyen vao email phai tra ve dang string
   //o day se viet mot cai ham chuyen tu array ve string lai
   const { email } = useLocalSearchParams();
-  const emailString = Array.isArray(email) ? email[0] : email || "";
+  const emailString = Array.isArray(email) ? email[0] : email ?? "";
 
   const [otpInput, setOtpInput] = useState(["", "", "", "", "", ""]);
   const [isModalVisible, setIsModalVisible] = useState(false);

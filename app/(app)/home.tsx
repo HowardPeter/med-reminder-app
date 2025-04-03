@@ -6,7 +6,6 @@ import theme from '@/config/theme';
 
 export default function Home() {
   const { logout, user } = useAuth();
-  const [fadeAnim] = useState(new Animated.Value(0));
 
   const handleLogout = async () => {
     await logout();
