@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, Animated } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, TouchableOpacity } from 'react-native'
+import React from 'react'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { useAuth } from '@/hooks/useAuth'
 import theme from '@/config/theme';
