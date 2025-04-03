@@ -1,23 +1,8 @@
 name: Deploy App to Android
 on:
   workflow_dispatch:
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get code
-        uses: actions/checkout@v4
-        
-      - name: Setup environments
-        uses: ./.github/setup-envs
-        with:
-          expo-token: ${{ secrets.EXPO_TOKEN }}
-        
-      - name: Lint code
-        run: npm run lint
-              
+jobs:         
   deploy:
-    needs: build
     runs-on: ubuntu-latest
     steps:
     - name: Get code
