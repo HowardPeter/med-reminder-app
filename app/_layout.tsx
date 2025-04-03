@@ -1,33 +1,46 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter, useSegments } from "expo-router";
 import { Slot } from "expo-router";
 import "../global.css"
 import { MenuProvider } from 'react-native-popup-menu';
 import { AuthContextProvider, useAuth } from "@/hooks/useAuth";
+import SplashScreen from "@/components/SplashScreenView";
+import IntroScreenView from ".";
 
 const MainLayout = () => {
-  const { verified, isAuthenticated } = useAuth();
-  const segments = useSegments();
+  const { isAuthenticated } = useAuth();
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [showIntro, setShowIntro] = useState(false);
 
   useEffect(() => {
-    // check if user is authenticated or not
-    if (typeof isAuthenticated === "undefined") return;
-    const inApp = segments[0] === '(app)';
-    if (verified && !inApp) {
-      // redirect to home
-      router.replace('../(app)/home');
-    }
-    else if (!isAuthenticated) {
-      // redirect to signIn
-      router.replace('/(auth)/signIn');
-    }
-  }, [isAuthenticated, verified]);
-  console.log("Is authenticated: ", isAuthenticated)
-  console.log("Is verifed: ", verified)
+    const checkAuth = async () => {
+      await new Promise((resolve) => setTimeout(resolve, 3000)); // Giả lập thời gian hiển thị Splash
 
-  return < Slot />
-}
+      setLoading(false); // Tắt SplashScreen sau khi kiểm tra
+
+      if (typeof isAuthenticated === "undefined") return;
+
+      if (isAuthenticated) {
+        router.replace("/(auth)/welcome");
+      } else {
+        setShowIntro(true); // Hiển thị màn hình intro trước khi sign in
+      }
+    };
+
+    checkAuth();
+  }, [isAuthenticated]);
+
+  if (loading) {
+    return <SplashScreen />;
+  }
+
+  if (showIntro) {
+    return <IntroScreenView onFinish={() => router.replace("/(auth)/signIn")} />;
+  }
+
+  return <Slot />;
+};
 
 export default function RootLayout() {
   return (
