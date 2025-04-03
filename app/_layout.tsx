@@ -1,33 +1,39 @@
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSegments } from "expo-router";
 import { Slot } from "expo-router";
-import "../global.css"
-import { MenuProvider } from 'react-native-popup-menu';
+import { MenuProvider } from "react-native-popup-menu";
 import { AuthContextProvider, useAuth } from "@/hooks/useAuth";
+import StartPage from "./index"; // Import Splash Screen
 
 const MainLayout = () => {
   const { verified, isAuthenticated } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // check if user is authenticated or not
-    if (typeof isAuthenticated === "undefined") return;
-    const inApp = segments[0] === '(app)';
-    if (verified && !inApp) {
-      // redirect to home
-      router.replace('../(app)/home');
-    }
-    else if (!isAuthenticated) {
-      // redirect to signIn
-      router.replace('/(auth)/signIn');
-    }
-  }, [isAuthenticated, verified]);
-  console.log("Is authenticated: ", isAuthenticated)
-  console.log("Is verifed: ", verified)
+    // Chạy Splash Screen trong 3 giây
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
-  return < Slot />
-}
+  useEffect(() => {
+    if (isLoading || typeof isAuthenticated === "undefined") return;
+
+    const inApp = segments[0] === "(app)";
+    if (verified && !inApp) {
+      router.replace("../(app)/home");
+    } else if (!isAuthenticated) {
+      router.replace("/(auth)/signIn");
+    }
+  }, [isAuthenticated, verified, isLoading]);
+
+  if (isLoading) return <StartPage />; // Hiển thị Splash Screen trước khi điều hướng
+
+  return <Slot />;
+};
 
 export default function RootLayout() {
   return (
@@ -36,6 +42,5 @@ export default function RootLayout() {
         <MainLayout />
       </AuthContextProvider>
     </MenuProvider>
-
   );
 }

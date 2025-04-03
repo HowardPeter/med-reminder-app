@@ -7,6 +7,7 @@ import MessageModal from '../../components/MessageModal';
 import { db } from '../../firebaseConfig';
 import { doc, getDoc, deleteDoc } from 'firebase/firestore';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
+import { images } from '@/constants';
 
 export default function VertifiedOTP() {
   const router = useRouter();
@@ -15,7 +16,7 @@ export default function VertifiedOTP() {
   //vi email lay tu useLocalSearch params la string[] nen khi truyen vao email phai tra ve dang string
   //o day se viet mot cai ham chuyen tu array ve string lai
   const { email } = useLocalSearchParams();
-  const emailString = Array.isArray(email) ? email[0] : email || "";
+  const emailString = Array.isArray(email) ? email[0] : email ?? "";
 
   const [otpInput, setOtpInput] = useState(["", "", "", "", "", ""]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -97,7 +98,7 @@ export default function VertifiedOTP() {
         <View className='flex justify-center items-center mt-15'>
           <Image
             style={{ height: hp(35), width: hp(35), resizeMode: 'contain' }}
-            source={require('../../assets/images/forgot-password.png')}
+            source={images.forgotPassword}
           />
         </View>
 

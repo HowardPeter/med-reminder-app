@@ -9,6 +9,7 @@ import { Link, router } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import Loading from '@/components/loading';
 import { ReactNativeModal } from "react-native-modal";
+import { images } from '@/constants';
 
 export default function SignUp() {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -86,14 +87,14 @@ export default function SignUp() {
 
   return (
     <CustomKeyboardView>
-      <View style={{ backgroundColor: theme.colors.background }} className="flex-1 pl-9 pr-9 justify-center w-screen h-screen">
+      <View style={{ backgroundColor: theme.colors.background }} className="flex-1 pl-9 pr-9 justify-center w-full pb-[50px]">
         {/* Back Button */}
-        <View style={{ marginTop: hp(-7) }} className='flex-row justify-between mb-9'>
+        <View style={{marginTop: hp(5)}} className='flex-row justify-between mb-9'>
           <Link href="/(auth)/signIn" style={{ maxWidth: wp(10) }}>
             <Ionicons name="arrow-back-circle-outline" size={40} color="black" />
           </Link>
           <Image
-            source={require('../../assets/images/logo.jpg')}
+            source={images.logoTrans}
             className='w-[43px] h-[43px] rounded-xl'
           />
         </View>

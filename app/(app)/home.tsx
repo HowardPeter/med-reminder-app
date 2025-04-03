@@ -5,15 +5,17 @@ import { useAuth } from '@/hooks/useAuth'
 import theme from '@/config/theme';
 
 export default function Home() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
+
   const handleLogout = async () => {
     await logout();
   }
   return (
     <View className="flex-1 pl-9 pr-9 mt-5">
-      <Text style={{ fontSize: hp(2) }} className="text-center font-semibold">
+      <Text style={{ fontSize: hp(2.5) }} className="text-center font-semibold">
         Home
       </Text>
+      <Text className='font-medium text-lg'>Hi {user?.username}!</Text>
       <TouchableOpacity
         onPress={handleLogout}
         style={{ width: wp(25), backgroundColor: theme.colors.primary }}

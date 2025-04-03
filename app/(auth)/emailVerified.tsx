@@ -9,6 +9,7 @@ import { doc, setDoc, serverTimestamp, deleteDoc, Timestamp, getDoc } from "fire
 import { db } from "../../firebaseConfig";
 import emailjs from '@emailjs/react-native';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
+import { images } from '@/constants';
 
 export default function ForgetPasswordScreen() {
   const router = useRouter();
@@ -121,7 +122,7 @@ export default function ForgetPasswordScreen() {
         <View className='flex justify-center items-center'>
           <Image
             style={{ height: hp(35), width: hp(35), resizeMode: 'contain' }}
-            source={require('../../assets/images/email-verify.png')}
+            source={images.emailVerified}
           />
         </View>
 
