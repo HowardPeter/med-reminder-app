@@ -7,6 +7,7 @@ import MessageModal from '../../components/MessageModal';
 import { db } from '../../firebaseConfig';
 import { doc, getDoc, deleteDoc } from 'firebase/firestore';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
+import { images } from '@/constants';
 
 export default function VertifiedOTP() {
   const router = useRouter();
@@ -97,7 +98,7 @@ export default function VertifiedOTP() {
         <View className='flex justify-center items-center mt-15'>
           <Image
             style={{ height: hp(35), width: hp(35), resizeMode: 'contain' }}
-            source={require('../../assets/images/forgot-password.png')}
+            source={images.forgotPassword}
           />
         </View>
 

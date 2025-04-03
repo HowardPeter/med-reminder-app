@@ -1,43 +1,36 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSegments } from "expo-router";
 import { Slot } from "expo-router";
-import "../global.css"
-import { MenuProvider } from 'react-native-popup-menu';
+import { MenuProvider } from "react-native-popup-menu";
 import { AuthContextProvider, useAuth } from "@/hooks/useAuth";
-import SplashScreen from "@/components/SplashScreenView";
-import IntroScreenView from ".";
+import StartPage from "./index"; // Import Splash Screen
 
 const MainLayout = () => {
-  const { isAuthenticated } = useAuth();
+  const { verified, isAuthenticated } = useAuth();
+  const segments = useSegments();
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [showIntro, setShowIntro] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 3000)); // Giả lập thời gian hiển thị Splash
+    // Chạy Splash Screen trong 3 giây
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
-      setLoading(false); // Tắt SplashScreen sau khi kiểm tra
+  useEffect(() => {
+    if (isLoading || typeof isAuthenticated === "undefined") return;
 
-      if (typeof isAuthenticated === "undefined") return;
+    const inApp = segments[0] === "(app)";
+    if (verified && !inApp) {
+      router.replace("../(app)/home");
+    } else if (!isAuthenticated) {
+      router.replace("/(auth)/signIn");
+    }
+  }, [isAuthenticated, verified, isLoading]);
 
-      if (isAuthenticated) {
-        router.replace("/(auth)/welcome");
-      } else {
-        setShowIntro(true); // Hiển thị màn hình intro trước khi sign in
-      }
-    };
-
-    checkAuth();
-  }, [isAuthenticated]);
-
-  if (loading) {
-    return <SplashScreen />;
-  }
-
-  if (showIntro) {
-    return <IntroScreenView onFinish={() => router.replace("/(auth)/signIn")} />;
-  }
+  if (isLoading) return <StartPage />; // Hiển thị Splash Screen trước khi điều hướng
 
   return <Slot />;
 };
@@ -49,6 +42,5 @@ export default function RootLayout() {
         <MainLayout />
       </AuthContextProvider>
     </MenuProvider>
-
   );
 }

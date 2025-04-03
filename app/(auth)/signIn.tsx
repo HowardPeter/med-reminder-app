@@ -7,6 +7,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'expo-router'
 import Loading from '@/components/loading';
 import { Feather } from '@expo/vector-icons';
+import { images } from '@/constants';
 
 export default function SignIn() {
     const router = useRouter();
@@ -39,7 +40,7 @@ export default function SignIn() {
                 {/* Logo và tên ứng dụng */}
                 <View style={{ alignItems: 'center' }}>
                     <Image
-                        source={require('../../assets/images/logo.jpg')}
+                        source={images.logo}
                         style={styles.image}
                     />
                     <Text style={styles.appName}>PILLPALL</Text>
@@ -53,7 +54,7 @@ export default function SignIn() {
 
                 {/* Email Input */}
                 <View style={{ alignItems: 'center' }}>
-                    <View style={{ marginTop: 50 }}>
+                    <View style={{ marginTop: 40 }}>
                         <Text style={styles.email}>Email</Text>
                         <View style={styles.inputContainer}>
                             <Octicons name="mail" size={20} color="#000000" style={styles.icon} />
@@ -69,7 +70,7 @@ export default function SignIn() {
 
                 {/* Password Input */}
                 <View style={{ alignItems: 'center' }}>
-                    <View style={{ marginTop: 25 }}>
+                    <View style={{ marginTop: 24 }}>
                         <Text style={styles.email}>Password</Text>
                         <View style={styles.inputContainer}>
                             <Octicons name="lock" size={20} color="#000000" style={styles.icon} />
@@ -108,9 +109,8 @@ export default function SignIn() {
                     }
                 </View>
 
-
                 {/* Footer */}
-                <View style={{ alignItems: 'center', marginTop: 50 }} className='mb-10'>
+                <View style={{ alignItems: 'center', marginTop: 29 }} className='mb-10'>
                     <View style={{ flexDirection: 'row' }}>
                         <Text style={styles.dontHaveAccount}>Don’t have an account?</Text>
                         <TouchableOpacity onPress={() => router.push('/(auth)/signUp')}>
@@ -119,7 +119,7 @@ export default function SignIn() {
                     </View>
                     {/* Login with phone number */}
                     <TouchableOpacity>
-                        <View style={{ marginTop: 20 }}>
+                        <View style={{ marginTop: 11 }}>
                             <Text style={styles.loginWithPhone}>Login with phone number</Text>
                         </View>
                     </TouchableOpacity>
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     image: {
         width: 150,
         height: 154,
-        marginTop: 77
+        marginTop: 30
     },
     appName: {
         fontSize: 24,
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
         fontFamily: 'InstrumentSans',
         letterSpacing: 1,
         color: '#949494',
-        marginTop: 10,
+        marginTop: 5,
         fontWeight: 'bold'
     },
     email: {
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
         fontFamily: 'InstrumentSans',
         fontWeight: '800',
         color: '#949494',
-        marginTop: 20,
+        marginTop: 15,
         textDecorationColor: "#949494",
         textDecorationLine: "underline",
     },

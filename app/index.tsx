@@ -1,19 +1,39 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import theme from "@/config/theme";
+import { images } from "@/constants";
+import { useEffect, useState } from "react";
+import { Animated, View, Text } from "react-native";
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 
-interface IntroScreenViewProps {
-  onFinish: () => void;
-}
+export default function StartPage() {
+  const [fadeAnim] = useState(new Animated.Value(0));
 
-const IntroScreenView: React.FC<IntroScreenViewProps> = ({ onFinish }) => {
+  useEffect(() => {
+    // Bắt đầu hiệu ứng fade-in
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start(() => {
+    });
+  }, []);
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Welcome to the App</Text>
-      <TouchableOpacity onPress={onFinish}>
-        <Text style={{ fontSize: 18, color: '#04A996' }}>Get Started</Text>
-      </TouchableOpacity>
+    <View
+      style={{ backgroundColor: theme.colors.primary }}
+      className="w-full flex-1 justify-center items-center"
+    >
+      <Animated.Image
+        source={images.splashImage}
+        style={{
+          width: 350,
+          height: 350,
+          resizeMode: "contain",
+          opacity: fadeAnim,
+        }}
+      />
+      <Animated.Text style={{ opacity: fadeAnim }}>
+        <Text style={{ fontSize: hp(4) }} className='text-white font-bold text-center'>Manage your pill schedule easier than ever</Text>
+      </Animated.Text>
     </View>
   );
-};
-
-export default IntroScreenView;
+}
