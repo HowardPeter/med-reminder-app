@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface CustomKeyboardViewProps {
   children: ReactNode;
@@ -7,18 +8,20 @@ interface CustomKeyboardViewProps {
 
 const CustomKeyboardView: React.FC<CustomKeyboardViewProps> = ({ children }) => {
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1 }}
-    >
-      <ScrollView
+    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
-        bounces={false}
-        showsVerticalScrollIndicator={false}
       >
-        {children}
-      </ScrollView>
-    </KeyboardAvoidingView>
+        <ScrollView
+          style={{ flex: 1 }}
+          bounces={false}
+          showsVerticalScrollIndicator={false}
+        >
+          {children}
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
