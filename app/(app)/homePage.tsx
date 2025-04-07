@@ -6,6 +6,7 @@ import theme from "@/config/theme";
 import { useAuth } from "@/hooks/useAuth";
 import CalendarSlider from "@/components/CalendarSlider";
 import { SafeAreaView } from "react-native-safe-area-context";
+import PrescriptionList from "@/components/PrescriptionList";
 
 const HomePage = () => {
   const { logout } = useAuth();
@@ -20,8 +21,13 @@ const HomePage = () => {
         <CalendarSlider />
       </SafeAreaView>
 
+      {/* Body */}
+      <PrescriptionList />
+
       {/* Floating Action Button */}
-      <TouchableOpacity style={{ width: hp(7), height: hp(7) }} className="absolute bottom-20 right-5 bg-white rounded-full items-center justify-center drop-shadow-lg">
+      <TouchableOpacity
+        style={{ width: hp(7), height: hp(7) }}
+        className="absolute bottom-20 right-5 bg-white rounded-full items-center justify-center shadow-strong">
         <Text style={{ fontSize: hp(4) }} className="text-orange-500">+</Text>
       </TouchableOpacity>
 

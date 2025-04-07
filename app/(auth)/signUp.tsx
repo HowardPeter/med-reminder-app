@@ -89,7 +89,7 @@ export default function SignUp() {
 
   return (
     <CustomKeyboardView>
-      <View className="bg-white flex-1 pl-9 pr-9 justify-center w-full pb-[50px]">
+      <View className="bg-white flex-1 px-9 justify-center w-full pb-[50px]">
         {/* Back Button */}
         <View style={{ marginTop: hp(5) }} className='flex-row justify-between mb-9'>
           <Link href="/(auth)/signIn" style={{ maxWidth: wp(10) }}>
@@ -270,7 +270,7 @@ export default function SignUp() {
               <Text style={{ fontSize: wp(5.5) }} className='text-white font-bold text-center'>Verified!</Text>
               <Text style={{ fontSize: wp(4.2) }} className='text-white font-medium text-center text-lg mt-2'>Congratulation! You have successfully verify your email.</Text>
             </View>
-            <TouchableOpacity onPress={() => router.replace('/(app)/home')} className='bg-white pt-4 pb-4 pl-[100px] pr-[100px] rounded-3xl items-center mt-10'>
+            <TouchableOpacity onPress={() => router.replace('/(app)/homePage')} className='bg-white py-4 px-[100px] rounded-3xl items-center mt-10'>
               <Text style={{ fontSize: wp(4), color: theme.colors.primary }} className='font-semibold'>Go to Home</Text>
             </TouchableOpacity>
           </View>
