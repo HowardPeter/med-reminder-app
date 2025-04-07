@@ -4,13 +4,14 @@ import React from 'react'
 import theme from '@/config/theme';
 import Thinking from './thinking'
 
-interface CustomAlertProps {
+type CustomAlertProps = Readonly<{
     title: string;
     message: string;
     btnConfirm: string;
     onConfirm: () => void;
-    onCancel: () => void;
-}
+    onCancel?: () => void;
+}>;
+
 
 export default function CustomAlert({ title, message, btnConfirm, onConfirm, onCancel }: CustomAlertProps) {
     return (
@@ -26,7 +27,7 @@ export default function CustomAlert({ title, message, btnConfirm, onConfirm, onC
                         <Text className='text-white text-xl font-bold'>Cancel</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={onConfirm}>
-                        <Text className='text-gray-900 text-xl font-bold'>{btnConfirm}</Text>
+                        <Text className='text-red-500 text-xl font-bold'>{btnConfirm}</Text>
                     </TouchableOpacity>
                 </View>
             </View>

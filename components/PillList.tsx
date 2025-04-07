@@ -64,6 +64,8 @@ const pills = [
   },
 ];
 
+const ItemSeparator = () => <View className="h-2" />;
+
 const PillList = () => {
   return (
     <View style={{maxHeight: hp(50)}} className="rounded-xl bg-white overflow-hidden mx-4 mt-2">
@@ -80,7 +82,7 @@ const PillList = () => {
             icon={item.icon}
           />
         )}
-        ItemSeparatorComponent={() => <View className="h-2" />} // Separator between items
+        ItemSeparatorComponent={ItemSeparator} // Separator between items
       />
     </View>
   );

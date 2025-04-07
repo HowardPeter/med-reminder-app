@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { FontAwesome, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import theme from "@/config/theme";
 import { useAuth } from "@/hooks/useAuth";
@@ -13,15 +13,15 @@ import CustomAlert from "@/components/CustomAlert";
 
 const HomePage = () => {
   const { logout } = useAuth();
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [isAlertVisible, setAlertVisible] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
 
   const handleLogout = () => {
     logout();
   };
 
   const handleDeletePrescription = () => {
-    setAlertVisible(false);
+    setIsAlertVisible(false);
     console.log("Prescription deleted");
   }
 
@@ -33,7 +33,7 @@ const HomePage = () => {
       </SafeAreaView>
 
       {/* Body */}
-      <PrescriptionList onToggle={() => setModalVisible(true)} />
+      <PrescriptionList onToggle={() => setIsModalVisible(true)} />
 
       {/* Floating Action Button */}
       <TouchableOpacity
@@ -65,11 +65,11 @@ const HomePage = () => {
               <TouchableOpacity>
                 <FontAwesome name="pencil" size={24} color="white" />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setAlertVisible(true)} className="ml-5">
+              <TouchableOpacity onPress={() => setIsAlertVisible(true)} className="ml-5">
                 <FontAwesome name="trash" size={24} color="white" />
               </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={() => setModalVisible(false)}>
+            <TouchableOpacity onPress={() => setIsModalVisible(false)}>
               <FontAwesome name="close" size={24} color="white" />
             </TouchableOpacity>
           </View>
@@ -100,7 +100,7 @@ const HomePage = () => {
           title="Prescription for headache"
           message="Do you want to delete this prescription? All future notifications will be deleted."
           btnConfirm="Delete"
-          onCancel={() => setAlertVisible(false)}
+          onCancel={() => setIsAlertVisible(false)}
           onConfirm={handleDeletePrescription} />
       </ReactNativeModal>
     </View>

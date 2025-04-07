@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 export default function CalendarSlider() {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [weekOffset, setWeekOffset] = useState(0);
-    const [isOutOfLimit, setIsOuOfLimit] = useState(false);
+    const [isOutOfLimit, setIsOutOfLimit] = useState(false);
 
     const translateX = useState(new Animated.Value(0))[0];
     const [direction, setDirection] = useState<'left' | 'right'>('right');
@@ -49,7 +49,7 @@ export default function CalendarSlider() {
     const handlePrevWeek = () => {
         setWeekOffset(prev => prev - 1);
         animateSlide('right');
-        setIsOuOfLimit(false);
+        setIsOutOfLimit(false);
     };
 
     const handleNextWeek = () => {
@@ -58,7 +58,7 @@ export default function CalendarSlider() {
             setWeekOffset(prev => prev + 1);
         }
         if (weekOffset >= 1) {
-            setIsOuOfLimit(true);
+            setIsOutOfLimit(true);
         }
     };
 
@@ -111,15 +111,11 @@ export default function CalendarSlider() {
                                 new Date(day.fullDate).toDateString() === selectedDate.toDateString();
                             const isFutureDate = moment(day.fullDate).isAfter(moment(), 'day');
 
-                            const bgColor = isSelected
-                                ? 'bg-[#182C47]'
-                                : isFutureDate
-                                    ? 'bg-gray-400'
-                                    : 'bg-white';
+                            const bgColor = isSelected ? 'bg-[#182C47]' : isFutureDate ? 'bg-white' : 'bg-gray-200';
 
                             return (
                                 <TouchableOpacity
-                                    key={index}
+                                    key={day.fullDate.toString()}
                                     className="items-center mx-2"
                                     onPress={() => setSelectedDate(day.fullDate)}
                                 >
