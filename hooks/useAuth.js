@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState, useContext, useCallback, useMemo } from "react";
-import { createUserWithEmailAndPassword, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from "firebase/auth"
+import { createUserWithEmailAndPassword, deleteUser, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from "firebase/auth"
 import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
 import { auth, db } from "../firebaseConfig";
 
