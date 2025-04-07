@@ -109,18 +109,25 @@ export default function CalendarSlider() {
                         {days.map((day, index) => {
                             const isSelected =
                                 new Date(day.fullDate).toDateString() === selectedDate.toDateString();
-                            const isToday = moment(selectedDate).isSame(moment(), 'day');
+                            const isFutureDate = moment(day.fullDate).isAfter(moment(), 'day');
+
+                            const bgColor = isSelected
+                                ? 'bg-[#182C47]'
+                                : isFutureDate
+                                    ? 'bg-gray-400'
+                                    : 'bg-white';
+
                             return (
                                 <TouchableOpacity
                                     key={index}
                                     className="items-center mx-2"
                                     onPress={() => setSelectedDate(day.fullDate)}
                                 >
-                                    <Text className={`text-sm text-center font-bold ${isSelected ? 'text-[#182C47]' : 'text-white'}`}>
+                                    <Text className={`text-sm text-center ${isFutureDate ? 'font-normal' : 'font-bold'} ${isSelected ? 'text-[#182C47]' : 'text-white'}`}>
                                         {day.label}
                                     </Text>
-                                    <View className={`w-8 h-8 mt-1 rounded-full items-center justify-center ${isSelected ? 'bg-[#182C47]' : 'bg-white'}`}>
-                                        <Text className={`text-sm font-bold ${isSelected ? 'text-white' : 'text-teal-600'}`}>
+                                    <View className={`w-8 h-8 mt-1 rounded-full items-center justify-center ${bgColor}`}>
+                                        <Text className={`text-base font-bold ${isSelected ? 'text-white' : 'text-teal-600'}`}>
                                             {day.date}
                                         </Text>
                                     </View>

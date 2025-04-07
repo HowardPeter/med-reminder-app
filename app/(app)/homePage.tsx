@@ -14,7 +14,7 @@ import CustomAlert from "@/components/CustomAlert";
 const HomePage = () => {
   const { logout } = useAuth();
   const [isModalVisible, setModalVisible] = useState(false);
-  const [isAlertVisible, setAlertVisible] = useState(true);
+  const [isAlertVisible, setAlertVisible] = useState(false);
 
   const handleLogout = () => {
     logout();
