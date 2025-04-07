@@ -80,6 +80,10 @@ module.exports = {
           800: "#ADADAD",
         },
       },
+      boxShadow: {
+        '3xl': '0 7px 10px rgba(0, 0, 0, 1)',
+        'strong': '2px 4px 15px rgba(0, 0, 0, 1)',
+      },
     },
   },
   plugins: [],
