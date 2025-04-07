@@ -1,18 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
-import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import { FontAwesome, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import theme from "@/config/theme";
 import { useAuth } from "@/hooks/useAuth";
 import CalendarSlider from "@/components/CalendarSlider";
 import { SafeAreaView } from "react-native-safe-area-context";
 import PrescriptionList from "@/components/PrescriptionList";
+import ReactNativeModal from "react-native-modal";
+import PillList from "@/components/PillList";
+import CustomAlert from "@/components/CustomAlert";
 
 const HomePage = () => {
   const { logout } = useAuth();
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [isAlertVisible, setAlertVisible] = useState(true);
+
   const handleLogout = () => {
     logout();
   };
+
+  const handleDeletePrescription = () => {
+    setAlertVisible(false);
+    console.log("Prescription deleted");
+  }
 
   return (
     <View style={{ backgroundColor: theme.colors.background }} className="flex-1">
@@ -22,7 +33,7 @@ const HomePage = () => {
       </SafeAreaView>
 
       {/* Body */}
-      <PrescriptionList />
+      <PrescriptionList onToggle={() => setModalVisible(true)} />
 
       {/* Floating Action Button */}
       <TouchableOpacity
@@ -43,6 +54,55 @@ const HomePage = () => {
           <FontAwesome name="user" size={35} color="gray" />
         </TouchableOpacity>
       </View>
+
+      <ReactNativeModal
+        isVisible={isModalVisible}
+        animationIn={'fadeIn'}>
+        <View className="bg-teal-50 rounded-xl pb-6">
+          {/* Top control icons */}
+          <View style={{ backgroundColor: theme.colors.primary }} className="flex-row justify-between items-center py-4 px-5 mb-4 rounded-t-xl">
+            <View className="flex-row justify-between items-center">
+              <TouchableOpacity>
+                <FontAwesome name="pencil" size={24} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setAlertVisible(true)} className="ml-5">
+                <FontAwesome name="trash" size={24} color="white" />
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity onPress={() => setModalVisible(false)}>
+              <FontAwesome name="close" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Info */}
+          <View className="px-4">
+            <Text style={{ fontSize: hp(2.3) }} className="font-bold text-center mb-3">
+              Prescription for stomachache
+            </Text>
+            <View className="flex-row items-center mb-1">
+              <MaterialIcons name="event" size={20} color="black" />
+              <Text style={{ fontSize: hp(1.9) }} className="ml-2">Scheduled for 7:30, today</Text>
+            </View>
+            <View className="flex-row items-center mb-2 mt-1">
+              <MaterialIcons name="chat-bubble-outline" size={20} color="black" />
+              <Text style={{ fontSize: hp(1.9) }} className="ml-2">After breakfast</Text>
+            </View>
+          </View>
+
+          {/* Pills */}
+          <PillList />
+        </View>
+      </ReactNativeModal>
+
+      <ReactNativeModal
+        isVisible={isAlertVisible}>
+        <CustomAlert
+          title="Prescription for headache"
+          message="Do you want to delete this prescription? All future notifications will be deleted."
+          btnConfirm="Delete"
+          onCancel={() => setAlertVisible(false)}
+          onConfirm={handleDeletePrescription} />
+      </ReactNativeModal>
     </View>
   );
 };

@@ -1,18 +1,19 @@
 // components/PrescriptionCard.js
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { FontAwesome } from "@expo/vector-icons";
 
 interface PrescriptionCardProps {
   time: string;
   title: string;
   note: string;
+  onToggle?: () => void;
 }
 
-const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ time, title, note }) => {
+const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ time, title, note, onToggle }) => {
   return (
-    <TouchableOpacity className="bg-white rounded-xl shadow-3xl overflow-hidden mb-4 mx-4">
+    <TouchableOpacity onPress={onToggle} className="bg-white rounded-xl shadow-3xl overflow-hidden mb-4 mx-4">
       <View className="p-4">
         <View className="flex-row items-center mb-2">
           <FontAwesome name="clock-o" size={20} color="#000" />

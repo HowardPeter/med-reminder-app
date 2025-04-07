@@ -30,20 +30,31 @@ const prescriptions = [
     },
 ];
 
-const PrescriptionList = () => {
+interface Prescription {
+    id: string;
+    time: string;
+    title: string;
+    note: string;
+}
+
+interface PrescriptionListProps {
+    onToggle: () => void;
+}
+
+const PrescriptionList: React.FC<PrescriptionListProps> = ({ onToggle }) => {
     return (
         <View className="flex-1">
             <FlatList
                 data={prescriptions}
-                // keyExtractor={(item) => item.id}
-                keyExtractor={() => Math.random().toString()}
+                keyExtractor={(item: Prescription) => item.id}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingVertical: 16, paddingBottom: 70 }}
-                renderItem={({ item }) => (
+                renderItem={({ item }: { item: Prescription }) => (
                     <PrescriptionCard
                         time={item.time}
                         title={item.title}
                         note={item.note}
+                        onToggle={onToggle}
                     />
                 )}
             />
