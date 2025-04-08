@@ -10,6 +10,7 @@ import PrescriptionList from "@/components/PrescriptionList";
 import ReactNativeModal from "react-native-modal";
 import PillList from "@/components/PillList";
 import CustomAlert from "@/components/CustomAlert";
+import { router } from "expo-router";
 
 const HomePage = () => {
   const { logout } = useAuth();
@@ -19,6 +20,18 @@ const HomePage = () => {
   const handleLogout = () => {
     logout();
   };
+
+  const moveToAddPresctiption = () => {
+    setIsModalVisible(false);
+    setIsAlertVisible(false);
+    router.push('/addPrescription');
+  }
+
+  const moveToUpdatePrescription = () => {
+    setIsModalVisible(false);
+    setIsAlertVisible(false);
+    router.push('/updatePrescription');
+  }
 
   const handleDeletePrescription = () => {
     setIsAlertVisible(false);
@@ -37,6 +50,7 @@ const HomePage = () => {
 
       {/* Floating Action Button */}
       <TouchableOpacity
+        onPress={moveToAddPresctiption}
         style={{ width: hp(7), height: hp(7) }}
         className="absolute bottom-20 right-5 bg-white rounded-full items-center justify-center shadow-strong">
         <Text style={{ fontSize: hp(4) }} className="text-orange-500">+</Text>
@@ -62,7 +76,7 @@ const HomePage = () => {
           {/* Top control icons */}
           <View style={{ backgroundColor: theme.colors.primary }} className="flex-row justify-between items-center py-4 px-5 mb-4 rounded-t-xl">
             <View className="flex-row justify-between items-center">
-              <TouchableOpacity>
+              <TouchableOpacity onPress={moveToUpdatePrescription}>
                 <FontAwesome name="pencil" size={24} color="white" />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => setIsAlertVisible(true)} className="ml-5">
@@ -100,6 +114,7 @@ const HomePage = () => {
           title="Prescription for headache"
           message="Do you want to delete this prescription? All future notifications will be deleted."
           btnConfirm="Delete"
+          confirmTextColor="text-red-500"
           onCancel={() => setIsAlertVisible(false)}
           onConfirm={handleDeletePrescription} />
       </ReactNativeModal>

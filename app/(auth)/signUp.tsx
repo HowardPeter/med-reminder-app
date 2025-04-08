@@ -18,7 +18,7 @@ export default function SignUp() {
   const [isChecked, setIsChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
-  const [userRegister, setUserRegister] = useState();
+  const [userRegister, setUserRegister] = useState<{ data?: { reload: () => Promise<void>; emailVerified?: boolean; email?: string } } | null>(null);
 
   const userNameRef = useRef("");
   const emailRef = useRef("");
@@ -26,7 +26,7 @@ export default function SignUp() {
   const confirmPasswordRef = useRef("");
 
   const [verification, setVerification] = useState({
-    state: "pending",
+    state: "default",
   });
 
   const handlePasswordConfirmation = () => {

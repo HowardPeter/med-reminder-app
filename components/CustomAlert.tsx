@@ -8,12 +8,12 @@ type CustomAlertProps = Readonly<{
     title: string;
     message: string;
     btnConfirm: string;
+    confirmTextColor: string;
     onConfirm: () => void;
     onCancel?: () => void;
 }>;
 
-
-export default function CustomAlert({ title, message, btnConfirm, onConfirm, onCancel }: CustomAlertProps) {
+export default function CustomAlert({ title, message, btnConfirm, confirmTextColor, onConfirm, onCancel }: CustomAlertProps) {
     return (
         <View className='flex-1 justify-center items-center'>
             <View style={{ backgroundColor: theme.colors.secondary, maxWidth: 300 }} className='flex p-5 rounded-2xl'>
@@ -27,7 +27,7 @@ export default function CustomAlert({ title, message, btnConfirm, onConfirm, onC
                         <Text className='text-white text-xl font-bold'>Cancel</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={onConfirm}>
-                        <Text className='text-red-500 text-xl font-bold'>{btnConfirm}</Text>
+                        <Text className={`${confirmTextColor} text-xl font-bold`}>{btnConfirm}</Text>
                     </TouchableOpacity>
                 </View>
             </View>

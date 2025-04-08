@@ -8,10 +8,10 @@ import Loading from '@/components/loading';
 import MedicineTimePicker from '@/components/MedicineTimePicker';
 import { Picker } from '@react-native-picker/picker';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
-import theme from '@/config/theme';
 import { router } from 'expo-router';
+import theme from '@/config/theme';
 
-export default function UpdatePrescription() {
+export default function AddPrescription() {
     const [name, setName] = useState("");
     const [day, setDay] = useState("");
     const [time, setTime] = useState("");
@@ -19,18 +19,7 @@ export default function UpdatePrescription() {
     const [note, setNote] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleUpdatePrescription = async () => {
-        if (!name || !day || !time || !note) {
-            Alert.alert('Update Prescription', 'Please fill all fields!');
-            return;
-        }
-        setIsLoading(true);
-        Alert.alert('Update Prescription', 'Update successfully!');
-        console.log('Update Prescription', {
-            name: name, day: day, time: time, frequency: selectedFrequency, note: note
-        });
-        setNullValue();
-        setIsLoading(false);
+    const handleAddPrescription = async () => {
         router.push('/addPills');
     }
     const setNullValue = () => {
@@ -42,11 +31,13 @@ export default function UpdatePrescription() {
     }
     return (
         <CustomKeyboardView>
-            <View className='bg-[#E8F3F2]'>
+            <View style={{ backgroundColor: theme.colors.accent }} className='flex-1 mb-7'>
                 {/* Header */}
                 <View className='bg-white'>
                     <View className='flex-row mt-[30] ml-[16] mr-[16] items-center justify-between'>
-                        <Ionicons name="chevron-back" size={30} color="black" />
+                        <TouchableOpacity onPress={() => router.back()}>
+                            <Ionicons name="chevron-back" size={30} color="black" />
+                        </TouchableOpacity>
                         <View className='flex-row items-center'>
                             <Image
                                 source={images.logo}
@@ -63,7 +54,7 @@ export default function UpdatePrescription() {
                 </View>
                 <View className='bg-white rounded-bl-[70] rounded-br-[70]'>
                     <Text className='pt-[20] text-3xl font-bold text-black text-center'>
-                        Update prescription
+                        Add new prescription
                     </Text>
                     <Text className='text-1xl text-gray-700 text-center mt-2 pb-[40]'>
                         "Keeping prescriptions accurate for better care."
@@ -74,7 +65,7 @@ export default function UpdatePrescription() {
                     {/* Name */}
                     <View>
                         <View className='w-full'>
-                            <Text className='text-1xl font-bold text-black'>
+                            <Text className='text-1xl font-bold'>
                                 Prescription name
                             </Text>
                         </View>
@@ -84,7 +75,7 @@ export default function UpdatePrescription() {
                                 <TextInput
                                     onChangeText={setName}
                                     placeholder='Enter prescription name...'
-                                    className='px-3 pr-3 text-black text-1xl w-full'
+                                    className='px-3 pr-3 text-1xl w-full'
                                 >
                                 </TextInput>
                             </View>
@@ -93,7 +84,7 @@ export default function UpdatePrescription() {
                     {/* Day */}
                     <View className='mt-3'>
                         <View className='w-full'>
-                            <Text className='text-1xl font-bold text-black'>
+                            <Text className='text-1xl font-bold'>
                                 Start date
                             </Text>
                         </View>
@@ -103,7 +94,7 @@ export default function UpdatePrescription() {
                                 <TextInput
                                     onChangeText={setDay}
                                     placeholder='01/01/2025'
-                                    className='px-3 pr-3 text-black text-1xl w-full'
+                                    className='px-3 pr-3 text-1xl w-full'
                                 >
                                 </TextInput>
                             </View>
@@ -112,32 +103,22 @@ export default function UpdatePrescription() {
                     {/* Time */}
                     <View className='mt-3'>
                         <View className='w-full'>
-                            <Text className='text-1xl font-bold text-black'>
+                            <Text className='text-1xl font-bold'>
                                 Time of taking medicine
                             </Text>
                         </View>
-                        {/* <View>
-                            <View className='bg-white flex-row items-center border border-gray-400 rounded-[10] h-[50] w-[370] mt-2 px-4'>
-                                <AntDesign name="clockcircleo" size={24} color="black" />
-                                <TextInput
-                                    onChangeText={setTime}
-                                    placeholder='00:00:00 AM'
-                                    className='px-3 pr-3 text-black text-1xl w-full'
-                                    >
-                                </TextInput>
-                            </View>
-                        </View> */}
                         <View className='w-full mt-2'>
                             <MedicineTimePicker
                                 initialTimes={['7:00', '11:00', '17:00']}
                             //onTimesChange={handleTimesChange}
                             />
+                            <Text style={{ fontSize: hp(1.8) }} className='italic text-base text-center'>Note: Times must be at least 1 hour apart</Text>
                         </View>
                     </View>
                     {/* Frequency */}
                     <View className="mt-3">
                         <View className="w-full">
-                            <Text className="text-1xl font-bold text-black">
+                            <Text className="text-1xl font-bold">
                                 Frequency of taking medication
                             </Text>
                         </View>
@@ -156,6 +137,7 @@ export default function UpdatePrescription() {
                                     <Picker.Item label="No repeat" value="No repeat" />
                                     <Picker.Item label="Every day" value="Every day" />
                                     <Picker.Item label="Every week" value="Every week" />
+                                    {/* <Picker.Item label="Every year" value="Every year" /> */}
                                 </Picker>
                             </View>
                         </View>
@@ -163,7 +145,7 @@ export default function UpdatePrescription() {
                     {/* note */}
                     <View className='mt-3'>
                         <View className='w-full'>
-                            <Text className='text-1xl font-bold text-black'>
+                            <Text className='text-1xl font-bold'>
                                 Prescription note
                             </Text>
                         </View>
@@ -173,7 +155,7 @@ export default function UpdatePrescription() {
                                 <TextInput
                                     onChangeText={setNote}
                                     placeholder='Some notes...'
-                                    className='px-3 pr-3 text-black text-1xl w-full'
+                                    className='px-3 pr-3 text-1xl w-full'
                                     multiline={true}
                                     numberOfLines={5} // số dòng hiển thị sẵn, không giới hạn input
                                     textAlignVertical="top" // căn chữ lên đầu thay vì giữa
@@ -191,11 +173,12 @@ export default function UpdatePrescription() {
                                 <TouchableOpacity
                                     style={{ backgroundColor: theme.colors.primary }}
                                     className="flex rounded-[20] h-[50] w-[140] justify-center mt-5"
-                                    onPress={handleUpdatePrescription}
+                                    onPress={handleAddPrescription}
                                 >
-                                    <Text className="text-white text-xl text-center font-bold">Update</Text>
+                                    <Text className="text-white text-xl text-center font-bold">Add</Text>
                                 </TouchableOpacity>
                             </View>
+
                         }
                     </View>
                 </View>
