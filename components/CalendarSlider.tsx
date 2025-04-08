@@ -111,7 +111,7 @@ export default function CalendarSlider() {
                                 new Date(day.fullDate).toDateString() === selectedDate.toDateString();
                             const isFutureDate = moment(day.fullDate).isAfter(moment(), 'day');
 
-                            const bgColor = isSelected ? 'bg-[#182C47]' : isFutureDate ? 'bg-white' : 'bg-gray-200';
+                            const bgColor = isSelected ? 'bg-[#182C47]' : isFutureDate ? 'bg-gray-400' : 'bg-white';
 
                             return (
                                 <TouchableOpacity

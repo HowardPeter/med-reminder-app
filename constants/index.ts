@@ -8,7 +8,10 @@ import resetPassword from "@/assets/images/Reset_password-pana.png";
 import emailVerified from "@/assets/images/email-verify.png";
 import forgotPassword from "@/assets/images/forgot-password.png";
 import pill from "@/assets/images/pill.png";
+import pill2 from "@/assets/images/pill2.png";
+import injection from "@/assets/images/injection.png";
 import thinking from "@/assets/images/thinking.json";
+
 
 export const images = {
     logo,
@@ -20,6 +23,8 @@ export const images = {
     emailVerified,
     forgotPassword,
     pill,
+    pill2,
+    injection,
 }
 
 export const animations = {

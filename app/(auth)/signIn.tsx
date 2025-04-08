@@ -26,7 +26,6 @@ export default function SignIn() {
         const response = await login(email, password);
         setIsLoading(false)
         if (response.success) {
-            Alert.alert('Sign In', 'Login successfully!');
             setEmail("");
             setPassword("");
         } else {

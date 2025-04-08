@@ -46,6 +46,7 @@ export const AuthContextProvider = ({ children }) => {
             let msg = error.message;
             if (msg.includes('auth/invalid-email')) msg = 'Email is invalid';
             if (msg.includes('auth/invalid-credential')) msg = 'Wrong email or password';
+            if (msg.includes('auth/network-request-failed')) msg = 'Network error, please try again later';
             return { success: false, msg };
         }
     }, []);
@@ -86,6 +87,7 @@ export const AuthContextProvider = ({ children }) => {
             if (msg.includes('auth/invalid-email')) msg = 'Email is invalid';
             if (msg.includes('auth/email-already-in-use')) msg = 'This email is already in use';
             if (msg.includes('auth/weak-password')) msg = 'Password should be at least 6 characters.';
+            if (msg.includes('auth/network-request-failed')) msg = 'Network error, please try again later';
             return { success: false, msg };
         }
     }, []);
