@@ -1,9 +1,8 @@
-import { View, Text, Image, TextInput, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, Image, TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { Ionicons, Fontisto, EvilIcons, FontAwesome } from '@expo/vector-icons';
 import { images } from '@/constants';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
-import MedList from '@/components/MedList'
 import Loading from '@/components/loading';
 import MedicineTimePicker from '@/components/MedicineTimePicker';
 import { Picker } from '@react-native-picker/picker';
@@ -12,23 +11,15 @@ import { router } from 'expo-router';
 import theme from '@/config/theme';
 
 export default function AddPrescription() {
-    const [name, setName] = useState("");
-    const [day, setDay] = useState("");
-    const [time, setTime] = useState("");
     const [selectedFrequency, setSelectedFrequency] = useState('Every day');
-    const [note, setNote] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
     const handleAddPrescription = async () => {
+        setIsLoading(true);
         router.push('/addPills');
+        setIsLoading(false);
     }
-    const setNullValue = () => {
-        setName("");
-        setDay("");
-        setTime("");
-        setSelectedFrequency("Every day");
-        setNote("");
-    }
+
     return (
         <CustomKeyboardView>
             <View style={{ backgroundColor: theme.colors.accent }} className='flex-1 mb-7'>
@@ -73,7 +64,6 @@ export default function AddPrescription() {
                             <View className='bg-white flex-row items-center border border-gray-400 rounded-[10] h-[50] w-[370] mt-2 px-4'>
                                 <Ionicons name="medkit-outline" size={24} color="black" />
                                 <TextInput
-                                    onChangeText={setName}
                                     placeholder='Enter prescription name...'
                                     className='px-3 pr-3 text-1xl w-full'
                                 >
@@ -92,7 +82,6 @@ export default function AddPrescription() {
                             <View className='bg-white flex-row items-center border border-gray-400 rounded-[10] h-[50] w-[370] mt-2 px-4'>
                                 <Fontisto name="date" size={24} color="black" />
                                 <TextInput
-                                    onChangeText={setDay}
                                     placeholder='01/01/2025'
                                     className='px-3 pr-3 text-1xl w-full'
                                 >
@@ -153,7 +142,6 @@ export default function AddPrescription() {
                             <View className='bg-white flex-row items-center border border-gray-400 rounded-[10] h-[100] w-[370] mt-2 px-4'>
                                 <FontAwesome name="sticky-note-o" size={24} color="black" />
                                 <TextInput
-                                    onChangeText={setNote}
                                     placeholder='Some notes...'
                                     className='px-3 pr-3 text-1xl w-full'
                                     multiline={true}

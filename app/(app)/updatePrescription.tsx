@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import { Ionicons, Fontisto, EvilIcons, FontAwesome } from '@expo/vector-icons';
 import { images } from '@/constants';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
-import MedList from '@/components/MedList'
 import Loading from '@/components/loading';
 import MedicineTimePicker from '@/components/MedicineTimePicker';
 import { Picker } from '@react-native-picker/picker';
