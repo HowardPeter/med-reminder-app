@@ -22,7 +22,16 @@ export default function EnterNewPassword() {
     const [modalMessage, setModalMessage] = useState('');
     const [modalIcon, setModalIcon] = useState('alert-circle');
     const [modalColor, setModalColor] = useState('bg-red-500');
-    const [modalTitle, setModalTitle] = useState('Error');
+    const [modalTitle, setModalTitle] = useState<'Success' | 'Warning' | 'Error'>('Error');
+
+    const modalButtonTextMap = {
+        Success: 'Great!',
+        Warning: 'I Understand',
+        Error: 'Try Again',
+    };
+    
+    const modalButtonText = modalButtonTextMap[modalTitle];
+    
 
     //modal thanh cong
     const showSuccessModal = (message: string) => {
@@ -75,7 +84,7 @@ export default function EnterNewPassword() {
 
             const currentUser = auth.currentUser;
 
-            if (!currentUser || !currentUser.email) {
+            if (!currentUser?.email) {
                 showErrorModal('No authenticated user found.');
                 return;
             }
@@ -100,6 +109,7 @@ export default function EnterNewPassword() {
 
     const router = useRouter();
 
+    
     //tat console log
     LogBox.ignoreAllLogs(true);
 
@@ -214,9 +224,7 @@ export default function EnterNewPassword() {
                                 className={`${modalColor} py-3 rounded-2xl items-center`}
                             >
                                 <Text className="text-white text-lg font-bold">
-                                    {modalTitle === 'Success' ? 'Great!' :
-                                        modalTitle === 'Warning' ? 'I Understand' :
-                                            'Try Again'}
+                                    {modalButtonText}
                                 </Text>
                             </TouchableOpacity>
                         </View>

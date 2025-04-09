@@ -13,7 +13,6 @@ import CustomAlert from "@/components/CustomAlert";
 import { router } from "expo-router";
 
 const HomePage = () => {
-  const { logout } = useAuth();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAlertVisible, setIsAlertVisible] = useState(false);
 

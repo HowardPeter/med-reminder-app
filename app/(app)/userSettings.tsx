@@ -18,8 +18,16 @@ export default function UserSettings() {
     const [modalMessage, setModalMessage] = useState('');
     const [modalIcon, setModalIcon] = useState('alert-circle');
     const [modalColor, setModalColor] = useState('bg-red-500');
-    const [modalTitle, setModalTitle] = useState('Error');
+    const [modalTitle, setModalTitle] = useState<'Success' | 'Warning' | 'Error'>('Error');
 
+    const modalButtonTextMap = {
+        Success: 'Great!',
+        Warning: 'I Understand',
+        Error: 'Try Again',
+    };
+
+    const modalButtonText = modalButtonTextMap[modalTitle];
+    
     //modal thanh cong
     const showSuccessModal = (message: string) => {
         setModalIcon('check-circle');
@@ -41,7 +49,7 @@ export default function UserSettings() {
     };
 
     const handleImageUpdate = async (newImageUrl) => {
-        if (user && user.email) {
+        if (user?.email) {
             try {
                 await updateUserImage(user.email, newImageUrl);
                 showSuccessModal('Success updating your image!');
@@ -346,8 +354,7 @@ export default function UserSettings() {
                                 className={`${modalColor} py-3 rounded-2xl items-center`}
                             >
                                 <Text className="text-white text-lg font-bold">
-                                    {modalTitle === 'Success' ? 'Great!' :
-                                        modalTitle === 'Warning' ? 'Try again!' : 'I understand!'}
+                                    {modalButtonText}
                                 </Text>
                             </TouchableOpacity>
                         </View>
