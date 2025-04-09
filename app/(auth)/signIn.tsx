@@ -83,9 +83,9 @@ export default function SignIn() {
                             />
                             <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
                                 {isPasswordVisible ? (
-                                    <Feather name="eye" size={18} color="gray" />
-                                ) : (
                                     <Feather name="eye-off" size={18} color="gray" />
+                                ) : (
+                                    <Feather name="eye" size={18} color="gray" />
                                 )}
                             </TouchableOpacity>
                         </View>

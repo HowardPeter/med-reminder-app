@@ -10,6 +10,7 @@ import PrescriptionList from "@/components/PrescriptionList";
 import ReactNativeModal from "react-native-modal";
 import PillList from "@/components/PillList";
 import CustomAlert from "@/components/CustomAlert";
+import { router } from "expo-router";
 
 const HomePage = () => {
   const { logout } = useAuth();
@@ -62,7 +63,9 @@ const HomePage = () => {
           {/* Top control icons */}
           <View style={{ backgroundColor: theme.colors.primary }} className="flex-row justify-between items-center py-4 px-5 mb-4 rounded-t-xl">
             <View className="flex-row justify-between items-center">
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => router.push({ pathname: '/(app)/updatePrescription', params: { id: 'Rajm1rwDJDO7Yv7DrhuEeTunxgn2' } })}
+              >
                 <FontAwesome name="pencil" size={24} color="white" />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => setIsAlertVisible(true)} className="ml-5">

@@ -1,5 +1,5 @@
 import { View, Text, Image, TextInput, TouchableOpacity, Alert } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Ionicons, Fontisto, EvilIcons, FontAwesome } from '@expo/vector-icons';
 import { images } from '@/constants';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
@@ -8,6 +8,9 @@ import Loading from '@/components/loading';
 import MedicineTimePicker from '@/components/MedicineTimePicker';
 import { Picker } from '@react-native-picker/picker';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
+import { router } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
+import { addDoc, collection, doc, onSnapshot, orderBy, query, setDoc, Timestamp } from 'firebase/firestore';
 
 export default function UpdatePrescription() {
     const [ name, setName ] = useState("");
@@ -16,9 +19,15 @@ export default function UpdatePrescription() {
     const [selectedFrequency, setSelectedFrequency] = useState('Every day');
     const [ note, setNote ] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const { idDocPrescription} = useLocalSearchParams();
 
+    useEffect(() => {
+      
+
+    }, []);
+    // Handle update prescription
     const handleUpdatePrescription = async () => {
-        if (!name || !day || !time || !note) {
+        if (!name || !day  || !note) {
             Alert.alert('Update Prescription', 'Please fill all fields!');
             return;
         }
@@ -43,7 +52,11 @@ export default function UpdatePrescription() {
                 {/* Header */}
                 <View className='bg-white'>
                     <View className='flex-row mt-[30] ml-[16] mr-[16] items-center justify-between'>
-                        <Ionicons name="chevron-back" size={30} color="black" />
+                        <TouchableOpacity
+                            onPress={() => router.replace('/homePage')}
+                        >
+                            <Ionicons name="chevron-back" size={30} color="black" />  
+                        </TouchableOpacity>
                         <View className='flex-row items-center'>
                             <Image 
                                 source={images.logo}
