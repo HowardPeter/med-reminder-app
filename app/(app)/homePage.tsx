@@ -13,13 +13,8 @@ import CustomAlert from "@/components/CustomAlert";
 import { router } from "expo-router";
 
 const HomePage = () => {
-  const { logout } = useAuth();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAlertVisible, setIsAlertVisible] = useState(false);
-
-  const handleLogout = () => {
-    logout();
-  };
 
   const moveToAddPresctiption = () => {
     setIsModalVisible(false);
@@ -64,7 +59,7 @@ const HomePage = () => {
         <TouchableOpacity>
           <MaterialCommunityIcons name="pill" size={35} color="gray" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleLogout}>
+        <TouchableOpacity onPress={() => router.push('/userSettings')}>
           <FontAwesome name="user" size={35} color="gray" />
         </TouchableOpacity>
       </View>

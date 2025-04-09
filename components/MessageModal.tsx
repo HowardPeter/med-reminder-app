@@ -14,10 +14,10 @@ const MessageModal: React.FC<MessageModalProps> = ({ isVisible, onClose, email }
     const router = useRouter();
     const { resetPassword } = useAuth();
     const handleResetPassword = async () => {
-        const response = await resetPassword(email); // Gọi hàm resetPassword
+        const response = await resetPassword(email);
         if (response.success) {
             onClose();
-            router.replace(`/signIn`); // Chuyển trang thông báo kiểm tra email
+            router.replace(`/signIn`);
         } else {
             console.error(response.msg);
         }
@@ -102,6 +102,6 @@ const styles = StyleSheet.create({
     messageText: {
         textAlign: 'center',
     }
-})
+});
 
 export default MessageModal;

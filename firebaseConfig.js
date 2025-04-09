@@ -19,15 +19,6 @@ const firebaseConfig = {
   measurementId: "G-KL00GGGM1M"
 };
 
-// const firebaseConfig = {
-//   apiKey: "AIzaSyB_9-CBYxDMsgjNaJ5Eq8MVMApC-w0qVzc",
-//   authDomain: "medicalreminder-969aa.firebaseapp.com",
-//   projectId: "medicalreminder-969aa",
-//   storageBucket: "medicalreminder-969aa.firebasestorage.app",
-//   messagingSenderId: "548331444799",
-//   appId: "1:548331444799:web:d13ae1b1fbf9ce2060768a"
-// };
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
