@@ -26,7 +26,6 @@ export default function SignIn() {
         const response = await login(email, password);
         setIsLoading(false)
         if (response.success) {
-            Alert.alert('Sign In', 'Login successfully!');
             setEmail("");
             setPassword("");
 
@@ -86,14 +85,14 @@ export default function SignIn() {
                             />
                             <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
                                 {isPasswordVisible ? (
-                                    <Feather name="eye" size={18} color="gray" />
-                                ) : (
                                     <Feather name="eye-off" size={18} color="gray" />
+                                ) : (
+                                    <Feather name="eye" size={18} color="gray" />
                                 )}
                             </TouchableOpacity>
                         </View>
                         {/* Forgot password */}
-                        <TouchableOpacity onPress={() => router.push('/(auth)/emailVerified')}>
+                        <TouchableOpacity onPress={() => router.push('./(auth)/emailVerified')}>
                             <Text style={styles.forgotPass}>Forgot password?</Text>
                         </TouchableOpacity>
                     </View>

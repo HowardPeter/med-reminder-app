@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState, useContext, useCallback, useMemo } from "react";
-import { createUserWithEmailAndPassword, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updateEmail } from "firebase/auth"
+import { createUserWithEmailAndPassword, deleteUser, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updateEmail } from "firebase/auth"
 import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { auth, db } from "../firebaseConfig";
 
@@ -46,6 +46,7 @@ export const AuthContextProvider = ({ children }) => {
             let msg = error.message;
             if (msg.includes('auth/invalid-email')) msg = 'Email is invalid';
             if (msg.includes('auth/invalid-credential')) msg = 'Wrong email or password';
+            if (msg.includes('auth/network-request-failed')) msg = 'Network error, please try again later';
             return { success: false, msg };
         }
     }, []);
@@ -82,14 +83,14 @@ export const AuthContextProvider = ({ children }) => {
         // }
             // }, 2 * 60 * 1000);
             return { success: true, data: user };
-    } catch (error) {
-        let msg = error.message;
-        if (msg.includes('auth/invalid-email')) msg = 'Email is invalid';
-        if (msg.includes('auth/email-already-in-use')) msg = 'This email is already in use';
-        if (msg.includes('auth/weak-password')) msg = 'Password should be at least 6 characters.';
-        return { success: false, msg };
-    }
-}, []);
+        } catch (error) {
+            let msg = error.message;
+            if (msg.includes('auth/invalid-email')) msg = 'Email is invalid';
+            if (msg.includes('auth/email-already-in-use')) msg = 'This email is already in use';
+            if (msg.includes('auth/weak-password')) msg = 'Password should be at least 6 characters.';
+            return { success: false, msg };
+        }
+    }, []);
 
 const checkIfEmailExists = useCallback(async (email) => {
     try {

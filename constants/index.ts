@@ -18,10 +18,13 @@ import avatar6 from "@/assets/images/avatar6.jpg";
 import avatar7 from "@/assets/images/avatar7.jpg";
 import avatar8 from "@/assets/images/avatar8.jpg";
 import nullUserImage from "@/assets/images/user.jpg";
+import pill from "@/assets/images/pill.png";
+import pill2 from "@/assets/images/pill2.png";
+import injection from "@/assets/images/injection.png";
+import thinking from "@/assets/images/thinking.json";
 
 export const images = {
     logo,
-    loading,
     logoTrans,
     splashImage,
     verifyEmail,
@@ -40,4 +43,12 @@ export const images = {
     avatar7,
     avatar8,
     nullUserImage,
+    pill,
+    pill2,
+    injection,
+}
+
+export const animations = {
+    loading,
+    thinking,
 }

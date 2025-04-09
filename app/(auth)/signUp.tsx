@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Alert, Image } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Alert, Image, ScrollView } from 'react-native'
 import React, { useRef, useState } from 'react'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { Feather, Ionicons, Octicons } from "@expo/vector-icons";
@@ -18,7 +18,7 @@ export default function SignUp() {
   const [isChecked, setIsChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
-  const [userRegister, setUserRegister] = useState();
+  const [userRegister, setUserRegister] = useState<{ data?: { reload: () => Promise<void>; emailVerified?: boolean; email?: string } } | null>(null);
 
   const userNameRef = useRef("");
   const emailRef = useRef("");
@@ -56,13 +56,15 @@ export default function SignUp() {
     const response = await register(userNameRef.current, emailRef.current, passwordRef.current);
     setUserRegister(response);
 
-    setVerification({
-      state: "pending",
-    });
     setIsLoading(false)
 
     if (!response.success) {
       Alert.alert('Sign Up', response.msg);
+    }
+    else {
+      setVerification({
+        state: "pending",
+      });
     }
   }
 
@@ -87,11 +89,11 @@ export default function SignUp() {
 
   return (
     <CustomKeyboardView>
-      <View style={{ backgroundColor: theme.colors.background }} className="flex-1 pl-9 pr-9 justify-center w-full pb-[50px]">
+      <View className="bg-white flex-1 px-9 justify-center w-full pb-[50px]">
         {/* Back Button */}
-        <View style={{marginTop: hp(5)}} className='flex-row justify-between mb-9'>
+        <View style={{ marginTop: hp(5) }} className='flex-row justify-between mb-9'>
           <Link href="/(auth)/signIn" style={{ maxWidth: wp(10) }}>
-            <Ionicons name="arrow-back-circle-outline" size={40} color="black" />
+            <Ionicons name="chevron-back" size={32} color="black" />
           </Link>
           <Image
             source={images.logoTrans}
@@ -214,39 +216,44 @@ export default function SignUp() {
           animationOut={"slideOutRight"}
           style={{ margin: 0 }}
         >
-          <View style={{ backgroundColor: "white" }} className='flex-1 text-center px-7'>
-            {/* Back Button */}
-            <View style={{ marginTop: hp(5), maxWidth: wp(10) }} className='mb-5'>
-              <TouchableOpacity onPress={() => setVerification({ state: "default" })}>
-                <Ionicons name="arrow-back-circle-outline" size={40} color="black" />
-              </TouchableOpacity>
-            </View>
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={{ backgroundColor: "white" }} className='flex-1 text-center px-7'>
+              {/* Back Button */}
+              <View style={{ marginTop: hp(3), maxWidth: wp(10) }} className='mb-5'>
+                <TouchableOpacity onPress={() => setVerification({ state: "default" })}>
+                  <Ionicons name="chevron-back" size={32} color="black" />
+                </TouchableOpacity>
+              </View>
 
-            <View className='flex items-center mt-15'>
-              <Image
-                style={{ height: hp(35), width: hp(35), resizeMode: 'contain' }}
-                source={require('../../assets/images/verify-email.png')}
-              />
-            </View>
+              <View className='flex items-center mt-15'>
+                <Image
+                  style={{ height: hp(35), width: hp(35), resizeMode: 'contain' }}
+                  source={require('../../assets/images/verify-email.png')}
+                />
+              </View>
 
-            <View className="w-full items-center mt-9">
-              <Text style={{ fontSize: wp(5.5) }} className='font-semibold'>Confirm your email address</Text>
-              <Text style={{ fontSize: wp(4.3) }} className="text-gray-500 text-center w-90 mt-3">
-                We sent a confirmation email to your email:
-              </Text>
-              <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="mt-2 font-bold">{userRegister?.data?.email}</Text>
-              <Text style={{ fontSize: wp(4.3) }} className='text-gray-500 text-center text-lg mt-2'>Check your email and click on the confirmation link to continue.</Text>
-            </View>
+              <View className="w-full items-center mt-9">
+                <Text style={{ fontSize: wp(5.5) }} className='font-semibold'>Confirm your email address</Text>
+                <Text style={{ fontSize: wp(4.3) }} className="text-gray-500 text-center w-90 mt-3">
+                  We sent a confirmation email to your email:
+                </Text>
+                <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="mt-2 font-bold">{userRegister?.data?.email}</Text>
+                <Text style={{ fontSize: wp(4.3) }} className='text-gray-500 text-center text-lg mt-2'>Check your email and click on the confirmation link to continue.</Text>
+              </View>
 
-            <View className="flex-row justify-between mt-[170px]">
-              <TouchableOpacity>
-                <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="font-bold">Resend</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={checkVerification}>
-                <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="font-bold">CONFIRM</Text>
-              </TouchableOpacity>
+              <View className="flex-row justify-between mt-[170px] pb-11">
+                <TouchableOpacity>
+                  <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="font-bold">Resend</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={checkVerification}>
+                  <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="font-bold">CONFIRM</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
+          </ScrollView>
         </ReactNativeModal>
 
         <ReactNativeModal
@@ -263,7 +270,7 @@ export default function SignUp() {
               <Text style={{ fontSize: wp(5.5) }} className='text-white font-bold text-center'>Verified!</Text>
               <Text style={{ fontSize: wp(4.2) }} className='text-white font-medium text-center text-lg mt-2'>Congratulation! You have successfully verify your email.</Text>
             </View>
-            <TouchableOpacity onPress={() => router.replace('/(app)/home')} className='bg-white pt-4 pb-4 pl-[100px] pr-[100px] rounded-3xl items-center mt-10'>
+            <TouchableOpacity onPress={() => router.replace('/(app)/homePage')} className='bg-white py-4 px-[100px] rounded-3xl items-center mt-10'>
               <Text style={{ fontSize: wp(4), color: theme.colors.primary }} className='font-semibold'>Go to Home</Text>
             </TouchableOpacity>
           </View>
