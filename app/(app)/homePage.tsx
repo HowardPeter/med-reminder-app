@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { FontAwesome, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import theme from "@/config/theme";
-import { useAuth } from "@/hooks/useAuth";
 import CalendarSlider from "@/components/CalendarSlider";
 import { SafeAreaView } from "react-native-safe-area-context";
 import PrescriptionList from "@/components/PrescriptionList";
@@ -15,7 +14,7 @@ import { router } from "expo-router";
 const HomePage = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAlertVisible, setIsAlertVisible] = useState(false);
-
+  
   const moveToAddPresctiption = () => {
     setIsModalVisible(false);
     setIsAlertVisible(false);
