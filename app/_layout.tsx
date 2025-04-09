@@ -15,7 +15,7 @@ const MainLayout = () => {
     // Chạy Splash Screen trong 3 giây
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 3000);
+    }, 2500);
     return () => clearTimeout(timer);
   }, []);
 

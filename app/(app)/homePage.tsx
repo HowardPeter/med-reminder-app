@@ -21,6 +21,18 @@ const HomePage = () => {
     logout();
   };
 
+  const moveToAddPresctiption = () => {
+    setIsModalVisible(false);
+    setIsAlertVisible(false);
+    router.push('/addPrescription');
+  }
+
+  const moveToUpdatePrescription = () => {
+    setIsModalVisible(false);
+    setIsAlertVisible(false);
+    router.push('/updatePrescription');
+  }
+
   const handleDeletePrescription = () => {
     setIsAlertVisible(false);
     console.log("Prescription deleted");
@@ -38,6 +50,7 @@ const HomePage = () => {
 
       {/* Floating Action Button */}
       <TouchableOpacity
+        onPress={moveToAddPresctiption}
         style={{ width: hp(7), height: hp(7) }}
         className="absolute bottom-20 right-5 bg-white rounded-full items-center justify-center shadow-strong">
         <Text style={{ fontSize: hp(4) }} className="text-orange-500">+</Text>
@@ -63,9 +76,7 @@ const HomePage = () => {
           {/* Top control icons */}
           <View style={{ backgroundColor: theme.colors.primary }} className="flex-row justify-between items-center py-4 px-5 mb-4 rounded-t-xl">
             <View className="flex-row justify-between items-center">
-              <TouchableOpacity
-                onPress={() => router.push({ pathname: '/(app)/updatePrescription', params: { id: 'Rajm1rwDJDO7Yv7DrhuEeTunxgn2' } })}
-              >
+              <TouchableOpacity onPress={moveToUpdatePrescription}>
                 <FontAwesome name="pencil" size={24} color="white" />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => setIsAlertVisible(true)} className="ml-5">
@@ -103,6 +114,7 @@ const HomePage = () => {
           title="Prescription for headache"
           message="Do you want to delete this prescription? All future notifications will be deleted."
           btnConfirm="Delete"
+          confirmTextColor="text-red-500"
           onCancel={() => setIsAlertVisible(false)}
           onConfirm={handleDeletePrescription} />
       </ReactNativeModal>
