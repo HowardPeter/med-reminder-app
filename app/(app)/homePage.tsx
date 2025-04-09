@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { FontAwesome, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
@@ -10,11 +10,15 @@ import ReactNativeModal from "react-native-modal";
 import PillList from "@/components/PillList";
 import CustomAlert from "@/components/CustomAlert";
 import { router } from "expo-router";
+import { useCrud } from "@/hooks/useCrud";
 
 const HomePage = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAlertVisible, setIsAlertVisible] = useState(false);
-  
+  const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string | null>(null);
+  const [pills, setPills] = useState<{ id: string }[]>([]);
+  const { fetchPillsData } = useCrud();
+
   const moveToAddPresctiption = () => {
     setIsModalVisible(false);
     setIsAlertVisible(false);
@@ -32,6 +36,19 @@ const HomePage = () => {
     console.log("Prescription deleted");
   }
 
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!selectedPrescriptionId) return;
+      const data = await fetchPillsData(selectedPrescriptionId);
+      setPills(data);
+      console.log("Fetched pills data:", data);
+      setIsModalVisible(true);
+    };
+  
+    fetchData();
+  }, [selectedPrescriptionId]);
+  
+
   return (
     <View style={{ backgroundColor: theme.colors.background }} className="flex-1">
       {/* Header Section */}
@@ -40,7 +57,9 @@ const HomePage = () => {
       </SafeAreaView>
 
       {/* Body */}
-      <PrescriptionList onToggle={() => setIsModalVisible(true)} />
+      <PrescriptionList
+        onSelectPrescription={(id) => setSelectedPrescriptionId(id)}
+      />
 
       {/* Floating Action Button */}
       <TouchableOpacity
@@ -77,7 +96,10 @@ const HomePage = () => {
                 <FontAwesome name="trash" size={24} color="white" />
               </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={() => setIsModalVisible(false)}>
+            <TouchableOpacity onPress={() => {
+              setIsModalVisible(false);
+              setSelectedPrescriptionId(null);
+            }}>
               <FontAwesome name="close" size={24} color="white" />
             </TouchableOpacity>
           </View>
@@ -85,7 +107,7 @@ const HomePage = () => {
           {/* Info */}
           <View className="px-4">
             <Text style={{ fontSize: hp(2.3) }} className="font-bold text-center mb-3">
-              Prescription for stomachache
+              Prescription
             </Text>
             <View className="flex-row items-center mb-1">
               <MaterialIcons name="event" size={20} color="black" />
@@ -98,7 +120,7 @@ const HomePage = () => {
           </View>
 
           {/* Pills */}
-          <PillList />
+          <PillList pills={pills}/>
         </View>
       </ReactNativeModal>
 

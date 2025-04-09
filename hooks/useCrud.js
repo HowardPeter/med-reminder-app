@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo } from "react";
 const COLLECTION_NAME = 'prescriptions';
 
 export const useCrud = () => {
-    const fetchPrescriptionData = async (userId) => {
+    const fetchPrescriptionData = useCallback(async (userId) => {
         try {
             const prescriptionsRef = collection(db, COLLECTION_NAME);
             const q = query(prescriptionsRef, where("userId", "==", userId));
@@ -21,11 +21,24 @@ export const useCrud = () => {
             console.error("Error fetching prescriptions:", error);
             return [];
         }
-    };
+    }, []);
 
-    const fetchPillsData = async (prescriptionId) => {
+    const fetchPillsData = useCallback(async (prescriptionId) => {
+        try {
+            const pillsRef = collection(db, COLLECTION_NAME, prescriptionId, 'pills');
+            const snapshot = await getDocs(pillsRef);
 
-    }
+            const pills = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+
+            return pills;
+        } catch (error) {
+            console.error("Error fetching pills:", error);
+            return [];
+        }
+    }, []);
 
     const addPrescription = () => {
 

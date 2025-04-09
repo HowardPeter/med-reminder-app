@@ -14,7 +14,7 @@ interface Prescription {
 }
 
 interface PrescriptionListProps {
-    onToggle: () => void;
+    onSelectPrescription: (id: string) => void;
 }
 
 interface PrescriptionData {
@@ -41,7 +41,7 @@ const subscribeToPrescriptionData = (userId: string, callback: PrescriptionCallb
     return unsubscribe;
 };
 
-const PrescriptionList: React.FC<PrescriptionListProps> = ({ onToggle }) => {
+const PrescriptionList: React.FC<PrescriptionListProps> = ({ onSelectPrescription }) => {
     const { user } = useAuth();
     const { fetchPrescriptionData } = useCrud();
     const [refreshing, setRefreshing] = useState(false);
@@ -84,7 +84,10 @@ const PrescriptionList: React.FC<PrescriptionListProps> = ({ onToggle }) => {
                         time={item.time.join(", ")}
                         title={item.name}
                         note={item.note}
-                        onToggle={onToggle}
+                        onToggle={() => {
+                            onSelectPrescription(item.id);
+                            console.log("Selected prescription ID:", item.id);
+                        }}
                     />
                 )}
             />

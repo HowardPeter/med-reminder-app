@@ -21,6 +21,7 @@ import nullUserImage from "@/assets/images/user.jpg";
 import pill from "@/assets/images/pill.png";
 import pill2 from "@/assets/images/pill2.png";
 import injection from "@/assets/images/injection.png";
+import inhaler from "@/assets/images/inhaler.png";
 import thinking from "@/assets/images/thinking.json";
 
 export const images = {
@@ -46,6 +47,7 @@ export const images = {
     pill,
     pill2,
     injection,
+    inhaler,
 }
 
 export const animations = {
