@@ -1,4 +1,5 @@
 const COLLECTION_NAME = 'prescriptions';
+import { addDoc, collection, doc, onSnapshot, orderBy, query, setDoc, Timestamp } from 'firebase/firestore';
 
 const useCrud = () => {
 
@@ -17,7 +18,9 @@ const useCrud = () => {
     const deletePrescription = () => {
 
     }
-
+    const fetchPrescriptions = (idDocument) => {
+        
+    }
     return {
         fetchData,
         addPrescription,

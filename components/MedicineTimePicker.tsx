@@ -21,6 +21,13 @@ const MedicineTimePicker: React.FC<MedicineTimePickerProps> = ({
     updateCurrentDeviceTime();
   }, []);
 
+    // Thêm useEffect này để theo dõi thay đổi của initialTimes
+    useEffect(() => {
+      if (initialTimes && initialTimes.length > 0) {
+        setTimes(initialTimes);
+      }
+    }, [initialTimes]);
+
   const updateCurrentDeviceTime = () => {
     const now = new Date();
     const hours = now.getHours().toString().padStart(2, '0');

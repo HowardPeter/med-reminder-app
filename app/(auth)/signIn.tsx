@@ -120,11 +120,11 @@ export default function SignIn() {
                         </TouchableOpacity>
                     </View>
                     {/* Login with phone number */}
-                    <TouchableOpacity>
+                    {/* <TouchableOpacity>
                         <View style={{ marginTop: 11 }}>
                             <Text style={styles.loginWithPhone}>Login with phone number</Text>
                         </View>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
             </View>
         </CustomKeyboardView>
