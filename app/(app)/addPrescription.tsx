@@ -25,7 +25,7 @@ export default function AddPrescription() {
             <View style={{ backgroundColor: theme.colors.accent }} className='flex-1 mb-7'>
                 {/* Header */}
                 <View className='bg-white'>
-                    <View className='flex-row mt-[30] ml-[16] mr-[16] items-center justify-between'>
+                    <View className='flex-row mt-[20] mx-[16] items-center justify-between'>
                         <TouchableOpacity onPress={() => router.back()}>
                             <Ionicons name="chevron-back" size={30} color="black" />
                         </TouchableOpacity>
@@ -153,7 +153,7 @@ export default function AddPrescription() {
                         </View>
                     </View>
                     {/* Button Update */}
-                    <View className='self-end w-full mt-3'>
+                    <View className='self-end w-full mt-2'>
                         {isLoading ?
                             <Loading size={hp(7)} />
                             :
