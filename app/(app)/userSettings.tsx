@@ -1,11 +1,12 @@
-import { View, Text, TouchableOpacity, Image, TextInput} from 'react-native';
+import { View, Text, TouchableOpacity, Image, TextInput } from 'react-native';
 import React, { useState } from 'react';
-import { AntDesign, FontAwesome, MaterialIcons, Ionicons, Feather } from '@expo/vector-icons';
+import { AntDesign, FontAwesome, MaterialIcons, Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useRouter } from 'expo-router';
 import { images } from '@/constants';
 import ReactNativeModal from 'react-native-modal';
 import { useAuth } from '@/hooks/useAuth';
+import theme from '@/config/theme';
 
 export default function UserSettings() {
     const { logout, user, updateUserImage } = useAuth();
@@ -98,12 +99,6 @@ export default function UserSettings() {
 
     return (
         <View className="flex-1 bg-teal-500">
-            <View className="px-7 pt-10">
-                <TouchableOpacity onPress={() => router.push('/home')}>
-                    <Ionicons name="chevron-back" size={24} color="white" />
-                </TouchableOpacity>
-            </View>
-
             <View className="items-center mt-5">
                 <View className="relative">
                     <Image
@@ -358,6 +353,18 @@ export default function UserSettings() {
                         </View>
                     </View>
                 </ReactNativeModal>
+            </View>
+            {/* Bottom Navigation Bar */}
+            <View style={{ backgroundColor: theme.colors.primary }} className="absolute bottom-0 left-0 right-0 flex-row justify-around items-center h-16 rounded-t-3xl">
+                <TouchableOpacity>
+                    <FontAwesome name="home" size={35} color="gray" />
+                </TouchableOpacity>
+                <TouchableOpacity>
+                    <MaterialCommunityIcons name="pill" size={35} color="gray" />
+                </TouchableOpacity>
+                <TouchableOpacity>
+                    <FontAwesome name="user" size={35} color="white" />
+                </TouchableOpacity>
             </View>
         </View>
     );

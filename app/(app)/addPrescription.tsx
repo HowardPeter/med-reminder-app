@@ -22,7 +22,7 @@ export default function AddPrescription() {
 
     return (
         <CustomKeyboardView>
-            <View style={{ backgroundColor: theme.colors.accent }} className='flex-1 mb-7'>
+            <View style={{ backgroundColor: theme.colors.accent }} className='flex-1 mb-7 h-screen'>
                 {/* Header */}
                 <View className='bg-white'>
                     <View className='flex-row mt-[20] mx-[16] items-center justify-between'>

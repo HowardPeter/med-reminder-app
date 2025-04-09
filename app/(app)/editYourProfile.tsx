@@ -17,6 +17,7 @@ export default function EditYourProfile() {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isEditable, setIsEditable] = useState(false);
+    const [isEditButtonVisible, setIsEditButtonVisible] = useState(false);
 
     useEffect(() => {
         if (user) {
@@ -98,12 +99,13 @@ export default function EditYourProfile() {
                     </View>
                 </View>
 
-                <View className="w-full items-center">
+                <View className={`w-full items-center ${isEditButtonVisible ? 'visible' : 'invisible'}`}>
                     <TouchableOpacity
                         className="w-[90%] bg-teal-500 rounded-3xl py-3 mt-10 px-5 h-14 justify-center items-center"
                         onPress={() => {
                             handleConfirmEdit();
                             setIsEditable(false);
+                            setIsEditButtonVisible(false)
                         }}
                     >
                         <Text className="text-white text-lg font-bold text-center">Edit my profile</Text>
@@ -135,6 +137,7 @@ export default function EditYourProfile() {
                                 onPress={() => {
                                     setIsEditable(true);
                                     setIsModalVisible(false);
+                                    setIsEditButtonVisible(true);
                                 }}
                                 className="bg-teal-500 py-3 rounded-2xl items-center"
                             >
