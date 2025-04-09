@@ -29,6 +29,9 @@ export default function SignIn() {
             Alert.alert('Sign In', 'Login successfully!');
             setEmail("");
             setPassword("");
+
+            router.replace({ pathname: '/home', params: { email } });
+            console.log(`Email sign in: ${email}`)
         } else {
             console.log('Sign In', response.msg);
         }
