@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Animated } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import moment from 'moment';
@@ -9,7 +9,8 @@ export default function CalendarSlider() {
     const [weekOffset, setWeekOffset] = useState(0);
     const [isOutOfLimit, setIsOutOfLimit] = useState(false);
 
-    const translateX = useState(new Animated.Value(0))[0];
+    // const translateX = useState(new Animated.Value(0))[0];
+    const translateX = useRef(new Animated.Value(0)).current;
     const [direction, setDirection] = useState<'left' | 'right'>('right');
 
     const animateSlide = (dir: 'left' | 'right') => {
@@ -20,7 +21,7 @@ export default function CalendarSlider() {
         // slide ra
         Animated.timing(translateX, {
             toValue,
-            duration: 50,
+            duration: 30,
             useNativeDriver: true,
         }).start(() => {
             // reset vị trí và slide vào lại
