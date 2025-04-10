@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, Animated } from 'react-native
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import moment from 'moment';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CalendarSlider() {
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -33,7 +34,6 @@ export default function CalendarSlider() {
             }).start();
         });
     };
-
 
     const days = useMemo(() => {
         const start = moment().add(weekOffset, 'weeks').startOf('week');
@@ -92,10 +92,10 @@ export default function CalendarSlider() {
     }, [selectedDate]);
 
     return (
-        <View>
-            <View className='py-2'>
-                <Text style={{ fontSize: hp(4) }} className="text-white text-2xl font-bold pt-1">{dateDisplay.day}</Text>
-                <Text style={{ fontSize: hp(2.4) }} className="text-white text-lg mt-1">{dateDisplay.weekday}, {dateDisplay.month} {dateDisplay.date}</Text>
+        <SafeAreaView>
+            <View className='pt-6 pb-2'>
+                <Text style={{ fontSize: hp(4.2) }} className="text-white text-2xl font-bold pt-2">{dateDisplay.day}</Text>
+                <Text style={{ fontSize: hp(2.8) }} className="text-[#DDDDDD] font-semibold text-lg mt-1">{dateDisplay.weekday}, {dateDisplay.month} {dateDisplay.date}</Text>
             </View>
 
             <View className="flex-row justify-between mt-4">
@@ -141,6 +141,6 @@ export default function CalendarSlider() {
                     }
                 </TouchableOpacity>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }

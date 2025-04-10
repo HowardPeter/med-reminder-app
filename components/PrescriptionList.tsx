@@ -19,6 +19,8 @@ interface PrescriptionListProps {
 
 type PrescriptionCallback = (data: PrescriptionProps[]) => void;
 
+// Hàm subscribeToPrescriptionData lắng nghe sự thay đổi dữ liệu trong Firestore
+// và gọi callback với dữ liệu mới khi có sự thay đổi
 const subscribeToPrescriptionData = (userId: string, callback: PrescriptionCallback): () => void => {
     const prescriptionsRef = collection(db, 'prescriptions');
     const q = query(prescriptionsRef, where('userId', '==', userId));
