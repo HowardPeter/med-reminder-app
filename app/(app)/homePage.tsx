@@ -11,12 +11,16 @@ import PillList from "@/components/PillList";
 import CustomAlert from "@/components/CustomAlert";
 import { router } from "expo-router";
 import { useCrud } from "@/hooks/useCrud";
-import { useAuth } from "@/hooks/useAuth";
 
 const HomePage = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAlertVisible, setIsAlertVisible] = useState(false);
-  const [selectedPrescription, setSelectedPrescription] = useState(null);
+  const [selectedPrescription, setSelectedPrescription] = useState({
+    id: "",
+    name: "",
+    time: "",
+    note: "",
+  });
   const [pills, setPills] = useState<{ id: string, name: string, type: string, dosage: string }[]>([]);
 
   const { fetchPillsData } = useCrud();
@@ -43,7 +47,7 @@ const HomePage = () => {
   useEffect(() => {
     fetchPills();
   }, [selectedPrescriptionId]);
-  
+
   const fetchPills = async () => {
     if (!selectedPrescriptionId) {
       console.log("No prescription ID selected.");
@@ -65,7 +69,14 @@ const HomePage = () => {
 
       {/* Body */}
       <PrescriptionList
-        onSelectPrescription={(item) => setSelectedPrescription(item)}
+        onSelectPrescription={(prescription, time) =>
+          setSelectedPrescription({
+            id: prescription.id,
+            name: prescription.name,
+            note: prescription.note,
+            time: time,
+          })
+        }
       />
 
       {/* Floating Action Button */}
@@ -105,7 +116,12 @@ const HomePage = () => {
             </View>
             <TouchableOpacity onPress={() => {
               setIsModalVisible(false);
-              setSelectedPrescription(null);
+              setSelectedPrescription({
+                id: "",
+                name: "",
+                time: "",
+                note: "",
+              });
             }}>
               <FontAwesome name="close" size={24} color="white" />
             </TouchableOpacity>
@@ -118,7 +134,7 @@ const HomePage = () => {
             </Text>
             <View className="flex-row items-center mb-1">
               <MaterialIcons name="event" size={20} color="black" />
-              <Text style={{ fontSize: hp(1.9) }} className="ml-2">Scheduled for {selectedPrescription?.time.join(', ')} today</Text>
+              <Text style={{ fontSize: hp(1.9) }} className="ml-2">Scheduled for {selectedPrescription?.time} today</Text>
             </View>
             <View className="flex-row items-center mb-2 mt-1">
               <MaterialIcons name="chat-bubble-outline" size={20} color="black" />
@@ -127,7 +143,7 @@ const HomePage = () => {
           </View>
 
           {/* Pills */}
-          <PillList pills={pills}/>
+          <PillList pills={pills} />
         </View>
       </ReactNativeModal>
 

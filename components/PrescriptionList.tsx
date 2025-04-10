@@ -6,25 +6,18 @@ import { useCrud } from "@/hooks/useCrud";
 import { collection, doc, getDoc, getDocs, onSnapshot, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
-interface Prescription {
+interface PrescriptionProps {
     id: string;
-    time: string[];
+    time: string;
     name: string;
     note: string;
 }
 
 interface PrescriptionListProps {
-    onSelectPrescription: (prescription: any) => void;
+    onSelectPrescription: (prescription: any, time: string) => void;
 }
 
-interface PrescriptionData {
-    id: string;
-    time: string[];
-    name: string;
-    note: string;
-}
-
-type PrescriptionCallback = (data: PrescriptionData[]) => void;
+type PrescriptionCallback = (data: PrescriptionProps[]) => void;
 
 const subscribeToPrescriptionData = (userId: string, callback: PrescriptionCallback): () => void => {
     const prescriptionsRef = collection(db, 'prescriptions');
@@ -34,18 +27,42 @@ const subscribeToPrescriptionData = (userId: string, callback: PrescriptionCallb
         const prescriptions = snapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
-        } as PrescriptionData));
+        } as PrescriptionProps));
         callback(prescriptions);
     });
 
     return unsubscribe;
 };
 
+// Hàm chia presctiption thành nhiều phần dựa trên thời gian và sắp xếp theo thứ tự thời gian
+const expandAndSortPrescriptions = (data: PrescriptionProps[]) => {
+    // Chia prescription thành nhiều phần dựa trên thời gian
+    const expanded = data.flatMap((item) =>
+        item.time.map((t) => ({
+            id: `${item?.id}-${t}`,
+            name: item?.name,
+            note: item?.note,
+            time: t,
+            originalId: item?.id,
+            fullPrescription: item,
+        }))
+    );
+
+    // Sắp xếp theo thứ tự thời gian
+    const sorted = expanded.sort((a, b) => {
+        const [aHour, aMin] = a.time.split(":").map(Number);
+        const [bHour, bMin] = b.time.split(":").map(Number);
+        return aHour !== bHour ? aHour - bHour : aMin - bMin;
+    });
+
+    return sorted;
+};
+
 const PrescriptionList: React.FC<PrescriptionListProps> = ({ onSelectPrescription }) => {
     const { user } = useAuth();
     const { fetchPrescriptionData } = useCrud();
     const [refreshing, setRefreshing] = useState(false);
-    const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
+    const [prescriptions, setPrescriptions] = useState<PrescriptionProps[]>([]);
 
     const userId = user?.userId || null;
 
@@ -53,7 +70,8 @@ const PrescriptionList: React.FC<PrescriptionListProps> = ({ onSelectPrescriptio
         if (!userId) return;
 
         const unsubscribe = subscribeToPrescriptionData(userId, (data) => {
-            setPrescriptions(data);
+            const processed = expandAndSortPrescriptions(data);
+            setPrescriptions(processed);
         });
 
         return () => {
@@ -63,10 +81,18 @@ const PrescriptionList: React.FC<PrescriptionListProps> = ({ onSelectPrescriptio
 
     const onRefresh = async () => {
         if (!userId) return;
+
         setRefreshing(true);
-        const data = await fetchPrescriptionData(userId);
-        setPrescriptions(data);
-        setRefreshing(false);
+
+        try {
+            const data = await fetchPrescriptionData(userId);
+            const processed = expandAndSortPrescriptions(data);
+            setPrescriptions(processed);
+        } catch (error) {
+            console.error("Refresh error:", error);
+        } finally {
+            setRefreshing(false);
+        }
     };
 
     return (
@@ -81,11 +107,12 @@ const PrescriptionList: React.FC<PrescriptionListProps> = ({ onSelectPrescriptio
                 contentContainerStyle={{ paddingVertical: 16, paddingBottom: 70 }}
                 renderItem={({ item }) => (
                     <PrescriptionCard
-                        time={item.time.join(", ")}
+                        time={item.time}
                         title={item.name}
                         note={item.note}
                         onToggle={() => {
-                            onSelectPrescription(item);
+                            onSelectPrescription(item.fullPrescription || item, item.time);
+                            console.log("Selected prescription time:", item.time);
                         }}
                     />
                 )}
