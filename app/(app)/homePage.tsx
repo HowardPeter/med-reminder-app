@@ -11,13 +11,17 @@ import PillList from "@/components/PillList";
 import CustomAlert from "@/components/CustomAlert";
 import { router } from "expo-router";
 import { useCrud } from "@/hooks/useCrud";
+import { useAuth } from "@/hooks/useAuth";
 
 const HomePage = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAlertVisible, setIsAlertVisible] = useState(false);
-  const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string | null>(null);
-  const [pills, setPills] = useState<{ id: string }[]>([]);
+  const [selectedPrescription, setSelectedPrescription] = useState(null);
+  const [pills, setPills] = useState<{ id: string, name: string, type: string, dosage: string }[]>([]);
+
   const { fetchPillsData } = useCrud();
+
+  const selectedPrescriptionId = selectedPrescription?.id || null;
 
   const moveToAddPresctiption = () => {
     setIsModalVisible(false);
@@ -37,17 +41,20 @@ const HomePage = () => {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!selectedPrescriptionId) return;
-      const data = await fetchPillsData(selectedPrescriptionId);
-      setPills(data);
-      console.log("Fetched pills data:", data);
-      setIsModalVisible(true);
-    };
-  
-    fetchData();
+    fetchPills();
   }, [selectedPrescriptionId]);
   
+  const fetchPills = async () => {
+    if (!selectedPrescriptionId) {
+      console.log("No prescription ID selected.");
+      return;
+    }
+    const data = await fetchPillsData(selectedPrescriptionId);
+    setPills(data);
+    console.log("Selected prescription:", selectedPrescription);
+    console.log("Fetched pills data:", data);
+    setIsModalVisible(true);
+  };
 
   return (
     <View style={{ backgroundColor: theme.colors.background }} className="flex-1">
@@ -58,7 +65,7 @@ const HomePage = () => {
 
       {/* Body */}
       <PrescriptionList
-        onSelectPrescription={(id) => setSelectedPrescriptionId(id)}
+        onSelectPrescription={(item) => setSelectedPrescription(item)}
       />
 
       {/* Floating Action Button */}
@@ -98,7 +105,7 @@ const HomePage = () => {
             </View>
             <TouchableOpacity onPress={() => {
               setIsModalVisible(false);
-              setSelectedPrescriptionId(null);
+              setSelectedPrescription(null);
             }}>
               <FontAwesome name="close" size={24} color="white" />
             </TouchableOpacity>
@@ -107,15 +114,15 @@ const HomePage = () => {
           {/* Info */}
           <View className="px-4">
             <Text style={{ fontSize: hp(2.3) }} className="font-bold text-center mb-3">
-              Prescription
+              {selectedPrescription?.name}
             </Text>
             <View className="flex-row items-center mb-1">
               <MaterialIcons name="event" size={20} color="black" />
-              <Text style={{ fontSize: hp(1.9) }} className="ml-2">Scheduled for 7:30, today</Text>
+              <Text style={{ fontSize: hp(1.9) }} className="ml-2">Scheduled for {selectedPrescription?.time.join(', ')} today</Text>
             </View>
             <View className="flex-row items-center mb-2 mt-1">
               <MaterialIcons name="chat-bubble-outline" size={20} color="black" />
-              <Text style={{ fontSize: hp(1.9) }} className="ml-2">After breakfast</Text>
+              <Text style={{ fontSize: hp(1.9) }} className="ml-2">{selectedPrescription?.note}</Text>
             </View>
           </View>
 

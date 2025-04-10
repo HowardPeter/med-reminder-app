@@ -14,7 +14,7 @@ interface Prescription {
 }
 
 interface PrescriptionListProps {
-    onSelectPrescription: (id: string) => void;
+    onSelectPrescription: (prescription: any) => void;
 }
 
 interface PrescriptionData {
@@ -85,8 +85,7 @@ const PrescriptionList: React.FC<PrescriptionListProps> = ({ onSelectPrescriptio
                         title={item.name}
                         note={item.note}
                         onToggle={() => {
-                            onSelectPrescription(item.id);
-                            console.log("Selected prescription ID:", item.id);
+                            onSelectPrescription(item);
                         }}
                     />
                 )}
