@@ -29,7 +29,7 @@ export default function SignIn() {
             setEmail("");
             setPassword("");
 
-            router.replace({ pathname: '/home', params: { email } });
+            //router.replace({ pathname: '/home', params: { email } });
             console.log(`Email sign in: ${email}`)
         } else {
             console.log('Sign In', response.msg);

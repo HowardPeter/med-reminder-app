@@ -18,8 +18,9 @@ import { router } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import theme from "@/config/theme";
-import { db, userRef } from "@/firebaseConfig";
-import PillList from "@/components/PillList";
+import { db } from "@/firebaseConfig";
+import { Timestamp } from "firebase/firestore";
+import { format } from "date-fns";
 
 export default function UpdatePrescription() {
   const [name, setName] = useState("");
@@ -30,11 +31,11 @@ export default function UpdatePrescription() {
   const [isLoading, setIsLoading] = useState(false);
   const [oldData, setOldData] = useState<string[]>([]);
   const [timeOld, setTimeOld] = useState<string[]>([]);
-  //const { idDocPrescription} = useLocalSearchParams();
+  // const { prescriptionId } = useLocalSearchParams();
 
   // Lấy params từ URL
   const params = useLocalSearchParams();
-  const prescriptionId = "3sTqYLDP1sF8Ay2ESpYp";
+  const prescriptionId = "TsGOLUgiino4pAVuCH1O";
   //params.id as string; // Thay đổi từ idDocPrescription sang id
   const pillId = params.pillId as string; // Thêm pillId nếu cần update pill
 
@@ -44,44 +45,26 @@ export default function UpdatePrescription() {
 
       try {
         setIsLoading(true);
-
         // Lấy dữ liệu prescription chính
         const prescriptionRef = doc(db, "prescriptions", prescriptionId);
         const prescriptionSnap = await getDoc(prescriptionRef);
-
-        // if (pillId) {
-        //   // Nếu có pillId, lấy dữ liệu pill cụ thể
-        //   const pillRef = doc(
-        //     db,
-        //     "prescriptions",
-        //     prescriptionId,
-        //     "pills",
-        //     pillId
-        //   );
-        //   const pillSnap = await getDoc(pillRef);
-
-        //   if (pillSnap.exists()) {
-        //     const pillData = pillSnap.data();
-        //     setName(pillData.name || "");
-        //     setStartDate(
-        //       pillData.startDate?.toDate().toLocaleDateString() || ""
-        //     );
-        //     setTimes(pillData.time || []);
-        //     setSelectedFrequency(pillData.frequency?.toString() || "1");
-        //     setNote(pillData.note || "");
-        //   }
-        // }
         //Lấy dữ liệu prescription chính
         if (prescriptionSnap.exists()) {
           const prescriptionData = prescriptionSnap.data();
+          //Gán dữ liệu vào các biến
           setName(prescriptionData.name || "");
-          setStartDate(prescriptionData.startDate || "");
+          setStartDate(
+            format(
+              new Date(prescriptionData.startDate.toDate().toISOString()),
+              "dd/MM/yyyy"
+            ) || ""
+          );
           const numberOfFrequency = prescriptionData.frequency?.toString();
-          if (numberOfFrequency === "1") {
+          if (numberOfFrequency === "0") {
             setSelectedFrequency("No repeat");
-          } else if (numberOfFrequency === "2") {
+          } else if (numberOfFrequency === "7") {
             setSelectedFrequency("Every week");
-          } else if (numberOfFrequency === "3") {
+          } else if (numberOfFrequency === "1") {
             setSelectedFrequency("Every day");
           }
           setTimes(prescriptionData.time || []);
@@ -110,10 +93,10 @@ export default function UpdatePrescription() {
   const handleUpdatePrescription = async () => {
     const number =
       selectedFrequency === "No repeat"
-        ? 1
+        ? 0
         : selectedFrequency === "Every week"
-        ? 2
-        : 3;
+        ? 7
+        : 1;
     const newDataArray: string[] = [name, startDate, number.toString(), note];
     if (
       JSON.stringify(oldData) === JSON.stringify(newDataArray) &&
@@ -132,41 +115,22 @@ export default function UpdatePrescription() {
     }
     setIsLoading(true);
     try {
-      //   if (pillId) {
-      //     // Cập nhật pill trong subcollection
-      //     const pillRef = doc(
-      //       db,
-      //       "prescriptions",
-      //       prescriptionId,
-      //       "pills",
-      //       pillId
-      //     );
-      //     await updateDoc(pillRef, {
-      //       name,
-      //       startDate: new Date(startDate),
-      //       time: times,
-      //       frequency: parseInt(selectedFrequency),
-      //       note,
-      //       updatedAt: new Date(),
-      //     });
-      //     Alert.alert("Success", "Pill updated successfully!");
-      //   } else {
       // Cập nhật prescription chính
       const prescriptionRef = doc(db, "prescriptions", prescriptionId);
       await updateDoc(prescriptionRef, {
         name: name,
-        startDate: startDate,
+        startDate: convertToTimestamp(startDate),
         time: times,
         note: note,
         frequency:
           selectedFrequency === "No repeat"
-            ? 1
+            ? 0
             : selectedFrequency === "Every week"
-            ? 2
-            : 3,
+            ? 7
+            : 1,
       });
       Alert.alert("Success", "Prescription updated successfully!");
-      //}
+      setOldData(newDataArray);
       //router.back();
     } catch (error) {
       console.error("Update error:", error);
@@ -221,6 +185,26 @@ export default function UpdatePrescription() {
 
     return true;
   };
+  function convertToTimestamp(dateString: string): Timestamp | null {
+    try {
+      // Tách ngày, tháng, năm từ chuỗi
+      const [day, month, year] = dateString.split("/").map(Number);
+
+      // Tạo đối tượng Date (lưu ý: month trong JavaScript bắt đầu từ 0)
+      const date = new Date(year, month - 1, day);
+
+      // Kiểm tra ngày hợp lệ
+      if (isNaN(date.getTime())) {
+        throw new Error("Ngày không hợp lệ");
+      }
+
+      // Chuyển sang Firestore Timestamp
+      return Timestamp.fromDate(date);
+    } catch (error) {
+      console.error("Lỗi chuyển đổi ngày:", error);
+      return null;
+    }
+  }
   return (
     <CustomKeyboardView>
       <View className="bg-[#E8F3F2]">
@@ -298,17 +282,6 @@ export default function UpdatePrescription() {
                 Time of taking medicine
               </Text>
             </View>
-            {/* <View>
-                <View className='bg-white flex-row items-center border border-gray-400 rounded-[10] h-[50] w-[370] mt-2 px-4'>
-                    <AntDesign name="clockcircleo" size={24} color="black" />
-                    <TextInput
-                        onChangeText={setTime}
-                        placeholder='00:00:00 AM'
-                        className='px-3 pr-3 text-black text-1xl w-full'
-                        >
-                    </TextInput>
-                </View>
-            </View> */}
             <View className="w-full mt-2">
               <MedicineTimePicker
                 initialTimes={times} // Pass the actual array, not the setter
@@ -365,11 +338,30 @@ export default function UpdatePrescription() {
             </View>
           </View>
           {/* Button Update */}
-          <View className="self-end w-full mt-3">
+          <View className="items-center mt-3 flex-row">
             {isLoading ? (
               <Loading size={hp(7)} />
             ) : (
-              <View className="items-end mr-5">
+              <View className="pr-5 mb-10">
+                <TouchableOpacity
+                  className="flex border border-400 border-[#04A996] rounded-[20] h-[50] w-[140] justify-center mt-5"
+                  onPress={() =>
+                    router.push({
+                      pathname: "/addPills",
+                      params: { prescriptionId },
+                    })
+                  }
+                >
+                  <Text className="text-[#04A996] text-xl text-center font-bold">
+                    Update Pills
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            {isLoading ? (
+              <Loading size={hp(7)} />
+            ) : (
+              <View className="pl-5 mb-10">
                 <TouchableOpacity
                   style={{ backgroundColor: theme.colors.primary }}
                   className="flex rounded-[20] h-[50] w-[140] justify-center mt-5"
@@ -381,15 +373,6 @@ export default function UpdatePrescription() {
                 </TouchableOpacity>
               </View>
             )}
-          </View>
-        </View>
-        {/* Footer */}
-        <View className="mt-5 mb-10">
-          <Text className="text-2xl font-bold text-[#04A996] ml-4">
-            Medicine List
-          </Text>
-          <View>
-            <PillList />
           </View>
         </View>
       </View>
