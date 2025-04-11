@@ -1,6 +1,6 @@
 import { View, Text, Image, TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
-import { Ionicons, Fontisto, EvilIcons, FontAwesome } from '@expo/vector-icons';
+import { Ionicons, Fontisto, EvilIcons, FontAwesome, Feather } from '@expo/vector-icons';
 import { images } from '@/constants';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
 import Loading from '@/components/loading';
@@ -9,16 +9,109 @@ import { Picker } from '@react-native-picker/picker';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { router } from 'expo-router';
 import theme from '@/config/theme';
+import { useAuth } from '@/hooks/useAuth';
+import MessageModal from '@/components/MessageModal';
 
 export default function AddPrescription() {
-    const [selectedFrequency, setSelectedFrequency] = useState('Every day');
+    const [selectedFrequency, setSelectedFrequency] = useState('No repeat');
     const [isLoading, setIsLoading] = useState(false);
+    //lay data 
+    const [prescriptionName, setPrescriptionName] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [time, setTime] = useState<string[]>(['7:00', '11:00', '17:00']);
+
+    const [note, setNote] = useState('');
+    //modal
+    const [messageModalVisible, setMessageModalVisible] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
+
+    //modal loi
+    const showErrorModal = (message: string) => {
+        setModalMessage(message);
+        setMessageModalVisible(true);
+    };
+
+    const { user } = useAuth()
+
+    //ham xu ly chuyen doi du lieu tu ngay sang so 
+    const frequencyMap: { [key: string]: number } = {
+        'No repeat': 0,
+        'Every day': 1,
+        'Every week': 7,
+    };
+
+
+    const isValidAndNotPastDate = (dateString: string): { valid: boolean, message?: string } => {
+        //kiem tra xem dung dinh dang dd/mm//yyyy khong
+        const regex = /^\d{2}\/\d{2}\/\d{4}$/;
+        if (!regex.test(dateString)) {
+            return { valid: false, message: 'Date does not fit the format dd/mm/yyyy' };
+        }
+
+        const [day, month, year] = dateString.split('/').map(Number);
+        const inputDate = new Date(year, month - 1, day);
+
+        //kiem tra xem ngay nay co ton tai khong VD: 31/02/2025
+        if (
+            inputDate.getDate() !== day ||
+            inputDate.getMonth() !== month - 1 ||
+            inputDate.getFullYear() !== year
+        ) {
+            return { valid: false, message: 'This day does not exist.' };
+        }
+
+        //kiem tra xem ngay nhap vao co nho hon ngay hom nay hien tai k
+        const today = new Date();
+        inputDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+
+        if (inputDate < today) {
+            return { valid: false, message: 'Date can not be earlier than today.' };
+        }
+
+        return { valid: true };
+    };
+
 
     const handleAddPrescription = async () => {
+        if (!prescriptionName || !startDate) {
+            showErrorModal('Please fill all required fields');
+            return;
+        }
+
+        const dateCheck = isValidAndNotPastDate(startDate);
+        if (!dateCheck.valid) {
+            showErrorModal(dateCheck.message || 'Invalid date');
+            return;
+        }
+
+        if (!time || time.length === 0) {
+            showErrorModal('Please add at least one time to take the medicine.');
+            return;
+        }
+
         setIsLoading(true);
-        router.push('/addPills');
-        setIsLoading(false);
-    }
+
+        const newPrescription = {
+            name: prescriptionName,
+            startDate,
+            time,
+            frequency: frequencyMap[selectedFrequency] ?? 0, //neu undefined hoac null thi mac dinh la 0
+            note,
+            createdAt: new Date().toISOString(),
+            userId: user.uid,
+        };
+
+        setPrescriptionName('');
+        setStartDate('');
+        setSelectedFrequency('Every day');
+        setNote('');
+
+        router.push({
+            pathname: '/addPills',
+            params: { prescriptionData: JSON.stringify(newPrescription) }, //truyen xuong local bang dang js    
+        });
+    };
 
     return (
         <CustomKeyboardView>
@@ -65,6 +158,8 @@ export default function AddPrescription() {
                                 <Ionicons name="medkit-outline" size={24} color="black" />
                                 <TextInput
                                     placeholder='Enter prescription name...'
+                                    value={prescriptionName}
+                                    onChangeText={setPrescriptionName}
                                     className='px-3 pr-3 text-1xl w-full'
                                 >
                                 </TextInput>
@@ -83,6 +178,8 @@ export default function AddPrescription() {
                                 <Fontisto name="date" size={24} color="black" />
                                 <TextInput
                                     placeholder='01/01/2025'
+                                    value={startDate}
+                                    onChangeText={setStartDate}
                                     className='px-3 pr-3 text-1xl w-full'
                                 >
                                 </TextInput>
@@ -98,7 +195,8 @@ export default function AddPrescription() {
                         </View>
                         <View className='w-full mt-2'>
                             <MedicineTimePicker
-                                initialTimes={['7:00', '11:00', '17:00']}
+                                initialTimes={time}
+                                onTimesChange={setTime}
                             //onTimesChange={handleTimesChange}
                             />
                             <Text style={{ fontSize: hp(1.8) }} className='italic text-base text-center'>Note: Times must be at least 1 hour apart</Text>
@@ -145,6 +243,8 @@ export default function AddPrescription() {
                                     placeholder='Some notes...'
                                     className='px-3 pr-3 text-1xl w-full'
                                     multiline={true}
+                                    value={note}
+                                    onChangeText={setNote}
                                     numberOfLines={5} // số dòng hiển thị sẵn, không giới hạn input
                                     textAlignVertical="top" // căn chữ lên đầu thay vì giữa
                                 >
@@ -166,11 +266,17 @@ export default function AddPrescription() {
                                     <Text className="text-white text-xl text-center font-bold">Add</Text>
                                 </TouchableOpacity>
                             </View>
-
                         }
                     </View>
                 </View>
+                <MessageModal
+                    visible={messageModalVisible}
+                    onClose={() => setMessageModalVisible(false)}
+                    message={modalMessage}
+                    type='Error'
+                />
             </View>
         </CustomKeyboardView>
     )
 }
+

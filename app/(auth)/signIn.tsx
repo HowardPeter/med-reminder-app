@@ -29,7 +29,7 @@ export default function SignIn() {
             setEmail("");
             setPassword("");
 
-            router.replace({ pathname: '/home', params: { email } });
+            router.replace({ pathname: '/homePage', params: { email } });
             console.log(`Email sign in: ${email}`)
         } else {
             console.log('Sign In', response.msg);
@@ -92,7 +92,7 @@ export default function SignIn() {
                             </TouchableOpacity>
                         </View>
                         {/* Forgot password */}
-                        <TouchableOpacity onPress={() => router.push('./(auth)/emailVerified')}>
+                        <TouchableOpacity onPress={() => router.push('/(auth)/emailVerified')}>
                             <Text style={styles.forgotPass}>Forgot password?</Text>
                         </TouchableOpacity>
                     </View>

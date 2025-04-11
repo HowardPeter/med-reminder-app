@@ -7,6 +7,7 @@ import { images } from '@/constants';
 import ReactNativeModal from 'react-native-modal';
 import { useAuth } from '@/hooks/useAuth';
 import theme from '@/config/theme';
+import MessageModal from '@/components/MessageModal';
 
 export default function UserSettings() {
     const { logout, user, updateUserImage } = useAuth();
@@ -16,23 +17,13 @@ export default function UserSettings() {
     const [avatarModalVisible, setAvatarModalVisible] = useState(false);
     const [messageModalVisible, setMessageModalVisible] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
-    const [modalIcon, setModalIcon] = useState('alert-circle');
-    const [modalColor, setModalColor] = useState('bg-red-500');
-    const [modalTitle, setModalTitle] = useState<'Success' | 'Warning' | 'Error'>('Error');
+    const [modalType, setModalType] = useState('Error');
 
-    const modalButtonTextMap = {
-        Success: 'Great!',
-        Warning: 'I Understand',
-        Error: 'Try Again',
-    };
+    const [warningModalVisible, setWarningModalVisible] = useState(false);
 
-    const modalButtonText = modalButtonTextMap[modalTitle];
-    
-    //modal thanh cong
+    //modal success
     const showSuccessModal = (message: string) => {
-        setModalIcon('check-circle');
-        setModalColor('bg-teal-500');
-        setModalTitle('Success');
+        setModalType('Success');
         setModalMessage(message);
         setMessageModalVisible(true);
         setAvatarModalVisible(false);
@@ -40,12 +31,9 @@ export default function UserSettings() {
 
     //modal loi
     const showErrorModal = (message: string) => {
-        setModalIcon('alert-circle');
-        setModalColor('bg-red-500');
-        setModalTitle('Error');
+        setModalType('Error');
         setModalMessage(message);
         setMessageModalVisible(true);
-        setAvatarModalVisible(false);
     };
 
     const handleImageUpdate = async (newImageUrl) => {
@@ -107,7 +95,7 @@ export default function UserSettings() {
 
     return (
         <View className="flex-1 bg-teal-500">
-            <View className="items-center mt-5">
+            <View className="items-center mt-16">
                 <View className="relative">
                     <Image
                         key={user?.userImage}
@@ -162,7 +150,7 @@ export default function UserSettings() {
                     <AntDesign name="arrowright" size={24} color="gray" />
                 </TouchableOpacity>
 
-                <View className="items-center mt-5">
+                <View className="items-center mt-10">
                     <Image
                         source={images.userSettings}
                         style={{ height: hp(30), width: hp(30) }}
@@ -171,8 +159,9 @@ export default function UserSettings() {
                 </View>
 
                 <TouchableOpacity
-                    className="bg-teal-500 rounded-full py-3 mt-5 mx-8"
-                    onPress={handleLogout}>
+                    className="bg-teal-500 rounded-full py-3 mt-2 mx-8"
+                    onPress={() => setWarningModalVisible(true)}
+                    >
                     <Text className="text-white text-center text-lg font-bold">Log out</Text>
                 </TouchableOpacity>
 
@@ -328,34 +317,52 @@ export default function UserSettings() {
                     </View>
                 </ReactNativeModal>
 
+                <MessageModal
+                    visible={messageModalVisible}
+                    onClose={() => {
+                        setMessageModalVisible(false);
+                    }}
+                    message={modalMessage}
+                    type={modalType}
+                >
+                </MessageModal>
+
                 <ReactNativeModal
-                    isVisible={messageModalVisible}
-                    onBackdropPress={() => setMessageModalVisible(false)}
+                    isVisible={warningModalVisible}
+                    onBackdropPress={() => setWarningModalVisible(false)}
                     backdropOpacity={0.7}
                     animationIn="zoomIn"
                     animationOut="zoomOut"
                     style={{ justifyContent: 'center', alignItems: 'center' }}
                 >
                     <View className="bg-white rounded-2xl w-[90%] pt-16 pb-6 px-6 items-center relative">
-                        <View className={`absolute -top-12 ${modalColor} h-24 w-24 rounded-full items-center justify-center shadow-lg`}>
-                            <Feather name={modalIcon} size={50} color="white" />
+                        <View className="absolute -top-12 bg-yellow-500 h-24 w-24 rounded-full items-center justify-center shadow-lg">
+                            <Feather name="alert-triangle" size={50} color="white" />
                         </View>
 
                         <Text className="text-xl font-bold text-center text-gray-800 mb-2">
-                            {modalTitle}
+                            Warning
                         </Text>
                         <Text className="text-center text-base text-gray-600">
-                            {modalMessage}
+                            Are you sure you want to exit?.
                         </Text>
 
                         <View className="w-full mt-6 space-y-3">
                             <TouchableOpacity
-                                onPress={() => setMessageModalVisible(false)}
-                                className={`${modalColor} py-3 rounded-2xl items-center`}
+                                onPress={() => {
+                                    setWarningModalVisible(false);
+                                    handleLogout();
+                                }}
+                                className="bg-yellow-500 py-3 rounded-2xl items-center"
                             >
-                                <Text className="text-white text-lg font-bold">
-                                    {modalButtonText}
-                                </Text>
+                                <Text className="text-white text-lg font-bold">Log Out</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={() => setWarningModalVisible(false)}
+                                className="bg-gray-200 py-3 rounded-2xl items-center mt-3"
+                            >
+                                <Text className="text-gray-700 text-lg font-bold">Cancel</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -363,7 +370,7 @@ export default function UserSettings() {
             </View>
             {/* Bottom Navigation Bar */}
             <View style={{ backgroundColor: theme.colors.primary }} className="absolute bottom-0 left-0 right-0 flex-row justify-around items-center h-16 rounded-t-3xl">
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push('/homePage')}>
                     <FontAwesome name="home" size={35} color="gray" />
                 </TouchableOpacity>
                 <TouchableOpacity>
