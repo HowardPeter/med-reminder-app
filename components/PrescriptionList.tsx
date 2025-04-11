@@ -3,7 +3,7 @@ import { FlatList, RefreshControl, View } from "react-native";
 import PrescriptionCard from "./PrescriptionCard";
 import { useAuth } from "@/hooks/useAuth";
 import { useCrud } from "@/hooks/useCrud";
-import { collection, doc, getDoc, getDocs, onSnapshot, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import moment from "moment";
 
@@ -70,7 +70,6 @@ const PrescriptionList: React.FC<PrescriptionListProps> = ({ selectedDate, onSel
     const [prescriptions, setPrescriptions] = useState<PrescriptionProps[]>([]);
 
     const userId = user?.userId || null;
-    const date = selectedDate.toLocaleDateString();
 
     useEffect(() => {
         if (!userId) return;

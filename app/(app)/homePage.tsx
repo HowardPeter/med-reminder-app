@@ -36,12 +36,14 @@ const HomePage = () => {
   const moveToUpdatePrescription = () => {
     setIsModalVisible(false);
     setIsAlertVisible(false);
-    router.push('/updatePrescription');
+    router.push({
+      pathname: '/(app)/updatePrescription',
+      params: { prescriptionId: selectedPrescriptionId },
+    });
   }
 
   const handleDeletePrescription = () => {
     setIsAlertVisible(false);
-    console.log("Prescription deleted");
   }
 
   useEffect(() => {

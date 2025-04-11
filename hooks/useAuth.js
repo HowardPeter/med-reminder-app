@@ -40,7 +40,7 @@ export const AuthContextProvider = ({ children }) => {
 
     const login = useCallback(async (email, password) => {
         try {
-            const response = await signInWithEmailAndPassword(auth, email, password);
+            await signInWithEmailAndPassword(auth, email, password);
             return { success: true };
         } catch (error) {
             let msg = error.message;

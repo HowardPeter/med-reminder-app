@@ -6,7 +6,6 @@ import { images } from '@/constants';
 import { router } from 'expo-router';
 import theme from '@/config/theme';
 import PillCard from '@/components/PillCard';
-import CustomAlert from '@/components/CustomAlert';
 
 const pills = [
     { id: '1', name: 'Penicilin', type: 'Pill', dosage: '1', icon: images.pill },

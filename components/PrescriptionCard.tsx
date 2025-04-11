@@ -1,4 +1,3 @@
-// components/PrescriptionCard.js
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'

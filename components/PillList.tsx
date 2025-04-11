@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FlatList, View } from "react-native";
 import PillCard from "./PillCard";
 import { images } from "@/constants";

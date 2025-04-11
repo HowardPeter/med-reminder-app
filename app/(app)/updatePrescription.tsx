@@ -8,8 +8,6 @@ import MedicineTimePicker from '@/components/MedicineTimePicker';
 import { Picker } from '@react-native-picker/picker';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { router } from 'expo-router';
-import { useLocalSearchParams } from 'expo-router';
-import { addDoc, collection, doc, onSnapshot, orderBy, query, setDoc, Timestamp } from 'firebase/firestore';
 import theme from '@/config/theme';
 
 export default function UpdatePrescription() {
@@ -19,7 +17,6 @@ export default function UpdatePrescription() {
     const [selectedFrequency, setSelectedFrequency] = useState('Every day');
     const [note, setNote] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const { idDocPrescription} = useLocalSearchParams();
 
     useEffect(() => {
       
