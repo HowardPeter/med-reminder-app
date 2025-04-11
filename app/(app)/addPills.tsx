@@ -15,42 +15,10 @@ import { router } from "expo-router";
 import theme from "@/config/theme";
 import PillCard from "@/components/PillCard";
 import { useLocalSearchParams } from "expo-router";
-import useCrud from "@/hooks/useCrud";
+import { useCrud } from "@/hooks/useCrud";
 import Loading from "@/components/loading";
 import ReactNativeModal from "react-native-modal";
 import CustomAlert from "@/components/CustomAlert";
-
-// const pills = [
-//   { id: "1", name: "Penicilin", type: "Pill", dosage: "1", icon: images.pill },
-//   {
-//     id: "2",
-//     name: "Asthma Inhaler",
-//     type: "Inhaler",
-//     dosage: "2",
-//     icon: images.pill,
-//   },
-//   { id: "3", name: "Penicilin2", type: "Pill", dosage: "1", icon: images.pill },
-//   { id: "4", name: "Penicilin3", type: "Pill", dosage: "3", icon: images.pill },
-//   { id: "5", name: "Penicilin4", type: "Pill", dosage: "3", icon: images.pill },
-//   { id: "6", name: "Penicilin5", type: "Pill", dosage: "3", icon: images.pill },
-//   { id: "7", name: "Penicilin6", type: "Pill", dosage: "3", icon: images.pill },
-//   { id: "8", name: "Penicilin7", type: "Pill", dosage: "3", icon: images.pill },
-//   { id: "9", name: "Penicilin8", type: "Pill", dosage: "3", icon: images.pill },
-//   {
-//     id: "10",
-//     name: "Penicilin9",
-//     type: "Pill",
-//     dosage: "3",
-//     icon: images.pill,
-//   },
-//   {
-//     id: "11",
-//     name: "Penicilin10",
-//     type: "Pill",
-//     dosage: "3",
-//     icon: images.pill,
-//   },
-// ];
 
 const getPillIcon = (type: string) => {
   switch (type) {

@@ -31,13 +31,7 @@ export default function UpdatePrescription() {
   const [isLoading, setIsLoading] = useState(false);
   const [oldData, setOldData] = useState<string[]>([]);
   const [timeOld, setTimeOld] = useState<string[]>([]);
-  // const { prescriptionId } = useLocalSearchParams();
-
-  // Lấy params từ URL
-  const params = useLocalSearchParams();
-  const prescriptionId = "TsGOLUgiino4pAVuCH1O";
-  //params.id as string; // Thay đổi từ idDocPrescription sang id
-  const pillId = params.pillId as string; // Thêm pillId nếu cần update pill
+  const { prescriptionId } = useLocalSearchParams();
 
   useEffect(() => {
     const fetchPrescriptionData = async () => {
@@ -88,7 +82,7 @@ export default function UpdatePrescription() {
     };
 
     fetchPrescriptionData();
-  }, [prescriptionId, pillId]);
+  }, [prescriptionId]);
   //Ham cap nhat don thuoc
   const handleUpdatePrescription = async () => {
     const number =
@@ -348,7 +342,7 @@ export default function UpdatePrescription() {
                   onPress={() =>
                     router.push({
                       pathname: "/addPills",
-                      params: { prescriptionId },
+                      params: { prescriptionId: prescriptionId },
                     })
                   }
                 >
