@@ -69,7 +69,7 @@ const PrescriptionList: React.FC<PrescriptionListProps> = ({ selectedDate, onSel
     const [refreshing, setRefreshing] = useState(false);
     const [prescriptions, setPrescriptions] = useState<PrescriptionProps[]>([]);
 
-    const userId = user?.userId || null;
+    const userId = user?.userId ?? null;
 
     useEffect(() => {
         if (!userId) return;
@@ -107,7 +107,7 @@ const PrescriptionList: React.FC<PrescriptionListProps> = ({ selectedDate, onSel
         const twoWeeksLater = today.clone().add(13, 'days'); // Giới hạn trong 14 ngày
 
         return prescriptions.filter(item => {
-            const { startDate, frequency } = item.fullPrescription || {};
+            const { startDate, frequency } = item.fullPrescription ?? {};
             if (!startDate || !startDate.seconds) return false;
 
             const start = moment(new Date(startDate.seconds * 1000)).startOf('day');
@@ -142,7 +142,7 @@ const PrescriptionList: React.FC<PrescriptionListProps> = ({ selectedDate, onSel
                         title={item.name}
                         note={item.note}
                         onToggle={() => {
-                            onSelectPrescription(item.fullPrescription || item, item.time);
+                            onSelectPrescription(item.fullPrescription ?? item, item.time);
                             console.log("Selected prescription:", item.fullPrescription);
                         }}
                     />

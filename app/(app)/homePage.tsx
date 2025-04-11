@@ -25,7 +25,7 @@ const HomePage = () => {
   const { fetchPillsData } = useCrud();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
-  const selectedPrescriptionId = selectedPrescription?.id || null;
+  const selectedPrescriptionId = selectedPrescription?.id ?? null;
 
   const moveToAddPresctiption = () => {
     setIsModalVisible(false);

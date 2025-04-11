@@ -5,17 +5,15 @@ import moment from 'moment';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-interface CalendarSliderProps {
+type CalendarSliderProps = Readonly<{
     selectedDate: Date,
     onSelectDate: (date: Date) => void;
-}
+}>
 
 export default function CalendarSlider({ selectedDate, onSelectDate }: CalendarSliderProps) {
-    // const [selectedDate, setSelectedDate] = useState(new Date());
     const [weekOffset, setWeekOffset] = useState(0);
     const [isOutOfLimit, setIsOutOfLimit] = useState(false);
 
-    // const translateX = useState(new Animated.Value(0))[0];
     const translateX = useRef(new Animated.Value(0)).current;
     const [direction, setDirection] = useState<'left' | 'right'>('right');
 
