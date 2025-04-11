@@ -14,12 +14,10 @@ import Loading from "@/components/loading";
 import MedicineTimePicker from "@/components/MedicineTimePicker";
 import { Picker } from "@react-native-picker/picker";
 import { heightPercentageToDP as hp } from "react-native-responsive-screen";
-import { router } from "expo-router";
-import { useLocalSearchParams } from "expo-router";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { router, useLocalSearchParams } from "expo-router";
+import { doc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
 import theme from "@/config/theme";
 import { db } from "@/firebaseConfig";
-import { Timestamp } from "firebase/firestore";
 import { format } from "date-fns";
 
 export default function UpdatePrescription() {
@@ -46,12 +44,12 @@ export default function UpdatePrescription() {
         if (prescriptionSnap.exists()) {
           const prescriptionData = prescriptionSnap.data();
           //Gán dữ liệu vào các biến
-          setName(prescriptionData.name || "");
+          setName(prescriptionData.name ?? "");
           setStartDate(
             format(
               new Date(prescriptionData.startDate.toDate().toISOString()),
               "dd/MM/yyyy"
-            ) || ""
+            ) ?? ""
           );
           const numberOfFrequency = prescriptionData.frequency?.toString();
           if (numberOfFrequency === "0") {
@@ -61,8 +59,8 @@ export default function UpdatePrescription() {
           } else if (numberOfFrequency === "1") {
             setSelectedFrequency("Every day");
           }
-          setTimes(prescriptionData.time || []);
-          setNote(prescriptionData.note || "");
+          setTimes(prescriptionData.time ?? []);
+          setNote(prescriptionData.note ?? "");
           //Tao mot mang string
           const oldDataArray: string[] = [
             name,
@@ -71,7 +69,7 @@ export default function UpdatePrescription() {
             note,
           ];
           setOldData(oldDataArray);
-          setTimeOld(prescriptionData.time || []);
+          setTimeOld(prescriptionData.time ?? []);
         }
       } catch (error) {
         console.error("Error fetching data:", error);

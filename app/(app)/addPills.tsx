@@ -5,16 +5,14 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
-  TextInput,
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { images } from "@/constants";
-import { router } from "expo-router";
 import theme from "@/config/theme";
 import PillCard from "@/components/PillCard";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
 import { useCrud } from "@/hooks/useCrud";
 import Loading from "@/components/loading";
 import ReactNativeModal from "react-native-modal";
@@ -38,7 +36,6 @@ const AddPills = () => {
   const { prescriptionId } = params;
   const [pills, setPills] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [pillName, setPillName] = useState("");
   const [pillType, setPillType] = useState("pill");
   const [pillDosage, setPillDosage] = useState("");
