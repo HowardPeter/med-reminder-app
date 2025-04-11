@@ -55,7 +55,35 @@ export const useCrud = () => {
 
   const updatePrescription = () => {};
 
-  const deletePrescription = () => {};
+  const deletePrescription = async (prescriptionId) => {
+    const prescriptionRef = doc(db, "prescriptions", prescriptionId);
+
+    try {
+      // thu muc con
+      const subCollectionNames = ["pill"];
+      // thu muc con cua thu muc con
+      for (const subCollection of subCollectionNames) {
+        const subCollectionRef = collection(
+          db,
+          "prescriptions",
+          prescriptionId,
+          subCollection
+        );
+        const subDocsSnap = await getDocs(subCollectionRef);
+
+        const deleteSubDocs = subDocsSnap.docs.map((doc) => deleteDoc(doc.ref));
+        await Promise.all(deleteSubDocs);
+      }
+
+      await deleteDoc(prescriptionRef);
+
+      console.log(
+        `Đã xóa đơn thuốc ${prescriptionId} và các collection con của nó`
+      );
+    } catch (error) {
+      console.error("Lỗi khi xóa đơn thuốc:", error);
+    }
+  };
 
   async function getPrescriptionPills(prescriptionId) {
     try {
