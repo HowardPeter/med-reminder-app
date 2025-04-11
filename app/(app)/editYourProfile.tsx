@@ -8,7 +8,6 @@ import { useAuth } from '@/hooks/useAuth';
 import ReactNativeModal from 'react-native-modal';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
 
-
 export default function EditYourProfile() {
     const { user, updateUserInfo } = useAuth();
     const router = useRouter();
