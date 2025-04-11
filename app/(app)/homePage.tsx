@@ -11,6 +11,9 @@ import ReactNativeModal from "react-native-modal";
 import PillList from "@/components/PillList";
 import CustomAlert from "@/components/CustomAlert";
 import { router } from "expo-router";
+import deletePrescription from "../(app)/deletePrescription"; 
+
+
 
 const HomePage = () => {
   const { logout } = useAuth();
@@ -33,10 +36,18 @@ const HomePage = () => {
     router.push('/updatePrescription');
   }
 
-  const handleDeletePrescription = () => {
+  const handleDeletePrescription = async () => {
+    const prescriptionId = "SbuAhjPOR92BvDhzhmAB"; 
+    await deletePrescription(prescriptionId);
+    await fetchPrescriptions(); 
     setIsAlertVisible(false);
-    console.log("Prescription deleted");
-  }
+};
+ const fetchPrescriptions = async () => {
+   const querySnapshot = await getDocs(collection(db, "prescriptions"));
+   const prescriptionsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+   setPrescriptions(prescriptionsList);
+ };
+ 
 
   return (
     <View style={{ backgroundColor: theme.colors.background }} className="flex-1">
