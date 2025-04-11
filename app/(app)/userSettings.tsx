@@ -363,7 +363,7 @@ export default function UserSettings() {
             </View>
             {/* Bottom Navigation Bar */}
             <View style={{ backgroundColor: theme.colors.primary }} className="absolute bottom-0 left-0 right-0 flex-row justify-around items-center h-16 rounded-t-3xl">
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push('/homePage')}>
                     <FontAwesome name="home" size={35} color="gray" />
                 </TouchableOpacity>
                 <TouchableOpacity>

@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { FontAwesome, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import theme from "@/config/theme";
-import { useAuth } from "@/hooks/useAuth";
 import CalendarSlider from "@/components/CalendarSlider";
 import { SafeAreaView } from "react-native-safe-area-context";
 import PrescriptionList from "@/components/PrescriptionList";
@@ -11,10 +10,22 @@ import ReactNativeModal from "react-native-modal";
 import PillList from "@/components/PillList";
 import CustomAlert from "@/components/CustomAlert";
 import { router } from "expo-router";
+import { useCrud } from "@/hooks/useCrud";
 
 const HomePage = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const [selectedPrescription, setSelectedPrescription] = useState({
+    id: "",
+    name: "",
+    time: "",
+    note: "",
+  });
+  const [pills, setPills] = useState<{ id: string, name: string, type: string, dosage: string }[]>([]);
+  const { fetchPillsData } = useCrud();
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  const selectedPrescriptionId = selectedPrescription?.id ?? null;
 
   const moveToAddPresctiption = () => {
     setIsModalVisible(false);
@@ -25,23 +36,51 @@ const HomePage = () => {
   const moveToUpdatePrescription = () => {
     setIsModalVisible(false);
     setIsAlertVisible(false);
-    router.push('/updatePrescription');
+    router.push({
+      pathname: '/(app)/updatePrescription',
+      params: { prescriptionId: selectedPrescriptionId },
+    });
   }
 
   const handleDeletePrescription = () => {
     setIsAlertVisible(false);
-    console.log("Prescription deleted");
   }
+
+  useEffect(() => {
+    fetchPills();
+  }, [selectedPrescriptionId]);
+
+  const fetchPills = async () => {
+    if (!selectedPrescriptionId) {
+      console.log("No prescription ID selected.");
+      return;
+    }
+    const data = await fetchPillsData(selectedPrescriptionId);
+    setPills(data);
+    console.log("Selected prescription:", selectedPrescription);
+    console.log("Fetched pills data:", data);
+    setIsModalVisible(true);
+  };
 
   return (
     <View style={{ backgroundColor: theme.colors.background }} className="flex-1">
       {/* Header Section */}
       <SafeAreaView style={{ backgroundColor: theme.colors.primary }} className="rounded-b-3xl p-5">
-        <CalendarSlider />
+        <CalendarSlider selectedDate={selectedDate} onSelectDate={setSelectedDate}/>
       </SafeAreaView>
 
       {/* Body */}
-      <PrescriptionList onToggle={() => setIsModalVisible(true)} />
+      <PrescriptionList
+        onSelectPrescription={(prescription, time) =>
+          setSelectedPrescription({
+            id: prescription.id,
+            name: prescription.name,
+            note: prescription.note,
+            time: time,
+          })
+        }
+        selectedDate={selectedDate}
+      />
 
       {/* Floating Action Button */}
       <TouchableOpacity
@@ -78,7 +117,15 @@ const HomePage = () => {
                 <FontAwesome name="trash" size={24} color="white" />
               </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={() => setIsModalVisible(false)}>
+            <TouchableOpacity onPress={() => {
+              setIsModalVisible(false);
+              setSelectedPrescription({
+                id: "",
+                name: "",
+                time: "",
+                note: "",
+              });
+            }}>
               <FontAwesome name="close" size={24} color="white" />
             </TouchableOpacity>
           </View>
@@ -86,20 +133,20 @@ const HomePage = () => {
           {/* Info */}
           <View className="px-4">
             <Text style={{ fontSize: hp(2.3) }} className="font-bold text-center mb-3">
-              Prescription for stomachache
+              {selectedPrescription?.name}
             </Text>
             <View className="flex-row items-center mb-1">
               <MaterialIcons name="event" size={20} color="black" />
-              <Text style={{ fontSize: hp(1.9) }} className="ml-2">Scheduled for 7:30, today</Text>
+              <Text style={{ fontSize: hp(1.9) }} className="ml-2">Scheduled for {selectedPrescription?.time} today</Text>
             </View>
             <View className="flex-row items-center mb-2 mt-1">
               <MaterialIcons name="chat-bubble-outline" size={20} color="black" />
-              <Text style={{ fontSize: hp(1.9) }} className="ml-2">After breakfast</Text>
+              <Text style={{ fontSize: hp(1.9) }} className="ml-2">{selectedPrescription?.note}</Text>
             </View>
           </View>
 
           {/* Pills */}
-          <PillList />
+          <PillList pills={pills} />
         </View>
       </ReactNativeModal>
 
