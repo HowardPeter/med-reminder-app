@@ -5,8 +5,13 @@ import moment from 'moment';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function CalendarSlider() {
-    const [selectedDate, setSelectedDate] = useState(new Date());
+interface CalendarSliderProps {
+    selectedDate: Date,
+    onSelectDate: (date: Date) => void;
+}
+
+export default function CalendarSlider({ selectedDate, onSelectDate }: CalendarSliderProps) {
+    // const [selectedDate, setSelectedDate] = useState(new Date());
     const [weekOffset, setWeekOffset] = useState(0);
     const [isOutOfLimit, setIsOutOfLimit] = useState(false);
 
@@ -118,7 +123,7 @@ export default function CalendarSlider() {
                                 <TouchableOpacity
                                     key={day.fullDate.toString()}
                                     className="items-center mx-2"
-                                    onPress={() => setSelectedDate(day.fullDate)}
+                                    onPress={() => onSelectDate(day.fullDate)}
                                 >
                                     <Text className={`text-sm text-center ${isFutureDate ? 'font-normal' : 'font-bold'} ${isSelected ? 'text-[#182C47]' : 'text-white'}`}>
                                         {day.label}

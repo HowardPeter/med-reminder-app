@@ -1,19 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FlatList, RefreshControl, View } from "react-native";
 import PrescriptionCard from "./PrescriptionCard";
 import { useAuth } from "@/hooks/useAuth";
 import { useCrud } from "@/hooks/useCrud";
 import { collection, doc, getDoc, getDocs, onSnapshot, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { db } from "../firebaseConfig";
+import moment from "moment";
 
 interface PrescriptionProps {
     id: string;
     time: string;
     name: string;
     note: string;
+    fullPrescription: any;
 }
 
 interface PrescriptionListProps {
+    selectedDate: Date;
     onSelectPrescription: (prescription: any, time: string) => void;
 }
 
@@ -60,13 +63,14 @@ const expandAndSortPrescriptions = (data: PrescriptionProps[]) => {
     return sorted;
 };
 
-const PrescriptionList: React.FC<PrescriptionListProps> = ({ onSelectPrescription }) => {
+const PrescriptionList: React.FC<PrescriptionListProps> = ({ selectedDate, onSelectPrescription }) => {
     const { user } = useAuth();
     const { fetchPrescriptionData } = useCrud();
     const [refreshing, setRefreshing] = useState(false);
     const [prescriptions, setPrescriptions] = useState<PrescriptionProps[]>([]);
 
     const userId = user?.userId || null;
+    const date = selectedDate.toLocaleDateString();
 
     useEffect(() => {
         if (!userId) return;
@@ -97,10 +101,36 @@ const PrescriptionList: React.FC<PrescriptionListProps> = ({ onSelectPrescriptio
         }
     };
 
+    // Hàm filter đơn thuốc theo ngày bắt đầu và clone theo frequency
+    const filteredPrescriptions = useMemo(() => {
+        const today = moment().startOf('day');
+        const selected = moment(selectedDate).startOf('day');
+        const twoWeeksLater = today.clone().add(13, 'days'); // Giới hạn trong 14 ngày
+
+        return prescriptions.filter(item => {
+            const { startDate, frequency } = item.fullPrescription || {};
+            if (!startDate || !startDate.seconds) return false;
+
+            const start = moment(new Date(startDate.seconds * 1000)).startOf('day');
+
+            // Nếu ngoài 2 tuần thì bỏ qua
+            if (selected.isBefore(today) || selected.isAfter(twoWeeksLater)) return false;
+
+            // Nếu không lặp
+            if (Number(frequency) === 0) {
+                return selected.isSame(start);
+            }
+
+            // Nếu có lặp, kiểm tra selected có nằm đúng chu kỳ lặp
+            const diff = selected.diff(start, 'days');
+            return diff >= 0 && diff % Number(frequency) === 0;
+        });
+    }, [prescriptions, selectedDate]);
+
     return (
         <View className="flex-1">
             <FlatList
-                data={prescriptions}
+                data={filteredPrescriptions}
                 keyExtractor={(item) => item.id}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
@@ -114,7 +144,7 @@ const PrescriptionList: React.FC<PrescriptionListProps> = ({ onSelectPrescriptio
                         note={item.note}
                         onToggle={() => {
                             onSelectPrescription(item.fullPrescription || item, item.time);
-                            console.log("Selected prescription time:", item.time);
+                            console.log("Selected prescription:", item.fullPrescription);
                         }}
                     />
                 )}

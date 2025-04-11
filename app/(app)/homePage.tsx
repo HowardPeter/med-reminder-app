@@ -22,8 +22,8 @@ const HomePage = () => {
     note: "",
   });
   const [pills, setPills] = useState<{ id: string, name: string, type: string, dosage: string }[]>([]);
-
   const { fetchPillsData } = useCrud();
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const selectedPrescriptionId = selectedPrescription?.id || null;
 
@@ -64,7 +64,7 @@ const HomePage = () => {
     <View style={{ backgroundColor: theme.colors.background }} className="flex-1">
       {/* Header Section */}
       <SafeAreaView style={{ backgroundColor: theme.colors.primary }} className="rounded-b-3xl p-5">
-        <CalendarSlider />
+        <CalendarSlider selectedDate={selectedDate} onSelectDate={setSelectedDate}/>
       </SafeAreaView>
 
       {/* Body */}
@@ -77,6 +77,7 @@ const HomePage = () => {
             time: time,
           })
         }
+        selectedDate={selectedDate}
       />
 
       {/* Floating Action Button */}

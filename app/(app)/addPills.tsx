@@ -6,6 +6,7 @@ import { images } from '@/constants';
 import { router } from 'expo-router';
 import theme from '@/config/theme';
 import PillCard from '@/components/PillCard';
+import CustomAlert from '@/components/CustomAlert';
 
 const pills = [
     { id: '1', name: 'Penicilin', type: 'Pill', dosage: '1', icon: images.pill },
@@ -52,7 +53,7 @@ const AddPills = () => {
             <Text style={{ fontSize: hp(3) }} className="font-semibold ml-2 mb-5">Add pills to your{'\n'}prescription</Text>
 
             {/* Pill List */}
-            <View style={{maxHeight: hp(55)}} className="bg-white rounded-2xl overflow-hidden mb-6">
+            <View style={{ maxHeight: hp(55) }} className="bg-white rounded-2xl overflow-hidden mb-6">
                 <FlatList
                     data={pills}
                     renderItem={renderItem}
@@ -68,7 +69,7 @@ const AddPills = () => {
                     <Text style={{ fontSize: hp(3.5) }} className="text-white">+</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={{backgroundColor: theme.colors.primary}} className="px-6 py-3 rounded-full ml-5 shadow-xl">
+                <TouchableOpacity style={{ backgroundColor: theme.colors.primary }} className="px-6 py-3 rounded-full ml-5 shadow-xl">
                     <Text className="text-white font-semibold text-base">Confirm</Text>
                 </TouchableOpacity>
             </View>
