@@ -42,9 +42,13 @@ const AddPills = () => {
 
     const params = useLocalSearchParams();
     const { prescriptionId } = params;
-    const [pills, setPills] = useState([]);
+    // const [pills, setPills] = useState([]);
     const [pillId, setPillId] = useState("");
     const [isAlertVisible, setIsAlertVisible] = useState(false);
+
+    const [warningModalVisible, setWarningModalVisible] = useState(false);
+    const { prescriptionData } = useLocalSearchParams();
+    const { addPrescription, addPillToPrescription } = useCrud();
 
     //modal success
     const showSuccessModal = (message: string) => {
@@ -60,24 +64,35 @@ const AddPills = () => {
         setModalMessage(message);
         setMessageModalVisible(true);
     };
-
-    const [warningModalVisible, setWarningModalVisible] = useState(false);
-
-    const { prescriptionData } = useLocalSearchParams();
-
-    const { addPrescription, addPillToPrescription } = useCrud();
-
-    useEffect(() => {
-        if (prescriptionData) {
-            try {
-                const parsed = JSON.parse(prescriptionData);
-                setPrescription(parsed);
-            } catch (error) {
-                console.error("Invalid prescription data:", error);
+    if (prescriptionData) {
+        useEffect(() => {
+            if (prescriptionData === null) return;
+            if (prescriptionData) {
+                try {
+                    const parsed = JSON.parse(prescriptionData);
+                    setPrescription(parsed);
+                } catch (error) {
+                    console.error("Invalid prescription data:", error);
+                }
             }
-        }
-    }, [prescriptionData]);
+        }, [prescriptionData]);
+    } else if (prescriptionId) {
+        useEffect(() => {
+            const fetchPills = async () => {
+                if (prescriptionId === null) return;
+                try {
+                    const pillsData = await getPrescriptionPills(prescriptionId);
+                    setPillList(pillsData);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
 
+            fetchPills();
+        }, [prescriptionId]);
+    }
 
     const handleAddPill = () => {
         if (!pillName || !pillType) {
@@ -128,6 +143,26 @@ const AddPills = () => {
         }
     };
 
+    //Ham xoa 1 thuoc trong don thuoc
+    const deletePill = async () => {
+        try {
+            // 1. Thực hiện xóa pill
+            await deletePillById(prescriptionId.toString(), pillId);
+
+            // 2. Ẩn alert
+            setIsAlertVisible(false);
+
+            // 3. Load lại danh sách pill
+            setIsLoading(true);
+            const updatedPills = await getPrescriptionPills(prescriptionId);
+            setPillList(updatedPills);
+        } catch (error) {
+            console.error("Lỗi khi xóa pill:", error);
+            Alert.alert("Lỗi", "Không thể xóa thuốc: " + error.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const renderItem = ({ item }: any) => (
         <TouchableOpacity
@@ -147,41 +182,7 @@ const AddPills = () => {
             />
         </TouchableOpacity>
     );
-    //Ham xoa 1 thuoc trong don thuoc
-    const deletePill = async () => {
-        try {
-            // 1. Thực hiện xóa pill
-            await deletePillById(prescriptionId.toString(), pillId);
 
-            // 2. Ẩn alert
-            setIsAlertVisible(false);
-
-            // 3. Load lại danh sách pill
-            setIsLoading(true);
-            const updatedPills = await getPrescriptionPills(prescriptionId);
-            setPills(updatedPills);
-        } catch (error) {
-            console.error("Lỗi khi xóa pill:", error);
-            Alert.alert("Lỗi", "Không thể xóa thuốc: " + error.message);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        const fetchPills = async () => {
-            try {
-                const pillsData = await getPrescriptionPills(prescriptionId);
-                setPills(pillsData);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchPills();
-    }, [prescriptionId]);
     if (isLoading)
         return (
             <View className="flex-1 justify-center items-center bg-white">
@@ -231,9 +232,9 @@ const AddPills = () => {
                 className="bg-white rounded-2xl overflow-hidden mb-6"
             >
                 <FlatList
-                    data={pills}
+                    data={pillList}
                     renderItem={renderItem}
-                    keyExtractor={() => Math.random().toString()}
+                    keyExtractor={(item) => item.id}
                     showsVerticalScrollIndicator={true}
                     contentContainerStyle={{ paddingVertical: 16 }}
                 />

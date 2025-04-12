@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  addDoc,
   getDoc,
   getDocs,
   onSnapshot,
@@ -39,14 +40,18 @@ export const useCrud = () => {
       const pillsRef = collection(db, COLLECTION_NAME, prescriptionId, 'pills');
       const snapshot = await getDocs(pillsRef);
 
-      const pills = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      return pills;
+      const pills = snapshot.docs.map((doc) => {
+        const data = doc.data();
+      
+        return {
+          id: doc.id,
+          ...data,
+          startDate: data.startDate?.toDate?.() ?? null,
+          createdAt: data.createdAt?.toDate?.() ?? null,
+        };
+      });
     } catch (error) {
-      console.error("Error fetching pills:", error);
+      console.error("Phuoc Error fetching pills:", error);
       return [];
     }
   }, []);
@@ -81,7 +86,7 @@ export const useCrud = () => {
       const snapshot = await getDocs(pillsRef);
       return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
-      console.error('Error fetching pills: ', error);
+      console.error('Phat Error fetching pills: ', error);
       throw error;
     }
   };
@@ -145,7 +150,7 @@ export const useCrud = () => {
       console.log("Pills data:", pillsData);
       return pillsData;
     } catch (error) {
-      console.error("Error fetching pills:", error);
+      console.error("Nam Error fetching pills:", error);
       throw error; // Hoặc xử lý lỗi theo cách khác
     }
   }

@@ -24,7 +24,7 @@ const MainLayout = () => {
 
     const inApp = segments[0] === "(app)";
     if (verified && !inApp) {
-      router.replace("../(app)/addPills");
+      router.replace("/(app)/homePage");
     } else if (!isAuthenticated) {
       router.replace("/(auth)/signIn");
     }
