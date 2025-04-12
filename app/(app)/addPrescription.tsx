@@ -11,15 +11,14 @@ import { router } from 'expo-router';
 import theme from '@/config/theme';
 import { useAuth } from '@/hooks/useAuth';
 import MessageModal from '@/components/MessageModal';
-import { Timestamp } from 'firebase/firestore';
 
 export default function AddPrescription() {
     const [selectedFrequency, setSelectedFrequency] = useState('No repeat');
     const [isLoading, setIsLoading] = useState(false);
     //lay data 
     const [prescriptionName, setPrescriptionName] = useState('');
-    const [startDate, setStartDate] = useState("");
-    const [time, setTime] = useState<string[]>(['7:30', '11:30', '17:30']);
+    const [startDate, setStartDate] = useState('');
+    const [time, setTime] = useState<string[]>(['7:00', '11:00', '17:00']);
 
     const [note, setNote] = useState('');
     //modal
@@ -91,25 +90,15 @@ export default function AddPrescription() {
             return;
         }
 
-        // const newPrescription = {
-        //     name: prescriptionName,
-        //     startDate: formatDateToVNString(parseDateFromString(startDate) ?? new Date()),
-        //     time,
-        //     frequency: frequencyMap[selectedFrequency] ?? 0,
-        //     note,
-        //     createdAt: formatDateToVNString(new Date()),
-        //     userId: user.uid,
-        //   };
-          
-
+        setIsLoading(true);
 
         const newPrescription = {
             name: prescriptionName,
-            startDate: convertToTimestamp(startDate ),
+            startDate,
             time,
-            frequency: frequencyMap[selectedFrequency] ?? 0,
+            frequency: frequencyMap[selectedFrequency] ?? 0, //neu undefined hoac null thi mac dinh la 0
             note,
-            createdAt: Timestamp.fromDate(new Date()),
+            createdAt: new Date().toISOString(),
             userId: user.uid,
         };
 
@@ -122,55 +111,7 @@ export default function AddPrescription() {
             pathname: '/addPills',
             params: { prescriptionData: JSON.stringify(newPrescription) }, //truyen xuong local bang dang js    
         });
-    }
-
-    function convertToTimestamp(dateString: string): Timestamp | null {
-        try {
-            // Tách ngày, tháng, năm từ chuỗi
-            const [day, month, year] = dateString.split("/").map(Number);
-
-            // Tạo đối tượng Date (lưu ý: month trong JavaScript bắt đầu từ 0)
-            const date = new Date(year, month - 1, day);
-
-            // Kiểm tra ngày hợp lệ
-            if (isNaN(date.getTime())) {
-                throw new Error("Ngày không hợp lệ");
-            }
-
-            // Chuyển sang Firestore Timestamp
-            return Timestamp.fromDate(date);
-        } catch (error) {
-            console.error("Lỗi chuyển đổi ngày:", error);
-            return null;
-        }
-    }
-
-    // function formatDateToVNString(date: Date): string {
-
-    //     // Cấu hình định dạng theo ngôn ngữ và khu vực (ở đây là English - VN timezone)
-    //     const options: Intl.DateTimeFormatOptions = {
-    //       year: "numeric",
-    //       month: "long", // Tháng dạng chữ (April)
-    //       day: "numeric",
-    //       hour: "numeric",
-    //       minute: "numeric",
-    //       second: "numeric",
-    //       hour12: true,
-    //       timeZone: "Asia/Ho_Chi_Minh", // múi giờ UTC+7
-    //       timeZoneName: "short", // hiện UTC+7
-    //     };
-
-    //     return new Intl.DateTimeFormat("en-US", options).format(date);
-    //   }
-
-
-    // function parseDateFromString(dateString: string): Date | null {
-    //     const [day, month, year] = dateString.split("/").map(Number);
-    //     const date = new Date(Date.UTC(year, month - 1, day)); // Lấy dạng UTC luôn
-
-    //     if (isNaN(date.getTime())) return null;
-    //     return date;
-    // }
+    };
 
     return (
         <CustomKeyboardView>

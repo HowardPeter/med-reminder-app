@@ -7,10 +7,9 @@ import { router, useLocalSearchParams } from 'expo-router';
 import theme from '@/config/theme';
 import PillCard from '@/components/PillCard';
 import ReactNativeModal from 'react-native-modal';
-import { useCrud } from '@/hooks/useCrud';
+import useCrud from '@/hooks/useCrud';
 import { Picker } from '@react-native-picker/picker';
 import MessageModal from '@/components/MessageModal';
-import Loading from '@/components/loading';
 
 const renderItem = ({ item }: any) => (
     <TouchableOpacity onPress={() => console.log(item.name)}>
@@ -33,8 +32,7 @@ const AddPills = () => {
     const [modalType, setModalType] = useState('Error')
     const [messageModalVisible, setMessageModalVisible] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-
+    
     //modal success
     const showSuccessModal = (message: string) => {
         setModalType('Success');
@@ -66,7 +64,7 @@ const AddPills = () => {
             }
         }
     }, [prescriptionData]);
-
+    
 
     const handleAddPill = () => {
         if (!pillName || !pillType) {
@@ -100,7 +98,6 @@ const AddPills = () => {
         }
 
         try {
-            setIsLoading(true);
             //b1: luu don thuoc
             const prescriptionId = await addPrescription(prescription);
 
@@ -110,14 +107,13 @@ const AddPills = () => {
                     addPillToPrescription(prescriptionId, { name, type, dosage })
                 )
             );
-            setIsLoading(false);
             showSuccessModal("Prescription and pills saved!");
         } catch (err) {
             Alert.alert("Error", "Failed to save prescription.");
         }
     };
 
-
+    
     return (
         <View style={{ backgroundColor: theme.colors.accent }} className="flex-1 px-6 pt-8">
             <View className="flex-row items-center mb-4">
@@ -141,6 +137,7 @@ const AddPills = () => {
 
             <Text style={{ fontSize: hp(3) }} className="font-semibold ml-2 mb-5">Add pills to your{'\n'}prescription</Text>
 
+            {/* Pill List */}
             <View style={{ maxHeight: hp(55) }} className="bg-white rounded-2xl overflow-hidden mb-6">
                 <FlatList
                     data={pillList}
@@ -159,17 +156,9 @@ const AddPills = () => {
                     <Text style={{ fontSize: hp(3.5) }} className="text-white">+</Text>
                 </TouchableOpacity>
 
-                {isLoading ?
-                    <View className='px-5 ml-5'>
-                        <Loading size={hp(6)}/>
-                    </ View>
-                    :
-                    <TouchableOpacity style={{ backgroundColor: theme.colors.primary }} className="px-6 py-3 rounded-full ml-5 shadow-xl">
-                        <Text
-                            onPress={handleConfirm}
-                            className="text-white font-semibold text-base">Confirm</Text>
-                    </TouchableOpacity>
-                }
+                <TouchableOpacity style={{backgroundColor: theme.colors.primary}} className="px-6 py-3 rounded-full ml-5 shadow-xl">
+                    <Text className="text-white font-semibold text-base">Confirm</Text>
+                </TouchableOpacity>
             </View>
             <ReactNativeModal
                 isVisible={isModalVisible}
@@ -292,7 +281,7 @@ const AddPills = () => {
             </ReactNativeModal>
 
         </View>
-            );
+    );
 };
 
-            export default AddPills;                
+export default AddPills;                
