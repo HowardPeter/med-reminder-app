@@ -366,7 +366,7 @@ export default function UserSettings() {
                 <TouchableOpacity onPress={() => router.push('/homePage')}>
                     <FontAwesome name="home" size={35} color="gray" />
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push('/activePrescriptions')}>
                     <MaterialCommunityIcons name="pill" size={35} color="gray" />
                 </TouchableOpacity>
                 <TouchableOpacity>

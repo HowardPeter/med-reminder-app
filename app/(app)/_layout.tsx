@@ -11,6 +11,7 @@ export default function _layout() {
       <Stack.Screen name="userSettings" options={{ headerShown: false }} />
       <Stack.Screen name="editYourProfile" options={{ headerShown: false }} />
       <Stack.Screen name="enterNewPassword" options={{ headerShown: false }} />
+      <Stack.Screen name="activePrescriptions" options={{ headerShown: false }} />
     </Stack>
   )
 }
