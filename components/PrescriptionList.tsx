@@ -105,7 +105,7 @@ const PrescriptionList: React.FC<PrescriptionListProps> = ({ selectedDate, onSel
         const today = moment().startOf('day');
         const selected = moment(selectedDate).startOf('day');
         const twoWeeksLater = today.clone().add(13, 'days'); // Giới hạn trong 14 ngày
-
+                
         return prescriptions.filter(item => {
             const { startDate, frequency } = item.fullPrescription ?? {};
             if (!startDate || !startDate.seconds) return false;
@@ -113,7 +113,7 @@ const PrescriptionList: React.FC<PrescriptionListProps> = ({ selectedDate, onSel
             const start = moment(new Date(startDate.seconds * 1000)).startOf('day');
 
             // Nếu ngoài 2 tuần thì bỏ qua
-            if (selected.isBefore(today) || selected.isAfter(twoWeeksLater)) return false;
+            if (selected.isAfter(twoWeeksLater)) return false;
 
             // Nếu không lặp
             if (Number(frequency) === 0) {
@@ -143,7 +143,6 @@ const PrescriptionList: React.FC<PrescriptionListProps> = ({ selectedDate, onSel
                         note={item.note}
                         onToggle={() => {
                             onSelectPrescription(item.fullPrescription ?? item, item.time);
-                            console.log("Selected prescription:", item.fullPrescription);
                         }}
                     />
                 )}
