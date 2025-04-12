@@ -11,18 +11,23 @@ import { useCrud } from '@/hooks/useCrud';
 import { Picker } from '@react-native-picker/picker';
 import MessageModal from '@/components/MessageModal';
 import Loading from '@/components/loading';
+import CustomAlert from "@/components/CustomAlert";
 
-const renderItem = ({ item }: any) => (
-    <TouchableOpacity onPress={() => console.log(item.name)}>
-        <PillCard
-            name={item.name}
-            type={item.type}
-            dosage={item.dosage}
-            icon={item.icon} />
-    </TouchableOpacity>
-);
+const getPillIcon = (type: string) => {
+    switch (type) {
+        case "pill":
+            return images.pill;
+        case "inhaler":
+            return images.inhaler;
+        case "injection":
+            return images.injection;
+        default:
+            return images.pill;
+    }
+};
 
 const AddPills = () => {
+    const { getPrescriptionPills, deletePillById } = useCrud();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [pillName, setPillName] = useState('');
     const [pillType, setPillType] = useState('pill');
@@ -34,6 +39,12 @@ const AddPills = () => {
     const [messageModalVisible, setMessageModalVisible] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    const params = useLocalSearchParams();
+    const { prescriptionId } = params;
+    const [pills, setPills] = useState([]);
+    const [pillId, setPillId] = useState("");
+    const [isAlertVisible, setIsAlertVisible] = useState(false);
 
     //modal success
     const showSuccessModal = (message: string) => {
@@ -118,8 +129,69 @@ const AddPills = () => {
     };
 
 
+    const renderItem = ({ item }: any) => (
+        <TouchableOpacity
+            onPress={() => {
+                setPillName(item.name);
+                setPillType(item.type);
+                setPillDosage(item.dosage);
+                setPillId(item.id);
+                setIsAlertVisible(true);
+            }}
+        >
+            <PillCard
+                name={item.name}
+                type={item.type}
+                dosage={item.dosage}
+                icon={getPillIcon(item.type)}
+            />
+        </TouchableOpacity>
+    );
+    //Ham xoa 1 thuoc trong don thuoc
+    const deletePill = async () => {
+        try {
+            // 1. Thực hiện xóa pill
+            await deletePillById(prescriptionId.toString(), pillId);
+
+            // 2. Ẩn alert
+            setIsAlertVisible(false);
+
+            // 3. Load lại danh sách pill
+            setIsLoading(true);
+            const updatedPills = await getPrescriptionPills(prescriptionId);
+            setPills(updatedPills);
+        } catch (error) {
+            console.error("Lỗi khi xóa pill:", error);
+            Alert.alert("Lỗi", "Không thể xóa thuốc: " + error.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const fetchPills = async () => {
+            try {
+                const pillsData = await getPrescriptionPills(prescriptionId);
+                setPills(pillsData);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchPills();
+    }, [prescriptionId]);
+    if (isLoading)
+        return (
+            <View className="flex-1 justify-center items-center bg-white">
+                <Loading size={hp(14)} />
+            </View>
+        );
+
     return (
         <View style={{ backgroundColor: theme.colors.accent }} className="flex-1 px-6 pt-8">
+            {/* Header */}
             <View className="flex-row items-center mb-4">
                 <TouchableOpacity onPress={() => {
                     if (pillList.length > 0) {
@@ -134,18 +206,34 @@ const AddPills = () => {
                 <Text style={{ fontSize: hp(2.5) }} className="text-center font-semibold ml-2">Prescription for headache</Text>
             </View>
 
+            {/* Illustration */}
             <View className='flex-row mt-14 ml-2'>
                 <Image source={images.pill2} className="w-12 h-12 self-start mb-4" />
                 <Image source={images.injection} className="w-12 h-12 self-start mb-4" />
             </View>
 
+            {/* Title */}
             <Text style={{ fontSize: hp(3) }} className="font-semibold ml-2 mb-5">Add pills to your{'\n'}prescription</Text>
 
-            <View style={{ maxHeight: hp(55) }} className="bg-white rounded-2xl overflow-hidden mb-6">
+            {/* Pill List */}
+            {/* <View style={{ maxHeight: hp(55) }} className="bg-white rounded-2xl overflow-hidden mb-6">
+                    <FlatList
+                        data={pillList}
+                        renderItem={renderItem}
+                        keyExtractor={(item) => item.id}
+                        showsVerticalScrollIndicator={true}
+                        contentContainerStyle={{ paddingVertical: 16 }}
+                    />
+                </View> */}
+            {/* Pill List */}
+            <View
+                style={{ maxHeight: hp(55) }}
+                className="bg-white rounded-2xl overflow-hidden mb-6"
+            >
                 <FlatList
-                    data={pillList}
+                    data={pills}
                     renderItem={renderItem}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={() => Math.random().toString()}
                     showsVerticalScrollIndicator={true}
                     contentContainerStyle={{ paddingVertical: 16 }}
                 />
@@ -161,7 +249,7 @@ const AddPills = () => {
 
                 {isLoading ?
                     <View className='px-5 ml-5'>
-                        <Loading size={hp(6)}/>
+                        <Loading size={hp(6)} />
                     </ View>
                     :
                     <TouchableOpacity style={{ backgroundColor: theme.colors.primary }} className="px-6 py-3 rounded-full ml-5 shadow-xl">
@@ -171,6 +259,18 @@ const AddPills = () => {
                     </TouchableOpacity>
                 }
             </View>
+
+            <ReactNativeModal isVisible={isAlertVisible}>
+                <CustomAlert
+                    title="Delete Pill"
+                    message="Do you want to delete this pill?"
+                    btnConfirm="Delete"
+                    confirmTextColor="text-red-500"
+                    onCancel={() => setIsAlertVisible(false)}
+                    onConfirm={deletePill}
+                />
+            </ReactNativeModal>
+
             <ReactNativeModal
                 isVisible={isModalVisible}
                 onBackdropPress={() => setIsModalVisible(false)}
@@ -292,7 +392,7 @@ const AddPills = () => {
             </ReactNativeModal>
 
         </View>
-            );
+    );
 };
 
-            export default AddPills;                
+export default AddPills;

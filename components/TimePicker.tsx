@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import theme from "@/config/theme";
 
 interface TimePickerProps {
   onSave?: (time: string) => void;
@@ -178,7 +179,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0e0e0',
   },
   saveButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: theme.colors.primary,
   },
   buttonText: {
     color: 'white',
