@@ -64,6 +64,7 @@ export default function ActivePrescriptions() {
 
             {/* Floating Action Button */}
                   <TouchableOpacity
+                    onPress={() => router.push('/addPrescription')}
                     style={{ width: hp(7), height: hp(7) }}
                     className="absolute bottom-20 right-5 bg-orange-500 rounded-full items-center justify-center shadow-strong"
                   >
