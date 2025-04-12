@@ -8,33 +8,10 @@ import theme from '@/config/theme';
 import { useCrud } from '@/hooks/useCrud';
 import { useAuth } from '@/hooks/useAuth';
 
-const data = [
-    {
-        name: 'Prescription for stomachache',
-        time: '7:30, 19:30',
-        note: 'After breakfast',
-        pills: [
-            { name: 'Penicilin', type: 'Pill', dosage: 1 },
-            { name: 'Asthma Inhaler', type: 'Inhaler', dosage: 1 },
-        ],
-    },
-    {
-        name: 'Doses for the flu',
-        time: '18:00',
-        note: 'After dinner, wait for 10 mins',
-        pills: [],
-    },
-];
-
 export default function ActivePrescriptions() {
     const { user } = useAuth();
     const { fetchPrescriptionData, fetchPillsData } = useCrud();
     const [prescriptions, setPrescriptions] = useState<any[]>([]);
-    const [pills, setPills] = useState({
-        name: '',
-        type: '',
-        dosage: 0,
-    });
     const userId = user?.userId ?? '';
 
     useEffect(() => {
@@ -76,7 +53,7 @@ export default function ActivePrescriptions() {
                             time={item?.time.join(', ')}
                             frequency={item?.frequency}
                             note={item?.note}
-                            pills={item.pills || []}
+                            pills={item.pills ?? []}
                         />
                     )}
                     contentContainerStyle={{ paddingBottom: 70 }}

@@ -4,6 +4,7 @@ import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { Entypo } from '@expo/vector-icons';
 
 interface Pill {
+    id: string;
     name: string;
     type: string;
     dosage: number;
@@ -45,9 +46,9 @@ const PrescriptionAccordion: React.FC<Props> = ({ name, time, frequency, note, p
             </TouchableOpacity>
 
             {expanded && (
-                <View className="border-t border-gray-300 mt-2 pt-2">
+                <View className="border-t border-gray-300 mt-2">
                     {pills.map((pill, index) => (
-                        <View key={index} className="flex-row justify-between py-2 border-b border-gray-200">
+                        <View key={pill?.id ?? pill.name} className="flex-row justify-between py-2 border-b border-gray-200">
                             <View>
                                 <Text className="text-base font-semibold">{pill.name}</Text>
                                 <Text className="text-sm text-gray-500">{pill.type}</Text>
