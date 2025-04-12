@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, TouchableOpacity, Text, FlatList } from 'react-native';
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 import PrescriptionAccordion from '@/components/PrescriptionAccordion';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import theme from '@/config/theme';
+import { useCrud } from '@/hooks/useCrud';
+import { useAuth } from '@/hooks/useAuth';
 
 const data = [
     {
@@ -24,6 +27,38 @@ const data = [
 ];
 
 export default function ActivePrescriptions() {
+    const { user } = useAuth();
+    const { fetchPrescriptionData, fetchPillsData } = useCrud();
+    const [prescriptions, setPrescriptions] = useState<any[]>([]);
+    const [pills, setPills] = useState({
+        name: '',
+        type: '',
+        dosage: 0,
+    });
+    const userId = user?.userId ?? '';
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const prescriptions = await fetchPrescriptionData(userId);
+
+                // Fetch pills for each prescription
+                const prescriptionsWithPills = await Promise.all(
+                    prescriptions.map(async (prescription: any) => {
+                        const pills = await fetchPillsData(prescription.id);
+                        return { ...prescription, pills };
+                    })
+                );
+
+                setPrescriptions(prescriptionsWithPills);
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, [userId]);
 
     return (
         <View style={{ backgroundColor: theme.colors.background }} className="flex-1">
@@ -31,28 +66,32 @@ export default function ActivePrescriptions() {
                 <Text className="text-white text-2xl font-bold">Active prescriptions</Text>
             </View>
 
-            <View className="flex-1 bg-[#B7DCD3] pt-4">
+            <View className="flex-1 pt-4">
                 <FlatList
-                    data={data}
+                    data={prescriptions}
                     keyExtractor={() => Math.random().toString()}
                     renderItem={({ item }) => (
                         <PrescriptionAccordion
-                            name={item.name}
-                            time={item.time}
-                            note={item.note}
-                            pills={item.pills}
+                            name={item?.name}
+                            time={item?.time.join(', ')}
+                            frequency={item?.frequency}
+                            note={item?.note}
+                            pills={item.pills || []}
                         />
                     )}
-                    contentContainerStyle={{ paddingBottom: 100 }}
+                    contentContainerStyle={{ paddingBottom: 70 }}
                     showsVerticalScrollIndicator={false}
                 />
             </View>
 
 
-            {/* Floating Add Button */}
-            <TouchableOpacity className="absolute bottom-20 right-5 bg-white w-12 h-12 rounded-full items-center justify-center shadow-lg">
-                <Text className="text-orange-500 text-3xl">+</Text>
-            </TouchableOpacity>
+            {/* Floating Action Button */}
+                  <TouchableOpacity
+                    style={{ width: hp(7), height: hp(7) }}
+                    className="absolute bottom-20 right-5 bg-orange-500 rounded-full items-center justify-center shadow-strong"
+                  >
+                    <Text style={{ fontSize: hp(4) }} className="text-white">+</Text>
+                  </TouchableOpacity>
 
             {/* Bottom Navigation Bar */}
             <View

@@ -109,9 +109,7 @@ const HomePage = () => {
         style={{ width: hp(7), height: hp(7) }}
         className="absolute bottom-20 right-5 bg-orange-500 rounded-full items-center justify-center shadow-strong"
       >
-        <Text style={{ fontSize: hp(4) }} className="text-white">
-          +
-        </Text>
+        <Text style={{ fontSize: hp(4) }} className="text-white">+</Text>
       </TouchableOpacity>
 
       {/* Bottom Navigation Bar */}
