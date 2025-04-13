@@ -14,7 +14,6 @@ jobs:
         expo-token: ${{ secrets.EXPO_TOKEN }}
       
     - name: Build app in Android
-      if: false
       run: eas build --profile preview --platform android --non-interactive --clear-cache --local --output ${{ github.workspace }}/pill-pal-release.apk
       
     - name: Upload Build Artifact
