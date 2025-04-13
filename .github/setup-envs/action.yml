@@ -14,7 +14,7 @@ runs:
       uses: actions/setup-node@v4
       with:
         node-version: 22
-        
+
     - name: Setup EAS
       if: inputs.is-deploy == 'true'
       uses: expo/expo-github-action@v8
@@ -23,10 +23,16 @@ runs:
         expo-version: latest
         expo-cache: true
         token: ${{ inputs.expo-token }}
-        
+
     - name: Install eas-cli globally
       if: inputs.is-deploy == 'true'
       run: npm install -g eas-cli
+      shell: bash
+
+    - name: Check eas
+      run: |
+        which eas
+        eas --version
       shell: bash
         
     - name: Caching dependencies
