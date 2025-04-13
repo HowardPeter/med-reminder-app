@@ -67,12 +67,13 @@ const HomePage = () => {
       console.log("No prescription ID selected.");
       return;
     }
+    console.log(`Prescription id: ${selectedPrescriptionId}`)
     const data = await fetchPillsData(selectedPrescriptionId);
     setPills(data);
     console.log("Selected prescription:", selectedPrescription);
     console.log("Fetched pills data:", data);
     setIsModalVisible(true);
-  };
+  };  
 
   return (
     <View

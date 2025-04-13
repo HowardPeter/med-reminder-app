@@ -1,107 +1,63 @@
-import { Modal, Pressable, View, StyleSheet, Text, TouchableOpacity } from "react-native";
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { useRouter } from "expo-router";
-import { useAuth } from '../hooks/useAuth'
+import React from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import ReactNativeModal from 'react-native-modal';
+import { Feather } from '@expo/vector-icons';
 
-    interface MessageModalProps {
-        isVisible: boolean;
-        onClose: () => void;
-        email: string;
-    }
+type ModalType = 'Success' | 'Error';
 
-const MessageModal: React.FC<MessageModalProps> = ({ isVisible, onClose, email }) => {
-    const router = useRouter();
-    const { resetPassword } = useAuth();
-    const handleResetPassword = async () => {
-        const response = await resetPassword(email);
-        if (response.success) {
-            onClose();
-            router.replace(`/signIn`);
-        } else {
-            console.error(response.msg);
-        }
-    };
+interface MessageModalProps {
+    visible: boolean;
+    onClose: () => void;
+    message: string;
+    type: ModalType;
+}
 
-    return <Modal animationType="slide" visible={isVisible} transparent={true}>
-        <Pressable style={styles.container} onPress={onClose}>
-            <View style={styles.modalView}>
-                <View style={styles.modalIcon}>
-                    <FontAwesome name="check" size={60} color={'#FFFFFF'}/>
+const modalConfigs = {
+    Success: {
+        icon: 'check-circle' as keyof typeof Feather.glyphMap,
+        color: 'bg-teal-500',
+        title: 'Success',
+        buttonText: 'Great!',
+    },
+    Error: {
+        icon: 'alert-circle' as keyof typeof Feather.glyphMap,
+        color: 'bg-red-500',
+        title: 'Error',
+        buttonText: 'Try Again',
+    },
+};
+
+const MessageModal: React.FC<MessageModalProps> = ({ visible, onClose, message, type }) => {
+    const { icon, color, title, buttonText } = modalConfigs[type];
+
+    return (
+        <ReactNativeModal
+            isVisible={visible}
+            onBackdropPress={onClose}
+            backdropOpacity={0.7}
+            animationIn="zoomIn"
+            animationOut="zoomOut"
+            style={{ justifyContent: 'center', alignItems: 'center' }}
+        >
+            <View className="bg-white rounded-2xl w-[90%] pt-16 pb-6 px-6 items-center relative">
+                <View className={`absolute -top-12 ${color} h-24 w-24 rounded-full items-center justify-center shadow-lg`}>
+                    <Feather name={icon} size={50} color="white" />
                 </View>
-                <View style={styles.modalContent}>
-                    <Text 
-                        className="text-center font-bold"
-                        style={[styles.headerText, {fontSize: wp(5.5)}]}
-                    >Vertified successfully</Text>
-                    <Text 
-                        className="text-center"
-                        style={styles.messageText}
-                    >Please continue to reset your password!!</Text>
-                    <TouchableOpacity 
-                        onPress={() => { 
-                            handleResetPassword()
-                            onClose();
-                            router.replace(`/signIn`);
-                        }}
-                        className="bg-teal-500 rounded-3xl py-3 mt-6 px-5 h-14 justify-center items-center" 
-                        style={{width: wp(40)}}
+
+                <Text className="text-xl font-bold text-center text-gray-800 mb-2">{title}</Text>
+                <Text className="text-center text-base text-gray-600">{message}</Text>
+
+                <View className="w-full mt-6">
+                    <TouchableOpacity
+                        onPress={onClose}
+                        className={`${color} py-3 rounded-2xl items-center`}
                     >
-                    <Text className="text-white text-lg font-bold text-center">Change password</Text>
+                        <Text className="text-white text-lg font-bold">{buttonText}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
-        </Pressable>
-    </Modal>
-}
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 25, 
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.7)'
-    },
-    modalView: {
-        backgroundColor: '#FFFFFF',
-        width: '100%',
-        alignItems: 'center',
-        paddingTop: 45, 
-        borderRadius: 15,
-        elevation: 5, 
-        shadowColor: '#000',
-        shadowOpacity: 0.25,
-        shadowRadius: 5,
-        shadowOffset: {width: 0, height: 2},
-    },
-    modalIcon: {
-        backgroundColor: '#04A996',
-        height: 100,
-        width: 100,
-        borderRadius: 100,
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute',
-        top: -50,
-        elevation: 5, 
-        shadowColor: '#000',
-        shadowOpacity: 0.25,
-        shadowRadius: 5,
-        shadowOffset: {width: 0, height: 2},
-    },
-    modalContent: {
-        width: '100%',
-        alignItems: 'center',
-        padding: 20,
-    },
-    headerText: {
-        textAlign: 'center',
-        marginBottom: 10
-    },
-    messageText: {
-        textAlign: 'center',
-    }
-});
+        </ReactNativeModal>
+    );
+};
 
 export default MessageModal;

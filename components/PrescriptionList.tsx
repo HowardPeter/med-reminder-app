@@ -71,6 +71,9 @@ const PrescriptionList: React.FC<PrescriptionListProps> = ({ selectedDate, onSel
 
     const userId = user?.userId ?? null;
 
+    console.log("User Id: ", userId);
+    
+
     useEffect(() => {
         if (!userId) return;
 

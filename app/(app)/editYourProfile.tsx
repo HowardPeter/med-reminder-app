@@ -9,7 +9,7 @@ import ReactNativeModal from 'react-native-modal';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
 
 export default function EditYourProfile() {
-    const { user, updateUserInfo } = useAuth()
+    const { user, updateUserInfo } = useAuth();
     const router = useRouter();
     const [newName, setNewName] = useState('');
     const [newEmail, setNewEmail] = useState('');

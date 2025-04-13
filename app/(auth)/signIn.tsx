@@ -36,7 +36,6 @@ export default function SignIn() {
     if (response.success) {
       setEmail("");
       setPassword("");
-
       console.log(`Email sign in: ${email}`);
     } else {
       console.log("Sign In", response.msg);
@@ -78,7 +77,6 @@ export default function SignIn() {
             </View>
           </View>
         </View>
-
         {/* Password Input */}
         <View style={{ alignItems: "center" }}>
           <View style={{ marginTop: 24 }}>
@@ -109,7 +107,7 @@ export default function SignIn() {
             </View>
             {/* Forgot password */}
             <TouchableOpacity
-              onPress={() => router.push("./(auth)/emailVerified")}
+              onPress={() => router.push("/(auth)/emailVerified")}
             >
               <Text style={styles.forgotPass}>Forgot password?</Text>
             </TouchableOpacity>

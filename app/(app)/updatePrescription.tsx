@@ -40,17 +40,30 @@ export default function UpdatePrescription() {
         // Lấy dữ liệu prescription chính
         const prescriptionRef = doc(db, "prescriptions", prescriptionId);
         const prescriptionSnap = await getDoc(prescriptionRef);
+        
         //Lấy dữ liệu prescription chính
         if (prescriptionSnap.exists()) {
           const prescriptionData = prescriptionSnap.data();
           //Gán dữ liệu vào các biến
           setName(prescriptionData.name ?? "");
-          setStartDate(
-            format(
-              new Date(prescriptionData.startDate.toDate().toISOString()),
-              "dd/MM/yyyy"
-            ) ?? ""
-          );
+          const rawStartDate = prescriptionData.startDate;
+
+          // Kiểm tra và chuyển đổi nếu cần
+          let convertedDate: Date | null = null;
+        
+          if (rawStartDate instanceof Timestamp) {
+            convertedDate = rawStartDate.toDate();
+          } else if (rawStartDate?.seconds) {
+            // Nếu là plain object { seconds, nanoseconds }
+            convertedDate = new Timestamp(rawStartDate.seconds, rawStartDate.nanoseconds).toDate();
+          }
+        
+          // Nếu có ngày hợp lệ thì format
+          if (convertedDate) {
+            setStartDate(format(convertedDate, "dd/MM/yyyy"));
+          } else {
+            setStartDate(""); // hoặc giữ nguyên nếu không hợp lệ
+          } 
           const numberOfFrequency = prescriptionData.frequency?.toString();
           if (numberOfFrequency === "0") {
             setSelectedFrequency("No repeat");
@@ -73,7 +86,6 @@ export default function UpdatePrescription() {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        Alert.alert("Error", "Failed to fetch data");
       } finally {
         setIsLoading(false);
       }
@@ -97,7 +109,7 @@ export default function UpdatePrescription() {
       Alert.alert("Error", "No changes detected!");
       return;
     }
-    if (!name || !startDate || !note || times.length === 0) {
+    if (!name || !startDate || times.length === 0) {
       Alert.alert("Error", "Please fill all required fields!");
       return;
     }
@@ -123,7 +135,6 @@ export default function UpdatePrescription() {
       });
       Alert.alert("Success", "Prescription updated successfully!");
       setOldData(newDataArray);
-      //router.back();
     } catch (error) {
       console.error("Update error:", error);
       Alert.alert("Error", "Failed to update");

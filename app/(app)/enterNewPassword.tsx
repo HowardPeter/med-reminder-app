@@ -6,8 +6,8 @@ import { images } from '@/constants';
 import { useRouter } from 'expo-router';
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import ReactNativeModal from 'react-native-modal';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
+import MessageModal from '@/components/MessageModal';
 
 export default function EnterNewPassword() {
     const [oldPassword, setOldPassword] = useState('');
@@ -18,37 +18,22 @@ export default function EnterNewPassword() {
     const [newPasswordVisible, setNewPasswordVisible] = useState(false);
     const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
-    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [messageModalVisible, setMessageModalVisible] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
-    const [modalIcon, setModalIcon] = useState('alert-circle');
-    const [modalColor, setModalColor] = useState('bg-red-500');
-    const [modalTitle, setModalTitle] = useState<'Success' | 'Warning' | 'Error'>('Error');
+    const [modalType, setModalType] = useState('Error')
 
-    const modalButtonTextMap = {
-        Success: 'Great!',
-        Warning: 'I Understand',
-        Error: 'Try Again',
-    };
-    
-    const modalButtonText = modalButtonTextMap[modalTitle];
-    
-
-    //modal thanh cong
+    //modal success
     const showSuccessModal = (message: string) => {
-        setModalIcon('check-circle');
-        setModalColor('bg-teal-500');
-        setModalTitle('Success');
+        setModalType('Success');
         setModalMessage(message);
-        setIsModalVisible(true);
+        setMessageModalVisible(true);
     };
 
     //modal loi
     const showErrorModal = (message: string) => {
-        setModalIcon('alert-circle');
-        setModalColor('bg-red-500');
-        setModalTitle('Error');
+        setModalType('Error');
         setModalMessage(message);
-        setIsModalVisible(true);
+        setMessageModalVisible(true);
     };
 
     const handleChangePassword = async () => {
@@ -197,39 +182,20 @@ export default function EnterNewPassword() {
                         <Text className="text-white text-lg font-bold text-center">Change password</Text>
                     </TouchableOpacity>
                 </View>
-
-                <ReactNativeModal
-                    isVisible={isModalVisible}
-                    onBackdropPress={() => setIsModalVisible(false)}
-                    backdropOpacity={0.7}
-                    animationIn="zoomIn"
-                    animationOut="zoomOut"
-                    style={{ justifyContent: 'center', alignItems: 'center' }}
+                
+                <MessageModal
+                    visible={messageModalVisible}
+                    onClose={() => {
+                        setMessageModalVisible(false);
+                        if (modalType === 'Success') {
+                            router.push('/userSettings');
+                        }
+                    }}
+                    message={modalMessage}
+                    type={modalType}
                 >
-                    <View className="bg-white rounded-2xl w-[90%] pt-16 pb-6 px-6 items-center relative">
-                        <View className={`absolute -top-12 ${modalColor} h-24 w-24 rounded-full items-center justify-center shadow-lg`}>
-                            <Feather name={modalIcon} size={50} color="white" />
-                        </View>
-
-                        <Text className="text-xl font-bold text-center text-gray-800 mb-2">
-                            {modalTitle}
-                        </Text>
-                        <Text className="text-center text-base text-gray-600">
-                            {modalMessage}
-                        </Text>
-
-                        <View className="w-full mt-6 space-y-3">
-                            <TouchableOpacity
-                                onPress={() => setIsModalVisible(false)}
-                                className={`${modalColor} py-3 rounded-2xl items-center`}
-                            >
-                                <Text className="text-white text-lg font-bold">
-                                    {modalButtonText}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </ReactNativeModal>
+                </MessageModal>
+                
             </View>
         </CustomKeyboardView>
     )
