@@ -108,11 +108,9 @@ const HomePage = () => {
       <TouchableOpacity
         onPress={moveToAddPresctiption}
         style={{ width: hp(7), height: hp(7) }}
-        className="absolute bottom-20 right-5 bg-white rounded-full items-center justify-center shadow-strong"
+        className="absolute bottom-20 right-5 bg-orange-500 rounded-full items-center justify-center shadow-strong"
       >
-        <Text style={{ fontSize: hp(4) }} className="text-orange-500">
-          +
-        </Text>
+        <Text style={{ fontSize: hp(4) }} className="text-white">+</Text>
       </TouchableOpacity>
 
       {/* Bottom Navigation Bar */}
@@ -123,7 +121,7 @@ const HomePage = () => {
         <TouchableOpacity>
           <FontAwesome name="home" size={35} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("/activePrescriptions")}>
           <MaterialCommunityIcons name="pill" size={35} color="gray" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => router.push("/userSettings")}>

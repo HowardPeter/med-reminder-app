@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { Entypo, FontAwesome } from "@expo/vector-icons";
 import theme from "@/config/theme";
+import moment from "moment";
 
 interface PrescriptionCardProps {
   time: string;
@@ -13,7 +14,8 @@ interface PrescriptionCardProps {
 
 const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ time, title, note, onToggle }) => {
   const [isTaken, setIsTaken] = useState(false);
-
+  const currentTime = moment().format("HH:mm");
+  
   return (
     <View className="bg-white rounded-xl shadow-3xl overflow-hidden mb-4 mx-4">
       <TouchableOpacity onPress={onToggle}>
@@ -26,7 +28,7 @@ const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ time, title, note, 
             <View className={`${isTaken ? 'visible' : 'invisible'}`}>
               <View className="flex-row items-center mr-2">
                 <Entypo name="check" size={25} color="green" />
-                <Text style={{ fontSize: hp(2.1) }} className="text-green-700 font-bold">TAKEN</Text>
+                <Text style={{ fontSize: hp(2.1) }} className="text-green-700 font-bold">{currentTime} TAKEN</Text>
               </View>
             </View>
           </View>
