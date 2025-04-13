@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo-transparent.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.peterhoward.medreminderapp"
     },
     "web": {
       "bundler": "metro",
