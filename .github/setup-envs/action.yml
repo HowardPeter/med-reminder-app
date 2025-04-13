@@ -23,11 +23,6 @@ runs:
         expo-version: latest
         expo-cache: true
         token: ${{ inputs.expo-token }}
-
-    - name: Install eas-cli globally
-      if: inputs.is-deploy == 'true'
-      run: npm install eas-cli --save-dev
-      shell: bash
         
     - name: Caching dependencies
       id: cache
