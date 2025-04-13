@@ -8,10 +8,30 @@ jobs:
     - name: Get code
       uses: actions/checkout@v4
       
-    - name: Setup environments
-      uses: ./.github/setup-envs
+      - name: Setup node
+      uses: actions/setup-node@v4
       with:
-        expo-token: ${{ secrets.EXPO_TOKEN }}
+        node-version: 22
+        
+    - name: Setup EAS
+      uses: expo/expo-github-action@v8
+      with:
+        eas-version: latest
+        expo-version: latest
+        expo-cache: true
+        token: ${{ secrets.EXPO_TOKEN }}
+        
+    - name: Caching
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        
+    - name: Install dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: npm install
+      shell: bash
       
     - name: Build app in Android
       run: eas build --profile preview --platform android --non-interactive --local --output ${{ github.workspace }}/pill-pal-release.apk
