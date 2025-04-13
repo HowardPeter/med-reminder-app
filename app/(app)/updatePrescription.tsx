@@ -110,7 +110,7 @@ export default function UpdatePrescription() {
       Alert.alert("Error", "No changes detected!");
       return;
     }
-    if (!name || !startDate || !note || times.length === 0) {
+    if (!name || !startDate || times.length === 0) {
       Alert.alert("Error", "Please fill all required fields!");
       return;
     }

@@ -33,6 +33,7 @@ const AddPills = () => {
     const [pillType, setPillType] = useState('pill');
     const [pillDosage, setPillDosage] = useState('');
     const [pillList, setPillList] = useState<any[]>([]);
+    const [updatePillList, setUpdatePillList] = useState<any[]>([]);
     const [prescription, setPrescription] = useState<any | null>(null);
 
     const [modalType, setModalType] = useState('Error')
@@ -95,28 +96,55 @@ const AddPills = () => {
     }
 
     const handleAddPill = () => {
-        if (!pillName || !pillType) {
-            showErrorModal("Please fill all fields");
-            return;
+        if (prescriptionData) {
+            if (!pillName || !pillType) {
+                showErrorModal("Please fill all fields");
+                return;
+            }
+    
+            if (!pillDosage) {
+                showErrorModal("Please choose pill type!");
+                return;
+            }
+    
+            const newPill = {
+                id: Date.now().toString() + Math.random().toString(36).substring(7), //FlatList can trich xuat 1 id duy nhat, nen phai tao id duy nhat cho thuoc
+                name: pillName,
+                type: pillType,
+                dosage: pillDosage,
+                icon: images.pill,
+            };
+            setPillList(prev => [...prev, newPill]);
+    
+            setPillName('');
+            setPillType('pill');
+            setPillDosage('');
+        } else if (prescriptionId) {
+            if (!pillName || !pillType) {
+                showErrorModal("Please fill all fields");
+                return;
+            }
+    
+            if (!pillDosage) {
+                showErrorModal("Please choose pill type!");
+                return;
+            }
+    
+            const newPill = {
+                id: Date.now().toString() + Math.random().toString(36).substring(7), //FlatList can trich xuat 1 id duy nhat, nen phai tao id duy nhat cho thuoc
+                name: pillName,
+                type: pillType,
+                dosage: pillDosage,
+                icon: images.pill,
+            };
+            setPillList(prev => [...prev, newPill]);
+            setUpdatePillList(prev => [...prev, newPill]);
+
+            setPillName('');
+            setPillType('pill');
+            setPillDosage('');
         }
 
-        if (!pillDosage) {
-            showErrorModal("Please choose pill type!");
-            return;
-        }
-
-        const newPill = {
-            id: Date.now().toString() + Math.random().toString(36).substring(7), //FlatList can trich xuat 1 id duy nhat, nen phai tao id duy nhat cho thuoc
-            name: pillName,
-            type: pillType,
-            dosage: pillDosage,
-            icon: images.pill,
-        };
-        setPillList(prev => [...prev, newPill]);
-
-        setPillName('');
-        setPillType('pill');
-        setPillDosage('');
     };
 
     const handleConfirm = async () => {
@@ -125,21 +153,33 @@ const AddPills = () => {
             return;
         }
 
-        try {
+        if (prescriptionData){
+            try {
+                setIsLoading(true);
+                //b1: luu don thuoc
+                const prescriptionId = await addPrescription(prescription);
+    
+                //b2: luu tung vien thuoc vao prescription
+                await Promise.all(
+                    pillList.map(({ name, type, dosage }) =>
+                        addPillToPrescription(prescriptionId, { name, type, dosage })
+                    )
+                );
+                setIsLoading(false);
+                showSuccessModal("Prescription and pills saved!");
+            } catch (err) {
+                Alert.alert("Error", "Failed to save prescription.");
+            }
+        } else if (prescriptionId) {
             setIsLoading(true);
-            //b1: luu don thuoc
-            const prescriptionId = await addPrescription(prescription);
-
-            //b2: luu tung vien thuoc vao prescription
             await Promise.all(
-                pillList.map(({ name, type, dosage }) =>
+                updatePillList.map(({ name, type, dosage }) =>
                     addPillToPrescription(prescriptionId, { name, type, dosage })
                 )
             );
             setIsLoading(false);
-            showSuccessModal("Prescription and pills saved!");
-        } catch (err) {
-            Alert.alert("Error", "Failed to save prescription.");
+            showSuccessModal('Updates pill successfull!')
+            // router.push('/(app)/homePage')
         }
     };
 
@@ -244,7 +284,8 @@ const AddPills = () => {
             <View className="flex-row justify-end items-center">
                 <TouchableOpacity
                     onPress={() => setIsModalVisible(true)}
-                    className="flex bg-orange-400 rounded-full w-12 h-12 justify-center items-center shadow-3xl">
+                    className="flex bg-orange-400 rounded-full w-12 h-12 justify-center items-center shadow-3xl"
+                >
                     <Text style={{ fontSize: hp(3.5) }} className="text-white">+</Text>
                 </TouchableOpacity>
 

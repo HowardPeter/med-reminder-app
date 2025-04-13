@@ -37,21 +37,19 @@ export const useCrud = () => {
 
   const fetchPillsData = useCallback(async (prescriptionId) => {
     try {
-      const pillsRef = collection(db, COLLECTION_NAME, prescriptionId, 'pills');
+      const pillsRef = collection(db, COLLECTION_NAME, prescriptionId, "pills");
       const snapshot = await getDocs(pillsRef);
 
-      const pills = snapshot.docs.map((doc) => {
-        const data = doc.data();
-      
-        return {
-          id: doc.id,
-          ...data,
-          startDate: data.startDate?.toDate?.() ?? null,
-          createdAt: data.createdAt?.toDate?.() ?? null,
-        };
-      });
+      const pills = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+        // startDate: data.startDate?.toDate?.() ?? null,
+        // createdAt: data.createdAt?.toDate?.() ?? null,
+      }));
+
+      return pills;
     } catch (error) {
-      console.error("Phuoc Error fetching pills:", error);
+      console.error("Error fetching pills:", error);
       return [];
     }
   }, []);
