@@ -4,15 +4,12 @@ import {
   addDoc,
   getDoc,
   getDocs,
-  onSnapshot,
   query,
-  setDoc,
-  updateDoc,
   deleteDoc,
   where,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback } from "react";
 
 const COLLECTION_NAME = "prescriptions";
 

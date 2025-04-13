@@ -43,7 +43,6 @@ const AddPills = () => {
 
     const params = useLocalSearchParams();
     const { prescriptionId } = params;
-    // const [pills, setPills] = useState([]);
     const [pillId, setPillId] = useState("");
     const [isAlertVisible, setIsAlertVisible] = useState(false);
 
@@ -67,7 +66,6 @@ const AddPills = () => {
     };
     if (prescriptionData) {
         useEffect(() => {
-            if (prescriptionData === null) return;
             if (prescriptionData) {
                 try {
                     const parsed = JSON.parse(prescriptionData);
@@ -168,7 +166,7 @@ const AddPills = () => {
                 setIsLoading(false);
                 showSuccessModal("Prescription and pills saved!");
             } catch (err) {
-                Alert.alert("Error", "Failed to save prescription.");
+                Alert.alert("Error", `Failed to save prescription ${err.message}`);
             }
         } else if (prescriptionId) {
             setIsLoading(true);
@@ -244,7 +242,7 @@ const AddPills = () => {
                     <Ionicons name="chevron-back" size={30} color="black" />
                 </TouchableOpacity>
 
-                <Text style={{ fontSize: hp(2.5) }} className="text-center font-semibold ml-2">Prescription for headache</Text>
+                <Text style={{ fontSize: hp(2.5) }} className="text-center font-semibold ml-2">Prescription pill list</Text>
             </View>
 
             {/* Illustration */}
@@ -254,7 +252,7 @@ const AddPills = () => {
             </View>
 
             {/* Title */}
-            <Text style={{ fontSize: hp(3) }} className="font-semibold ml-2 mb-5">Add pills to your{'\n'}prescription</Text>
+            <Text style={{ fontSize: hp(3) }} className="font-semibold ml-2 mb-5">Manage pills</Text>
 
             {/* Pill List */}
             {/* <View style={{ maxHeight: hp(55) }} className="bg-white rounded-2xl overflow-hidden mb-6">

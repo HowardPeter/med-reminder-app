@@ -6,7 +6,6 @@ import { images } from '@/constants';
 import { useRouter } from 'expo-router';
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 import { auth } from '@/firebaseConfig';
-import ReactNativeModal from 'react-native-modal';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
 import MessageModal from '@/components/MessageModal';
 

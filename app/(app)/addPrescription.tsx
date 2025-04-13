@@ -1,6 +1,6 @@
-import { View, Text, Image, TextInput, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, Image, TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
-import { Ionicons, Fontisto, EvilIcons, FontAwesome, Feather } from '@expo/vector-icons';
+import { Ionicons, Fontisto, EvilIcons, FontAwesome } from '@expo/vector-icons';
 import { images } from '@/constants';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
 import Loading from '@/components/loading';
@@ -83,7 +83,7 @@ export default function AddPrescription() {
 
         const dateCheck = isValidAndNotPastDate(startDate);
         if (!dateCheck.valid) {
-            showErrorModal(dateCheck.message || 'Invalid date');
+            showErrorModal(dateCheck.message ?? 'Invalid date');
             return;
         }
 
@@ -91,6 +91,8 @@ export default function AddPrescription() {
             showErrorModal('Please add at least one time to take the medicine.');
             return;
         }
+        
+        setIsLoading(true);
 
         const newPrescription = {
             name: prescriptionName,
@@ -125,8 +127,9 @@ export default function AddPrescription() {
 
         setPrescriptionName('');
         setStartDate('');
-        setSelectedFrequency('Every day');
+        setSelectedFrequency('No repeat');
         setNote('');
+        setIsLoading(false)
 
         router.push({
             pathname: '/addPills',

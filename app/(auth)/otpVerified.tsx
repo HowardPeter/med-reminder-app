@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Image, TextInput } from 'react-native';
 import React, { useRef, useState } from 'react';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { AntDesign } from '@expo/vector-icons';
@@ -38,19 +38,9 @@ export default function VertifiedOTP() {
   };
 
   const [otpInput, setOtpInput] = useState(["", "", "", "", "", ""]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const otpFields = ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6'];
 
   const { resetPassword } = useAuth();
-  
-  const handleResetPassword = async () => {
-      const response = await resetPassword(email);
-      if (response.success) {
-          router.replace(`/signIn`);
-      } else {
-          console.error(response.msg);
-      }
-  };
 
   // xu ly va gop OTP tu cac input thanh mot chuoi
   const handleOTPChange = (text: string, index: number) => {
@@ -112,7 +102,6 @@ export default function VertifiedOTP() {
       showSuccessModal("OTP Matched! Deleting OTP and showing modal...");
       await deleteDoc(doc(db, "otps", email.toString()));
       resetPassword(emailString);
-      setIsModalVisible(true);
       return;
     } catch (error) {
       console.error("Error verifying OTP:", error);

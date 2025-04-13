@@ -86,7 +86,6 @@ export default function UpdatePrescription() {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        Alert.alert("Error", "Failed to fetch data");
       } finally {
         setIsLoading(false);
       }
@@ -136,7 +135,6 @@ export default function UpdatePrescription() {
       });
       Alert.alert("Success", "Prescription updated successfully!");
       setOldData(newDataArray);
-      //router.back();
     } catch (error) {
       console.error("Update error:", error);
       Alert.alert("Error", "Failed to update");
