@@ -15,8 +15,10 @@ import PillList from "@/components/PillList";
 import CustomAlert from "@/components/CustomAlert";
 import { router } from "expo-router";
 import { useCrud } from "@/hooks/useCrud";
+import * as Notifications from 'expo-notifications';
+import { useNotification } from '@/hooks/useNotification';
 
-const HomePage = () => {
+export default function HomePage() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAlertVisible, setIsAlertVisible] = useState(false);
   const [selectedPrescription, setSelectedPrescription] = useState({
@@ -30,6 +32,7 @@ const HomePage = () => {
   >([]);
   const { fetchPillsData, deletePrescription } = useCrud();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const { scheduleNotification } = useNotification();
 
   const selectedPrescriptionId = selectedPrescription?.id ?? null;
 
@@ -73,7 +76,11 @@ const HomePage = () => {
     console.log("Selected prescription:", selectedPrescription);
     console.log("Fetched pills data:", data);
     setIsModalVisible(true);
-  };  
+  };
+
+  const handleShowNotification = () => {
+      scheduleNotification();
+  };
 
   return (
     <View
@@ -111,6 +118,15 @@ const HomePage = () => {
         className="absolute bottom-20 right-5 bg-orange-500 rounded-full items-center justify-center shadow-strong"
       >
         <Text style={{ fontSize: hp(4) }} className="text-white">+</Text>
+      </TouchableOpacity>
+
+      {/* Floating Notification Button */}
+      <TouchableOpacity
+        onPress={handleShowNotification}
+        style={{ width: hp(7), height: hp(6) }}
+        className="absolute bottom-20 right-24 bg-orange-500 rounded-2xl items-center justify-center shadow-strong"
+      >
+        <Text className="text-white">Notification</Text>
       </TouchableOpacity>
 
       {/* Bottom Navigation Bar */}
@@ -206,5 +222,3 @@ const HomePage = () => {
     </View>
   );
 };
-
-export default HomePage;
