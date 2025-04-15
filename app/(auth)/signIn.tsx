@@ -57,7 +57,7 @@ export default function SignIn() {
   };
   return (
     <CustomKeyboardView>
-      <View className="bg-white">
+      <View className="bg-white h-screen">
         {/* Logo và tên ứng dụng */}
         <View style={{ alignItems: "center" }}>
           <Image source={images.logo} style={styles.image} />

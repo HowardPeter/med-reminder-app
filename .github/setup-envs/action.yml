@@ -14,7 +14,7 @@ runs:
       uses: actions/setup-node@v4
       with:
         node-version: 22
-        
+
     - name: Setup EAS
       if: inputs.is-deploy == 'true'
       uses: expo/expo-github-action@v8
