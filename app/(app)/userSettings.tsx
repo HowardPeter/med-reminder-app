@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, TextInput, Share, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Image, TextInput, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { AntDesign, FontAwesome, MaterialIcons, Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -23,24 +23,24 @@ export default function UserSettings() {
     const [warningModalVisible, setWarningModalVisible] = useState(false);
     const options = 'https://github.com/HowardPeter/med-reminder-app.git'
 
-    const onShare = async () => {
-        try {
-            const result = await Share.share({
-                message: `Check out PillPall - pill reminder and medication management. Get it now: ${options}`,
-            });
-            if (result.action === Share.sharedAction) {
-                if (result.activityType) {
-                    // shared with activity type of result.activityType
-                } else {
-                    // shared
-                }
-            } else if (result.action === Share.dismissedAction) {
-                // dismissed
-            }
-        } catch (error: any) {
-            Alert.alert(error.message);
-        }
-    }
+    // const onShare = async () => {
+    //     try {
+    //         const result = await Share.share({
+    //             message: `Check out PillPall - pill reminder and medication management. Get it now: ${options}`,
+    //         });
+    //         if (result.action === Share.sharedAction) {
+    //             if (result.activityType) {
+    //                 // shared with activity type of result.activityType
+    //             } else {
+    //                 // shared
+    //             }
+    //         } else if (result.action === Share.dismissedAction) {
+    //             // dismissed
+    //         }
+    //     } catch (error: any) {
+    //         Alert.alert(error.message);
+    //     }
+    // }
 
     //modal success
     const showSuccessModal = (message: string) => {
@@ -183,16 +183,15 @@ export default function UserSettings() {
                         onPress={() => router.push('/consultingDoctors')}>
                         <MaterialCommunityIcons name="doctor" size={24} color="black" />
                         <Text className="text-xl ml-4 flex-1">Consulting doctors</Text>
-                        <AntDesign name="arrowright" size={24} color="gray" />
                     </TouchableOpacity>
 
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         className="flex-row items-center p-6 border-b border-gray-300"
-                        onPress={onShare}
+                    // onPress={onShare}
                     >
                         <FontAwesome name="share" size={24} color="black" />
                         <Text className="text-xl ml-6 flex-1">Share PillPal</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
                     <View className="items-center mt-10">
                         <Image
@@ -203,7 +202,7 @@ export default function UserSettings() {
                     </View>
 
                     <TouchableOpacity
-                        className="bg-teal-500 rounded-full py-3 mt-2 mx-8"
+                        className="bg-teal-500 rounded-full py-3 mt-2 mx-8 mb-[80px]"
                         onPress={() => setWarningModalVisible(true)}
                     >
                         <Text className="text-white text-center text-lg font-bold">Log out</Text>
@@ -412,19 +411,19 @@ export default function UserSettings() {
                         </View>
                     </ReactNativeModal>
                 </View>
-                {/* Bottom Navigation Bar */}
-                <View style={{ backgroundColor: theme.colors.primary }} className="absolute bottom-0 left-0 right-0 flex-row justify-around items-center h-16 rounded-t-3xl">
-                    <TouchableOpacity onPress={() => router.push('/homePage')}>
-                        <FontAwesome name="home" size={35} color="gray" />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => router.push('/activePrescriptions')}>
-                        <MaterialCommunityIcons name="pill" size={35} color="gray" />
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                        <FontAwesome name="user" size={35} color="white" />
-                    </TouchableOpacity>
-                </View>
             </ScrollView>
+            {/* Bottom Navigation Bar */}
+            <View style={{ backgroundColor: theme.colors.primary }} className="absolute bottom-0 left-0 right-0 flex-row justify-around items-center h-16 rounded-t-3xl">
+                <TouchableOpacity onPress={() => router.push('/homePage')}>
+                    <FontAwesome name="home" size={35} color="gray" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push('/activePrescriptions')}>
+                    <MaterialCommunityIcons name="pill" size={35} color="gray" />
+                </TouchableOpacity>
+                <TouchableOpacity>
+                    <FontAwesome name="user" size={35} color="white" />
+                </TouchableOpacity>
+            </View>
         </KeyboardAvoidingView >
     );
 }

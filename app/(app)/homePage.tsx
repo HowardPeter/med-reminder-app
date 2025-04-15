@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, Alert, Share } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 import {
   FontAwesome,
@@ -166,183 +166,176 @@ export default function HomePage() {
   };
 
 
-  const onShare = async () => {
-    try {
-      if (!selectedPrescriptionId) {
-        Alert.alert("No prescription selected.");
-        return;
-      }
+  //   const onShare = async () => {
+  //     try {
+  //       if (!selectedPrescriptionId) {
+  //         Alert.alert("No prescription selected.");
+  //         return;
+  //       }
 
-      const pillsData = await getPrescriptionPills(selectedPrescriptionId);
+  //       const pillsData = await getPrescriptionPills(selectedPrescriptionId);
 
-      const pillsText = pillsData.length
-        ? pillsData.map((pill, index) =>
-          `${index + 1}. ${pill.name} - ${pill.dosage} (${pill.type})`
-        ).join("\n")
-        : "No pills listed for this prescription.";
+  //       const pillsText = pillsData.length
+  //         ? pillsData.map((pill, index) =>
+  //           `${index + 1}. ${pill.name} - ${pill.dosage} (${pill.type})`
+  //         ).join("\n")
+  //         : "No pills listed for this prescription.";
 
-      const timeText = selectedPrescriptionFull.time.length
-        ? selectedPrescriptionFull.time.join(", ")
-        : "No time set.";
+  //       const timeText = selectedPrescriptionFull.time.length
+  //         ? selectedPrescriptionFull.time.join(", ")
+  //         : "No time set.";
 
-      const frequencyText = getFrequencyText(selectedPrescriptionFull.frequency);
-      const startDateText = formatDateFlexible(selectedPrescriptionFull.startDate);
+  //       const frequencyText = getFrequencyText(selectedPrescriptionFull.frequency);
+  //       const startDateText = formatDateFlexible(selectedPrescriptionFull.startDate);
 
-      const message = `📋 Prescription: ${selectedPrescriptionFull.name}
-  🗓️ Started date: ${startDateText}
-  🔁 Frequency: ${frequencyText}
-  🕐 Time(s): ${timeText}
-  📝 Note: ${selectedPrescriptionFull.note || "No note for this prescription!!"}
-💊 Pills list:
-${pillsText}
-📲 Check out PillPall - your pill reminder & medication manager!`;
+  //       const message = `📋 Prescription: ${selectedPrescriptionFull.name}
+  //   🗓️ Started date: ${startDateText}
+  //   🔁 Frequency: ${frequencyText}
+  //   🕐 Time(s): ${timeText}
+  //   📝 Note: ${selectedPrescriptionFull.note || "No note for this prescription!!"}
+  // 💊 Pills list:
+  // ${pillsText}
+  // 📲 Check out PillPall - your pill reminder & medication manager!`;
 
-      const result = await Share.share({ message });
+  //       const result = await Share.share({ message });
 
-      if (result.action === Share.sharedAction) {
-        // optionally handle shared
-      } else if (result.action === Share.dismissedAction) {
-        // optionally handle dismissed
-      }
-    } catch (error: any) {
-      Alert.alert(error.message);
-    }
-    const handleShowNotification = () => {
-      scheduleNotification();
-    };
+  //       if (result.action === Share.sharedAction) {
+  //         // optionally handle shared
+  //       } else if (result.action === Share.dismissedAction) {
+  //         // optionally handle dismissed
+  //       }
+  //     } catch (error: any) {
+  //       Alert.alert(error.message);
+  //     }
 
-    return (
-      <View
-        style={{ backgroundColor: theme.colors.background }}
-        className="flex-1"
+  return (
+    <View
+      style={{ backgroundColor: theme.colors.background }}
+      className="flex-1"
+    >
+      {/* Header Section */}
+      <SafeAreaView
+        style={{ backgroundColor: theme.colors.primary }}
+        className="rounded-b-3xl p-5"
       >
-        {/* Header Section */}
-        <SafeAreaView
-          style={{ backgroundColor: theme.colors.primary }}
-          className="rounded-b-3xl p-5"
-        >
-          <CalendarSlider
-            selectedDate={selectedDate}
-            onSelectDate={setSelectedDate}
-          />
-        </SafeAreaView>
-
-        {/* Body */}
-        <PrescriptionList
-          onSelectPrescription={(prescription, time) =>
-            setSelectedPrescription({
-              id: prescription.id,
-              name: prescription.name,
-              note: prescription.note,
-              time: time,
-            })
-          }
+        <CalendarSlider
           selectedDate={selectedDate}
+          onSelectDate={setSelectedDate}
         />
+      </SafeAreaView>
 
-        {/* Floating Action Button */}
-        <TouchableOpacity
-          onPress={moveToAddPresctiption}
-          style={{ width: hp(7), height: hp(7) }}
-          className="absolute bottom-20 right-5 bg-orange-500 rounded-full items-center justify-center shadow-strong"
-        >
-          <Text style={{ fontSize: hp(4) }} className="text-white">+</Text>
+      {/* Body */}
+      <PrescriptionList
+        onSelectPrescription={(prescription, time) =>
+          setSelectedPrescription({
+            id: prescription.id,
+            name: prescription.name,
+            note: prescription.note,
+            time: time,
+          })
+        }
+        selectedDate={selectedDate}
+      />
+
+      {/* Floating Action Button */}
+      <TouchableOpacity
+        onPress={moveToAddPresctiption}
+        style={{ width: hp(7), height: hp(7) }}
+        className="absolute bottom-20 right-5 bg-orange-500 rounded-full items-center justify-center shadow-strong"
+      >
+        <Text style={{ fontSize: hp(4) }} className="text-white">+</Text>
+      </TouchableOpacity>
+
+      {/* Bottom Navigation Bar */}
+      <View
+        style={{ backgroundColor: theme.colors.primary }}
+        className="absolute bottom-0 left-0 right-0 flex-row justify-around items-center h-16 rounded-t-3xl"
+      >
+        <TouchableOpacity>
+          <FontAwesome name="home" size={35} color="white" />
         </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("/activePrescriptions")}>
+          <MaterialCommunityIcons name="pill" size={35} color="gray" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("/userSettings")}>
+          <FontAwesome name="user" size={35} color="gray" />
+        </TouchableOpacity>
+      </View>
 
-        {/* Bottom Navigation Bar */}
-        <View
-          style={{ backgroundColor: theme.colors.primary }}
-          className="absolute bottom-0 left-0 right-0 flex-row justify-around items-center h-16 rounded-t-3xl"
-        >
-          <TouchableOpacity>
-            <FontAwesome name="home" size={35} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("/activePrescriptions")}>
-            <MaterialCommunityIcons name="pill" size={35} color="gray" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("/userSettings")}>
-            <FontAwesome name="user" size={35} color="gray" />
-          </TouchableOpacity>
-        </View>
-
-        <ReactNativeModal isVisible={isModalVisible} animationIn={"fadeIn"}>
-          <View className="bg-teal-50 rounded-xl pb-6">
-            {/* Top control icons */}
-            <View
-              style={{ backgroundColor: theme.colors.primary }}
-              className="flex-row justify-between items-center py-4 px-5 mb-4 rounded-t-xl"
-            >
-              <View className="flex-row justify-between items-center">
-                <TouchableOpacity onPress={moveToUpdatePrescription}>
-                  <FontAwesome name="pencil" size={24} color="white" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={onShare}>
-                  <FontAwesome name="share" size={24} color="white" className="ml-5" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setIsAlertVisible(true)}
-                  className="ml-5"
-                >
-                  <FontAwesome name="trash" size={24} color="white" />
-                </TouchableOpacity>
-              </View>
+      <ReactNativeModal isVisible={isModalVisible} animationIn={"fadeIn"}>
+        <View className="bg-teal-50 rounded-xl pb-6">
+          {/* Top control icons */}
+          <View
+            style={{ backgroundColor: theme.colors.primary }}
+            className="flex-row justify-between items-center py-4 px-5 mb-4 rounded-t-xl"
+          >
+            <View className="flex-row justify-between items-center">
+              <TouchableOpacity onPress={moveToUpdatePrescription}>
+                <FontAwesome name="pencil" size={24} color="white" />
+              </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => {
-                  setIsModalVisible(false);
-                  setSelectedPrescription({
-                    id: "",
-                    name: "",
-                    time: "",
-                    note: "",
-                  });
-                }}
+                onPress={() => setIsAlertVisible(true)}
+                className="ml-5"
               >
-                <FontAwesome name="close" size={24} color="white" />
+                <FontAwesome name="trash" size={24} color="white" />
               </TouchableOpacity>
             </View>
-
-            {/* Info */}
-            <View className="px-4">
-              <Text
-                style={{ fontSize: hp(2.3) }}
-                className="font-bold text-center mb-3"
-              >
-                {selectedPrescription?.name}
-              </Text>
-              <View className="flex-row items-center mb-1">
-                <MaterialIcons name="event" size={20} color="black" />
-                <Text style={{ fontSize: hp(1.9) }} className="ml-2">
-                  Scheduled for {selectedPrescription?.time} today
-                </Text>
-              </View>
-              <View className="flex-row items-center mb-2 mt-1">
-                <MaterialIcons
-                  name="chat-bubble-outline"
-                  size={20}
-                  color="black"
-                />
-                <Text style={{ fontSize: hp(1.9) }} className="ml-2">
-                  {selectedPrescription?.note}
-                </Text>
-              </View>
-            </View>
-
-            {/* Pills */}
-            <PillList pills={pills} />
+            <TouchableOpacity
+              onPress={() => {
+                setIsModalVisible(false);
+                setSelectedPrescription({
+                  id: "",
+                  name: "",
+                  time: "",
+                  note: "",
+                });
+              }}
+            >
+              <FontAwesome name="close" size={24} color="white" />
+            </TouchableOpacity>
           </View>
-        </ReactNativeModal>
 
-        <ReactNativeModal isVisible={isAlertVisible}>
-          <CustomAlert
-            title="Prescription for headache"
-            message="Do you want to delete this prescription? All future notifications will be deleted."
-            btnConfirm="Delete"
-            confirmTextColor="text-red-500"
-            onCancel={() => setIsAlertVisible(false)}
-            onConfirm={handleDeletePrescription}
-          />
-        </ReactNativeModal>
-      </View>
-    );
-  };
+          {/* Info */}
+          <View className="px-4">
+            <Text
+              style={{ fontSize: hp(2.3) }}
+              className="font-bold text-center mb-3"
+            >
+              {selectedPrescription?.name}
+            </Text>
+            <View className="flex-row items-center mb-1">
+              <MaterialIcons name="event" size={20} color="black" />
+              <Text style={{ fontSize: hp(1.9) }} className="ml-2">
+                Scheduled for {selectedPrescription?.time} today
+              </Text>
+            </View>
+            <View className="flex-row items-center mb-2 mt-1">
+              <MaterialIcons
+                name="chat-bubble-outline"
+                size={20}
+                color="black"
+              />
+              <Text style={{ fontSize: hp(1.9) }} className="ml-2">
+                {selectedPrescription?.note}
+              </Text>
+            </View>
+          </View>
+
+          {/* Pills */}
+          <PillList pills={pills} />
+        </View>
+      </ReactNativeModal>
+
+      <ReactNativeModal isVisible={isAlertVisible}>
+        <CustomAlert
+          title="Prescription for headache"
+          message="Do you want to delete this prescription? All future notifications will be deleted."
+          btnConfirm="Delete"
+          confirmTextColor="text-red-500"
+          onCancel={() => setIsAlertVisible(false)}
+          onConfirm={handleDeletePrescription}
+        />
+      </ReactNativeModal>
+    </View>
+  );
 };
