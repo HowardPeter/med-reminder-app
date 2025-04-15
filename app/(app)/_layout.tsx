@@ -12,6 +12,11 @@ export default function _layout() {
       <Stack.Screen name="editYourProfile" options={{ headerShown: false }} />
       <Stack.Screen name="enterNewPassword" options={{ headerShown: false }} />
       <Stack.Screen name="activePrescriptions" options={{ headerShown: false }} />
+      <Stack.Screen name="consultingDoctors" options={{ headerShown: false }} />
+      <Stack.Screen name="updateDoctor" options={{ headerShown: false }} />
+      <Stack.Screen name="addDoctor" options={{ headerShown: false }} />
     </Stack>
-  )
+  );
 }
+
+  
