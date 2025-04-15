@@ -89,9 +89,9 @@ export default function SignUp() {
 
   return (
     <CustomKeyboardView>
-      <View className="bg-white flex-1 px-9 justify-center w-full pb-[50px]">
+      <View className="bg-white flex-1 px-9 justify-center w-full h-screen">
         {/* Back Button */}
-        <View style={{ marginTop: hp(5) }} className='flex-row justify-between mb-9'>
+        <View style={{ marginTop: hp(-5) }} className='flex-row justify-between mb-9'>
           <Link href="/(auth)/signIn" style={{ maxWidth: wp(10) }}>
             <Ionicons name="chevron-back" size={32} color="black" />
           </Link>
@@ -285,7 +285,7 @@ const styles = {
     fontSize: hp(2.1),
   },
   input: {
-    maxHeight: hp(5.5),
+    height: hp(5.5),
     fontSize: hp(2.1),
   }
 }

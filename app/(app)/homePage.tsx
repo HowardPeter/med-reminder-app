@@ -15,8 +15,10 @@ import PillList from "@/components/PillList";
 import CustomAlert from "@/components/CustomAlert";
 import { router } from "expo-router";
 import { useCrud } from "@/hooks/useCrud";
+import { useNotification } from '@/hooks/useNotification';
+import { useAuth } from "@/hooks/useAuth";
 
-const HomePage = () => {
+export default function HomePage() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAlertVisible, setIsAlertVisible] = useState(false);
   const [selectedPrescription, setSelectedPrescription] = useState({
@@ -28,8 +30,12 @@ const HomePage = () => {
   const [pills, setPills] = useState<
     { id: string; name: string; type: string; dosage: string }[]
   >([]);
-  const { fetchPillsData, deletePrescription } = useCrud();
+  const { fetchPillsData, fetchPrescriptionData, deletePrescription } = useCrud();
+  const { user } = useAuth();
+  const userId = user?.userId ?? null;
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [prescriptions, setPrescriptions] = useState<any>();
+  const { scheduleNotification } = useNotification();
 
   const selectedPrescriptionId = selectedPrescription?.id ?? null;
 
@@ -62,6 +68,18 @@ const HomePage = () => {
     fetchPills();
   }, [selectedPrescriptionId]);
 
+  useEffect(() => {
+    fetchPrescriptions();
+  }, [userId]);
+
+  const fetchPrescriptions = async () => {
+    if(!userId) return;
+    const data = await fetchPrescriptionData(userId);
+    setPrescriptions(data);
+  }
+
+  scheduleNotification(prescriptions);
+
   const fetchPills = async () => {
     if (!selectedPrescriptionId) {
       console.log("No prescription ID selected.");
@@ -73,7 +91,11 @@ const HomePage = () => {
     console.log("Selected prescription:", selectedPrescription);
     console.log("Fetched pills data:", data);
     setIsModalVisible(true);
-  };  
+  };
+
+  const handleShowNotification = () => {
+    scheduleNotification();
+  };
 
   return (
     <View
@@ -206,5 +228,3 @@ const HomePage = () => {
     </View>
   );
 };
-
-export default HomePage;
