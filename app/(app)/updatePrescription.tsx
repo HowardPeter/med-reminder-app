@@ -1,13 +1,12 @@
-import {
-  View,
-  Text,
-  Image,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { View, Text, Image, TextInput, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Ionicons, Fontisto, EvilIcons, FontAwesome } from "@expo/vector-icons";
+import {
+  Ionicons,
+  Fontisto,
+  EvilIcons,
+  FontAwesome,
+  Feather,
+} from "@expo/vector-icons";
 import { images } from "@/constants";
 import CustomKeyboardView from "@/components/CustomKeyboardView";
 import Loading from "@/components/loading";
@@ -19,6 +18,8 @@ import { doc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
 import theme from "@/config/theme";
 import { db } from "@/firebaseConfig";
 import { format } from "date-fns";
+import MessageModal from "@/components/MessageModal";
+import ReactNativeModal from "react-native-modal";
 
 export default function UpdatePrescription() {
   const [name, setName] = useState("");
@@ -30,6 +31,10 @@ export default function UpdatePrescription() {
   const [oldData, setOldData] = useState<string[]>([]);
   const [timeOld, setTimeOld] = useState<string[]>([]);
   const { prescriptionId } = useLocalSearchParams();
+  const [modalType, setModalType] = useState("Error");
+  const [messageModalVisible, setMessageModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState(""); //modal success
+  const [warningModalVisible, setWarningModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchPrescriptionData = async () => {
@@ -40,7 +45,7 @@ export default function UpdatePrescription() {
         // Lấy dữ liệu prescription chính
         const prescriptionRef = doc(db, "prescriptions", prescriptionId);
         const prescriptionSnap = await getDoc(prescriptionRef);
-        
+
         //Lấy dữ liệu prescription chính
         if (prescriptionSnap.exists()) {
           const prescriptionData = prescriptionSnap.data();
@@ -50,20 +55,23 @@ export default function UpdatePrescription() {
 
           // Kiểm tra và chuyển đổi nếu cần
           let convertedDate: Date | null = null;
-        
+
           if (rawStartDate instanceof Timestamp) {
             convertedDate = rawStartDate.toDate();
           } else if (rawStartDate?.seconds) {
             // Nếu là plain object { seconds, nanoseconds }
-            convertedDate = new Timestamp(rawStartDate.seconds, rawStartDate.nanoseconds).toDate();
+            convertedDate = new Timestamp(
+              rawStartDate.seconds,
+              rawStartDate.nanoseconds
+            ).toDate();
           }
-        
+
           // Nếu có ngày hợp lệ thì format
           if (convertedDate) {
             setStartDate(format(convertedDate, "dd/MM/yyyy"));
           } else {
             setStartDate(""); // hoặc giữ nguyên nếu không hợp lệ
-          } 
+          }
           const numberOfFrequency = prescriptionData.frequency?.toString();
           if (numberOfFrequency === "0") {
             setSelectedFrequency("No repeat");
@@ -106,11 +114,11 @@ export default function UpdatePrescription() {
       JSON.stringify(oldData) === JSON.stringify(newDataArray) &&
       JSON.stringify(times) === JSON.stringify(timeOld)
     ) {
-      Alert.alert("Error", "No changes detected!");
+      showErrorModal("No changes detected!");
       return;
     }
     if (!name || !startDate || times.length === 0) {
-      Alert.alert("Error", "Please fill all required fields!");
+      showErrorModal("Please fill all required fields!");
       return;
     }
     const isDateValid = isValidDate(startDate);
@@ -133,11 +141,11 @@ export default function UpdatePrescription() {
             ? 7
             : 1,
       });
-      Alert.alert("Success", "Prescription updated successfully!");
+      setWarningModalVisible(true);
       setOldData(newDataArray);
     } catch (error) {
       console.error("Update error:", error);
-      Alert.alert("Error", "Failed to update");
+      showErrorModal("Failed to update");
     } finally {
       setIsLoading(false);
     }
@@ -151,7 +159,7 @@ export default function UpdatePrescription() {
     // Kiểm tra định dạng ngày
     const dateRegex = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
     if (!dateRegex.test(dateString)) {
-      Alert.alert("Invalid Format", "Please enter date in DD/MM/YYYY format");
+      showErrorModal("Please enter date in DD/MM/YYYY format");
       return false;
     }
 
@@ -160,7 +168,7 @@ export default function UpdatePrescription() {
 
     // Kiểm tra giá trị ngày tháng hợp lệ
     if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1000) {
-      Alert.alert("Invalid Date", "Please enter a valid date");
+      showErrorModal("Please enter a valid date");
       return false;
     }
 
@@ -173,16 +181,7 @@ export default function UpdatePrescription() {
       inputDate.getMonth() !== month - 1 ||
       inputDate.getDate() !== day
     ) {
-      Alert.alert("Invalid Date", "The date doesn't exist");
-      return false;
-    }
-
-    // Kiểm tra ngày quá khứ
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Bỏ qua giờ phút để chỉ so sánh ngày
-
-    if (inputDate < today) {
-      Alert.alert("Past Date", "Start date cannot be in the past");
+      showErrorModal("The date doesn't exist");
       return false;
     }
 
@@ -208,6 +207,17 @@ export default function UpdatePrescription() {
       return null;
     }
   }
+  const showSuccessModal = (message: string) => {
+    setModalType("Success");
+    setModalMessage(message);
+    setMessageModalVisible(true);
+  };
+  //modal loi
+  const showErrorModal = (message: string) => {
+    setModalType("Error");
+    setModalMessage(message);
+    setMessageModalVisible(true);
+  };
   return (
     <CustomKeyboardView>
       <View className="bg-[#E8F3F2]">
@@ -291,6 +301,12 @@ export default function UpdatePrescription() {
                 onTimesChange={handleTimesChange}
               />
             </View>
+            <Text
+              style={{ fontSize: hp(1.5) }}
+              className="italic text-base text-center"
+            >
+              Note: Please press the time to update {"\n"} or hold to delete.
+            </Text>
           </View>
           {/* Frequency */}
           <View className="mt-3">
@@ -342,25 +358,21 @@ export default function UpdatePrescription() {
           </View>
           {/* Button Update */}
           <View className="items-center mt-3 flex-row">
-            {isLoading ? (
-              <Loading size={hp(7)} />
-            ) : (
-              <View className="pr-5 mb-10">
-                <TouchableOpacity
-                  className="flex border border-400 border-[#04A996] rounded-[20] h-[50] w-[140] justify-center mt-5"
-                  onPress={() =>
-                    router.push({
-                      pathname: "/addPills",
-                      params: { prescriptionId: prescriptionId },
-                    })
-                  }
-                >
-                  <Text className="text-[#04A996] text-xl text-center font-bold">
-                    Update Pills
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )}
+            <View className="pr-5 mb-10">
+              <TouchableOpacity
+                className="flex border border-400 border-[#04A996] rounded-[20] h-[50] w-[140] justify-center mt-5"
+                onPress={() =>
+                  router.push({
+                    pathname: "/addPills",
+                    params: { prescriptionId: prescriptionId },
+                  })
+                }
+              >
+                <Text className="text-[#04A996] text-xl text-center font-bold">
+                  Update Pills
+                </Text>
+              </TouchableOpacity>
+            </View>
             {isLoading ? (
               <Loading size={hp(7)} />
             ) : (
@@ -378,6 +390,61 @@ export default function UpdatePrescription() {
             )}
           </View>
         </View>
+        {/* Alert 1 button */}
+        <MessageModal
+          visible={messageModalVisible}
+          onClose={() => {
+            setMessageModalVisible(false);
+            if (modalType === "Success") {
+              router.push("/homePage");
+            }
+          }}
+          message={modalMessage}
+          type={modalType}
+        ></MessageModal>
+        {/* Alert 2 button */}
+        <ReactNativeModal
+          isVisible={warningModalVisible}
+          onBackdropPress={() => setWarningModalVisible(false)}
+          backdropOpacity={0.7}
+          animationIn="zoomIn"
+          animationOut="zoomOut"
+          style={{ justifyContent: "center", alignItems: "center" }}
+        >
+          <View className="bg-white rounded-2xl w-[90%] pt-16 pb-6 px-6 items-center relative">
+            <View className="absolute -top-12 bg-teal-500 h-24 w-24 rounded-full items-center justify-center shadow-lg">
+              <Feather name="alert-triangle" size={50} color="white" />
+            </View>
+
+            <Text className="text-xl font-bold text-center text-gray-800 mb-2">
+              Successful
+            </Text>
+            <Text className="text-center text-base text-gray-600">
+              Are you sure you want to exit?
+            </Text>
+
+            <View className="w-full mt-6 space-y-3">
+              <TouchableOpacity
+                onPress={() => {
+                  setWarningModalVisible(false);
+                  router.replace("/homePage");
+                }}
+                className="bg-teal-500 py-3 rounded-2xl items-center"
+              >
+                <Text className="text-white text-lg font-bold">
+                  Back to Homepage
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setWarningModalVisible(false)}
+                className="bg-gray-200 py-3 rounded-2xl items-center mt-3"
+              >
+                <Text className="text-gray-700 text-lg font-bold">Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ReactNativeModal>
       </View>
     </CustomKeyboardView>
   );

@@ -14,7 +14,7 @@ export default function ConsultingDoctors() {
     <View className="flex-1 bg-white pt-12 px-6">
       {/* Header */}
       <View className="flex-row items-center mb-6">
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => router.replace('/userSettings')}>
           <Ionicons name="arrow-back" size={28} color="#0f766e" />
         </TouchableOpacity>
       </View>

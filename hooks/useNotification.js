@@ -59,12 +59,12 @@ export const useNotification = () => {
           trigger,
         });
 
-        console.log(`[🔔 Scheduled for ${name} at ${timeString}] ID:`, id);
+        //console.log(`[🔔 Scheduled for ${name} at ${timeString}] ID:`, id);
       }
     }
 
-    const all = await Notifications.getAllScheduledNotificationsAsync();
-    console.log('[📅 All scheduled notifications]:', all);
+    // const all = await Notifications.getAllScheduledNotificationsAsync();
+    // console.log('[📅 All scheduled notifications]:', all);
   };
 
   return {

@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { heightPercentageToDP as hp } from "react-native-responsive-screen";
@@ -16,6 +15,8 @@ import { useRouter } from "expo-router";
 import Loading from "@/components/loading";
 import { Feather } from "@expo/vector-icons";
 import { images } from "@/constants";
+import MessageModal from "@/components/MessageModal";
+
 
 export default function SignIn() {
   const router = useRouter();
@@ -24,14 +25,22 @@ export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [modalType, setModalType] = useState("Error");
+  const [messageModalVisible, setMessageModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState(""); //modal success
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Sign In", "Please fill all fields!");
+      showErrorModal("Please fill all fields!");
       return;
     }
     setIsLoading(true);
     const response = await login(email, password);
+    if (!response.success) {
+      showErrorModal("Please check your email and password!");
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(false);
     if (response.success) {
       setEmail("");
@@ -41,7 +50,11 @@ export default function SignIn() {
       console.log("Sign In", response.msg);
     }
   };
-
+  const showErrorModal = (message: string) => {
+    setModalType("Error");
+    setModalMessage(message);
+    setMessageModalVisible(true);
+  };
   return (
     <CustomKeyboardView>
       <View className="bg-white h-screen">
@@ -145,6 +158,17 @@ export default function SignIn() {
                         </View>
                     </TouchableOpacity> */}
         </View>
+        <MessageModal
+          visible={messageModalVisible}
+          onClose={() => {
+            setMessageModalVisible(false);
+            if (modalType === "Success") {
+              router.push("/homePage");
+            }
+          }}
+          message={modalMessage}
+          type={modalType}
+        ></MessageModal>
       </View>
     </CustomKeyboardView>
   );

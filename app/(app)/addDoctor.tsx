@@ -25,7 +25,7 @@ export default function AddDoctorScreen() {
   };
 
   const handleDone = async () => {
-    if (!name || !specialty || !phone || !email || !address) { 
+    if (!name || !specialty || !phone) { 
       Alert.alert('Validation Error', 'Please fill in all fields.');
       return;
     }
@@ -42,7 +42,7 @@ export default function AddDoctorScreen() {
     try {
       await addDoc(collection(db, 'doctors'), newDoctor);
       Alert.alert('Success', 'Doctor added successfully!');
-      router.push('/consultingDoctors');
+      router.replace('/consultingDoctors');
     } catch (error) {
       console.error('Error saving to Firebase:', error);
       Alert.alert('Error', 'Could not save doctor. Try again.');

@@ -277,7 +277,12 @@ const AddPills = () => {
                     contentContainerStyle={{ paddingVertical: 16 }}
                 />
             </View>
-
+            <Text
+                style={{ fontSize: hp(1.5) }}
+                className="italic text-base text-left ml-1"
+            >
+                Note: Please press pill to delete.
+            </Text>
             {/* Bottom Buttons */}
             <View className="flex-row justify-end items-center">
                 <TouchableOpacity
