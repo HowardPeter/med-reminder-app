@@ -2,7 +2,7 @@ import { View, Image, Text, TextInput, TouchableOpacity, Alert } from 'react-nat
 import React, { useState } from 'react';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import "../../global.css";
-import { Fontisto } from "@expo/vector-icons"
+import { Feather, Fontisto } from "@expo/vector-icons"
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth'
 import { doc, setDoc, serverTimestamp, deleteDoc, Timestamp, getDoc } from "firebase/firestore";
@@ -10,11 +10,30 @@ import { db } from "../../firebaseConfig";
 import emailjs from '@emailjs/react-native';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
 import { images } from '@/constants';
+import Loading from '@/components/loading';
+import MessageModal from '@/components/MessageModal';
 
 export default function ForgetPasswordScreen() {
   const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const { checkIfEmailExists } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [modalType, setModalType] = useState('Error')
+  const [messageModalVisible, setMessageModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+
+  const showSuccessModal = (message: string) => {
+    setModalType('Success');
+    setModalMessage(message);
+    setMessageModalVisible(true);
+  };
+
+  //modal loi
+  const showErrorModal = (message: string) => {
+    setModalType('Error');
+    setModalMessage(message);
+    setMessageModalVisible(true);
+  };
 
   //ham tao ma tu OTP sau so random tu 100000 toi 900000
   const generateOTP = (): string => {
@@ -28,21 +47,21 @@ export default function ForgetPasswordScreen() {
       const formattedTime = expiresAt.toLocaleTimeString(); //format lai thoi gian cho no dep
 
       // chay bang EmailJS that
-      await emailjs.send(
-        'service_ljqfo7p',
-        'template_rf7va6r',
-        {
-          passcode: otp, //ghep cac truong tuong ung voi template
-          email: email,
-          time: formattedTime //thoi gian het han
-        },
-        {
-          publicKey: 'ZCUdPPfiDnWbrPeWO',
-        }
-      );
+      // await emailjs.send(
+      //   'service_ljqfo7p',
+      //   'template_rf7va6r',
+      //   {
+      //     passcode: otp, //ghep cac truong tuong ung voi template
+      //     email: email,
+      //     time: formattedTime //thoi gian het han
+      //   },
+      //   {
+      //     publicKey: 'ZCUdPPfiDnWbrPeWO',
+      //   }
+      // );
 
       // chay Test bang Alert
-      // console.log('Your OTP is:', otp);
+      console.log('Your OTP is:', otp);
 
       return otp; //tra otp ve de luu vao firebase
     } catch (err) {
@@ -52,8 +71,11 @@ export default function ForgetPasswordScreen() {
   }
 
   const handleCheckEmailExist = async () => {
+    setIsLoading(true);
+
     if (!email) {
-      Alert.alert("Error", "Please enter your email address");
+      showErrorModal("Please enter your email address");
+      setIsLoading(false);
       return;
     }
 
@@ -61,10 +83,10 @@ export default function ForgetPasswordScreen() {
       const exists = await checkIfEmailExists(email);
 
       if (!exists) {
-        Alert.alert(
-          "Email Verification Failed",
+        showErrorModal(
           "Email does not exist or is not valid, please check and try again!"
         );
+        setIsLoading(false);
         return;
       }
 
@@ -79,10 +101,10 @@ export default function ForgetPasswordScreen() {
 
         if (expiresAt > now) { //neu ma OTP van con thoi gian 
           const remainingTime = Math.ceil((expiresAt.getTime() - now.getTime()) / 1000);
-          Alert.alert(
-            "OTP Already Sent",
+          showErrorModal(
             `An OTP has already been sent. Please wait ${remainingTime} seconds before trying again.`
           );
+          setIsLoading(false);
           return;
         }
 
@@ -100,19 +122,17 @@ export default function ForgetPasswordScreen() {
         expiresAt: Timestamp.fromDate(expiresAt),
       });
 
-      Alert.alert(
-        "OTP Sent",
-        `An OTP has been sent to ${email}. Please check your inbox.`
-      );
-      router.push({ pathname: "/otpVerified", params: { email } }); //sau khi kiem tra thay ok co email thi gui OTP va chuyen sang trang nhap ma OTP
-
+      showSuccessModal(`An OTP has been sent to ${email}. Please check your inbox.`) //sau khi kiem tra thay ok co email thi gui OTP va chuyen sang trang nhap ma OTP
+      setIsLoading(false);
       // xoa OTP sau 5 phut
       setTimeout(async () => {
         await deleteDoc(otpRef);
-        console.log("OTP expired and deleted");
+        showErrorModal("OTP expired and deleted, please verified your email again.");
+        router.replace('/(auth)/emailVerified');
       }, 5 * 60 * 1000);
     } catch (error) {
       console.error("Error checking email and sending OTP:", error);
+      setIsLoading(false);
     }
   };
 
@@ -148,15 +168,20 @@ export default function ForgetPasswordScreen() {
             />
           </View>
         </View>
-
-        <View className="w-full items-center">
-          <TouchableOpacity
-            className="w-[90%] bg-teal-500 rounded-3xl py-3 mt-6 px-5 h-14 justify-center items-center"
-            onPress={handleCheckEmailExist}
-          >
-            <Text className="text-white text-lg font-bold text-center">Verified my OTP</Text>
-          </TouchableOpacity>
-        </View>
+        {isLoading ?
+          <View className='items-center px-5 ml-5'>
+            <Loading size={hp(7)} />
+          </ View>
+          :
+          <View className="w-full items-center">
+            <TouchableOpacity
+              className="w-[90%] bg-teal-500 rounded-3xl py-3 mt-6 px-5 h-14 justify-center items-center"
+              onPress={handleCheckEmailExist}
+            >
+              <Text className="text-white text-lg font-bold text-center">Verified my OTP</Text>
+            </TouchableOpacity>
+          </View>
+        }
 
         <TouchableOpacity className="mt-4 items-center px-5 pt-">
           <Text
@@ -166,6 +191,20 @@ export default function ForgetPasswordScreen() {
           >I remember my password now!</Text>
         </TouchableOpacity>
       </View>
+
+      <MessageModal
+        visible={messageModalVisible}
+        onClose={() => {
+          setMessageModalVisible(false);
+          if (modalType === 'Success') {
+            router.push({ pathname: "/otpVerified", params: { email } });
+          }
+        }}
+        message={modalMessage}
+        type={modalType}
+      >
+      </MessageModal>
+
     </CustomKeyboardView>
   );
 }

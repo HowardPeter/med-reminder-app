@@ -1,6 +1,6 @@
-import { View, Text, Image, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, Image, TextInput, TouchableOpacity} from 'react-native'
 import React, { useState } from 'react'
-import { Ionicons, Fontisto, EvilIcons, FontAwesome } from '@expo/vector-icons';
+import { Ionicons, EvilIcons, FontAwesome } from '@expo/vector-icons';
 import { images } from '@/constants';
 import CustomKeyboardView from '@/components/CustomKeyboardView';
 import Loading from '@/components/loading';
@@ -12,13 +12,14 @@ import theme from '@/config/theme';
 import { useAuth } from '@/hooks/useAuth';
 import MessageModal from '@/components/MessageModal';
 import { Timestamp } from 'firebase/firestore';
-
+import DatePickerField from '@/components/DatePickerField';
 
 export default function AddPrescription() {
     const [selectedFrequency, setSelectedFrequency] = useState('No repeat');
     const [isLoading, setIsLoading] = useState(false);
     //lay data 
     const [prescriptionName, setPrescriptionName] = useState('');
+
     const [startDate, setStartDate] = useState("");
     const [time, setTime] = useState<string[]>(['7:30', '11:30', '17:30']);
 
@@ -41,7 +42,6 @@ export default function AddPrescription() {
         'Every day': 1,
         'Every week': 7,
     };
-
 
     const isValidAndNotPastDate = (dateString: string): { valid: boolean, message?: string } => {
         //kiem tra xem dung dinh dang dd/mm//yyyy khong
@@ -74,7 +74,6 @@ export default function AddPrescription() {
         return { valid: true };
     };
 
-
     const handleAddPrescription = async () => {
         if (!prescriptionName || !startDate) {
             showErrorModal('Please fill all required fields');
@@ -91,7 +90,7 @@ export default function AddPrescription() {
             showErrorModal('Please add at least one time to take the medicine.');
             return;
         }
-        
+
         setIsLoading(true);
 
         const newPrescription = {
@@ -190,24 +189,18 @@ export default function AddPrescription() {
                             </View>
                         </View>
                     </View>
-                    {/* Day */}
-                    <View className='mt-3'>
-                        <View className='w-full'>
-                            <Text className='text-1xl font-bold'>
-                                Start date
-                            </Text>
+                    {/*Started Date*/}
+                    <View className="mt-5 items-center">
+                        <View className="w-[370]">
+                            <Text className="text-1xl font-bold text-black">Start date</Text>
                         </View>
-                        <View>
-                            <View className='bg-white flex-row items-center border border-gray-400 rounded-[10] h-[50] w-[370] mt-2 px-4'>
-                                <Fontisto name="date" size={24} color="black" />
-                                <TextInput
-                                    placeholder='01/01/2025'
-                                    value={startDate}
-                                    onChangeText={setStartDate}
-                                    className='px-3 pr-3 text-1xl w-full'
-                                >
-                                </TextInput>
-                            </View>
+                        <View className="w-[370]">
+                            <DatePickerField
+                                initialDate={startDate}
+                                onDateChange={(formattedDate) => {
+                                    setStartDate(formattedDate);
+                                }}
+                            />
                         </View>
                     </View>
                     {/* Time */}
@@ -293,6 +286,8 @@ export default function AddPrescription() {
                         }
                     </View>
                 </View>
+
+                {/* Success/Error Message Modal */}
                 <MessageModal
                     visible={messageModalVisible}
                     onClose={() => setMessageModalVisible(false)}

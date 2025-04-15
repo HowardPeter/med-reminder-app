@@ -2,7 +2,6 @@ import { View, Text, Image, TextInput, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import {
   Ionicons,
-  Fontisto,
   EvilIcons,
   FontAwesome,
   Feather,
@@ -18,6 +17,7 @@ import { doc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
 import theme from "@/config/theme";
 import { db } from "@/firebaseConfig";
 import { format } from "date-fns";
+import DatePickerField from "@/components/DatePickerField";
 import MessageModal from "@/components/MessageModal";
 import ReactNativeModal from "react-native-modal";
 
@@ -107,8 +107,8 @@ export default function UpdatePrescription() {
       selectedFrequency === "No repeat"
         ? 0
         : selectedFrequency === "Every week"
-        ? 7
-        : 1;
+          ? 7
+          : 1;
     const newDataArray: string[] = [name, startDate, number.toString(), note];
     if (
       JSON.stringify(oldData) === JSON.stringify(newDataArray) &&
@@ -138,8 +138,8 @@ export default function UpdatePrescription() {
           selectedFrequency === "No repeat"
             ? 0
             : selectedFrequency === "Every week"
-            ? 7
-            : 1,
+              ? 7
+              : 1,
       });
       setWarningModalVisible(true);
       setOldData(newDataArray);
@@ -187,6 +187,7 @@ export default function UpdatePrescription() {
 
     return true;
   };
+
   function convertToTimestamp(dateString: string): Timestamp | null {
     try {
       // Tách ngày, tháng, năm từ chuỗi
@@ -207,11 +208,7 @@ export default function UpdatePrescription() {
       return null;
     }
   }
-  const showSuccessModal = (message: string) => {
-    setModalType("Success");
-    setModalMessage(message);
-    setMessageModalVisible(true);
-  };
+
   //modal loi
   const showErrorModal = (message: string) => {
     setModalType("Error");
@@ -271,21 +268,18 @@ export default function UpdatePrescription() {
               </View>
             </View>
           </View>
-          {/* Day */}
-          <View className="mt-3">
-            <View className="w-full">
+          {/* Start date */}
+          <View className="mt-5 items-center">
+            <View className="w-[370]">
               <Text className="text-1xl font-bold text-black">Start date</Text>
             </View>
-            <View>
-              <View className="bg-white flex-row items-center border border-gray-400 rounded-[10] h-[50] w-[370] mt-2 px-4">
-                <Fontisto name="date" size={24} color="black" />
-                <TextInput
-                  value={startDate}
-                  onChangeText={setStartDate}
-                  placeholder="01/01/2025"
-                  className="px-3 pr-3 text-black text-1xl w-full"
-                ></TextInput>
-              </View>
+            <View className="w-[370]">
+              <DatePickerField
+                initialDate={startDate}
+                onDateChange={(formattedDate) => {
+                  setStartDate(formattedDate);
+                }}
+              />
             </View>
           </View>
           {/* Time */}

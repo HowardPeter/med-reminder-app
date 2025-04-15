@@ -70,6 +70,27 @@ export const useCrud = () => {
     []
   );
 
+  const fetchPrescriptionById = useCallback(async (prescriptionId) => {
+    try {
+      const prescriptionRef = doc(db, COLLECTION_NAME, prescriptionId);
+      const docSnap = await getDoc(prescriptionRef);
+  
+      if (docSnap.exists()) {
+        return {
+          id: docSnap.id,
+          ...docSnap.data(),
+        };
+      } else {
+        console.warn("No such prescription found!");
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching prescription:", error);
+      return null;
+    }
+  }, []);
+  
+
   const fetchPillsData = useCallback(async (prescriptionId) => {
     try {
       const pillsRef = collection(db, COLLECTION_NAME, prescriptionId, "pills");
@@ -78,8 +99,6 @@ export const useCrud = () => {
       const pills = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-        // startDate: data.startDate?.toDate?.() ?? null,
-        // createdAt: data.createdAt?.toDate?.() ?? null,
       }));
 
       return pills;
@@ -198,6 +217,7 @@ export const useCrud = () => {
       throw error; // Hoặc xử lý lỗi theo cách khác
     }
   }
+  
   async function deletePillById(
     prescriptionId: string,
     pillId: string
@@ -227,6 +247,7 @@ export const useCrud = () => {
   return {
     fetchPrescriptionData,
     fetchPillsData,
+    fetchPrescriptionById,
     addPrescription,
     addPillToPrescription,
     getPillsByPrescriptionId,

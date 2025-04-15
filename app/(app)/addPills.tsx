@@ -32,20 +32,20 @@ const AddPills = () => {
     const [pillName, setPillName] = useState('');
     const [pillType, setPillType] = useState('pill');
     const [pillDosage, setPillDosage] = useState('');
-    const [pillList, setPillList] = useState<any[]>([]);
-    const [updatePillList, setUpdatePillList] = useState<any[]>([]);
-    const [prescription, setPrescription] = useState<any | null>(null);
 
+    //tach 2 cai list ra
+    const [newPillList, setNewPillList] = useState<any[]>([]); //list nay danh cho addPrescription
+    const [existingPillList, setExistingPillList] = useState<any[]>([]); //list nay danh cho updatePrescription
+
+    const [prescription, setPrescription] = useState<any | null>(null);
     const [modalType, setModalType] = useState('Error')
     const [messageModalVisible, setMessageModalVisible] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-
     const params = useLocalSearchParams();
     const { prescriptionId } = params;
     const [pillId, setPillId] = useState("");
     const [isAlertVisible, setIsAlertVisible] = useState(false);
-
     const [warningModalVisible, setWarningModalVisible] = useState(false);
     const { prescriptionData } = useLocalSearchParams();
     const { addPrescription, addPillToPrescription } = useCrud();
@@ -64,24 +64,24 @@ const AddPills = () => {
         setModalMessage(message);
         setMessageModalVisible(true);
     };
-    if (prescriptionData) {
-        useEffect(() => {
-            if (prescriptionData) {
-                try {
-                    const parsed = JSON.parse(prescriptionData);
-                    setPrescription(parsed);
-                } catch (error) {
-                    console.error("Invalid prescription data:", error);
-                }
+
+    //useEffect set state, khi co prescriptionData thi xai newPillList va nguoc lai
+    useEffect(() => {
+        if (prescriptionData) {
+            // We're creating a new prescription
+            try {
+                const parsed = JSON.parse(prescriptionData);
+                setPrescription(parsed);
+            } catch (error) {
+                console.error("Invalid prescription data:", error);
             }
-        }, [prescriptionData]);
-    } else if (prescriptionId) {
-        useEffect(() => {
+        } else if (prescriptionId) {
+            // We're updating an existing prescription
             const fetchPills = async () => {
-                if (prescriptionId === null) return;
                 try {
+                    setIsLoading(true);
                     const pillsData = await getPrescriptionPills(prescriptionId);
-                    setPillList(pillsData);
+                    setExistingPillList(pillsData);
                 } catch (error) {
                     console.error(error);
                 } finally {
@@ -90,115 +90,107 @@ const AddPills = () => {
             };
 
             fetchPills();
-        }, [prescriptionId]);
-    }
+        }
+    }, [prescriptionData, prescriptionId]);
 
     const handleAddPill = () => {
-        if (prescriptionData) {
-            if (!pillName || !pillType) {
-                showErrorModal("Please fill all fields");
-                return;
-            }
-    
-            if (!pillDosage) {
-                showErrorModal("Please choose pill type!");
-                return;
-            }
-    
-            const newPill = {
-                id: Date.now().toString() + Math.random().toString(36).substring(7), //FlatList can trich xuat 1 id duy nhat, nen phai tao id duy nhat cho thuoc
-                name: pillName,
-                type: pillType,
-                dosage: pillDosage,
-                icon: images.pill,
-            };
-            setPillList(prev => [...prev, newPill]);
-    
-            setPillName('');
-            setPillType('pill');
-            setPillDosage('');
-        } else if (prescriptionId) {
-            if (!pillName || !pillType) {
-                showErrorModal("Please fill all fields");
-                return;
-            }
-    
-            if (!pillDosage) {
-                showErrorModal("Please choose pill type!");
-                return;
-            }
-    
-            const newPill = {
-                id: Date.now().toString() + Math.random().toString(36).substring(7), //FlatList can trich xuat 1 id duy nhat, nen phai tao id duy nhat cho thuoc
-                name: pillName,
-                type: pillType,
-                dosage: pillDosage,
-                icon: images.pill,
-            };
-            setPillList(prev => [...prev, newPill]);
-            setUpdatePillList(prev => [...prev, newPill]);
-
-            setPillName('');
-            setPillType('pill');
-            setPillDosage('');
-        }
-
-    };
-
-    const handleConfirm = async () => {
-        if (pillList.length === 0) {
-            showErrorModal('There is no pill yet!');
+        if (!pillName || !pillType) {
+            showErrorModal("Please fill all fields");
             return;
         }
 
-        if (prescriptionData){
-            try {
-                setIsLoading(true);
+        if (!pillDosage) {
+            showErrorModal("Please choose pill type!");
+            return;
+        }
+
+        const newPill = {
+            id: Date.now().toString() + Math.random().toString(36).substring(7), //FlatList can trich xuat 1 id duy nhat, nen phai tao id duy nhat cho thuoc
+            name: pillName,
+            type: pillType,
+            dosage: pillDosage,
+            icon: getPillIcon(pillType),
+        };
+
+        //phan dieu kien de them va list
+        if (prescriptionData) {
+            setNewPillList(prev => [...prev, newPill]);
+        } else if (prescriptionId) {
+            setExistingPillList(prev => [...prev, newPill]);
+        }
+
+        setPillName('');
+        setPillType('pill');
+        setPillDosage('');
+        setIsModalVisible(false);
+    }
+
+    const handleConfirm = async () => {
+        const currentPillList = prescriptionData ? newPillList : existingPillList;
+        if (currentPillList.length === 0) {
+            showErrorModal('There is no pill yet!');
+            return;
+        }
+        try {
+            setIsLoading(true);
+            if (prescriptionData) {
+
                 //b1: luu don thuoc
                 const prescriptionId = await addPrescription(prescription);
-    
+
                 //b2: luu tung vien thuoc vao prescription
                 await Promise.all(
-                    pillList.map(({ name, type, dosage }) =>
+                    newPillList.map(({ name, type, dosage }) =>
                         addPillToPrescription(prescriptionId, { name, type, dosage })
                     )
                 );
-                setIsLoading(false);
+
                 showSuccessModal("Prescription and pills saved!");
-            } catch (err) {
-                Alert.alert("Error", `Failed to save prescription ${err.message}`);
+            } else if (prescriptionId) {
+                //lay danh sach pills hien tai co trong firebase
+                const originalPills = await getPrescriptionPills(prescriptionId);
+
+                //tim toan bo cac pill da them vao pillList 
+                const newPills = existingPillList.filter(updatedPill =>
+                    !originalPills.some(originalPill => originalPill.id === updatedPill.id)
+                );
+
+                //tim toan bo cac pill da xoa khoi pillList 
+                const deletedPills = originalPills.filter(originalPill =>
+                    !existingPillList.some(updatedPill => updatedPill.id === originalPill.id)
+                );
+
+                //xoa pills do tren firebase neu co
+                await Promise.all(
+                    deletedPills.map(pill => deletePillById(prescriptionId.toString(), pill.id))
+                );
+
+                //chi them pill moi neu co 
+                await Promise.all(
+                    newPills.map(({ name, type, dosage }) =>
+                        addPillToPrescription(prescriptionId, { name, type, dosage })
+                    )
+                );
+
+                showSuccessModal('Pills updated successfully!');
             }
-        } else if (prescriptionId) {
-            setIsLoading(true);
-            await Promise.all(
-                updatePillList.map(({ name, type, dosage }) =>
-                    addPillToPrescription(prescriptionId, { name, type, dosage })
-                )
-            );
+        } catch (err) {
+            Alert.alert("Error", `Failed to save: ${err.message}`);
+        } finally {
             setIsLoading(false);
-            showSuccessModal('Updates pill successfull!')
-            // router.push('/(app)/homePage')
         }
     };
 
-    //Ham xoa 1 thuoc trong don thuoc
-    const deletePill = async () => {
-        try {
-            // 1. Thực hiện xóa pill
-            await deletePillById(prescriptionId.toString(), pillId);
+    //Ham xoa 1 thuoc trong don thuoc (chua xoa tren firebase)
+    const deletePill = (pillIdToDelete: string) => {
+        setIsAlertVisible(false);
 
-            // 2. Ẩn alert
-            setIsAlertVisible(false);
-
-            // 3. Load lại danh sách pill
-            setIsLoading(true);
-            const updatedPills = await getPrescriptionPills(prescriptionId);
-            setPillList(updatedPills);
-        } catch (error) {
-            console.error("Lỗi khi xóa pill:", error);
-            Alert.alert("Lỗi", "Không thể xóa thuốc: " + error.message);
-        } finally {
-            setIsLoading(false);
+        if (prescriptionData) {
+            //xoa tren danh sach moi
+            setNewPillList(prev => prev.filter(pill => pill.id !== pillIdToDelete));
+        } else if (prescriptionId) {
+            //xoa tren danh sach cu
+            setExistingPillList(prev => prev.filter(pill => pill.id !== pillIdToDelete));
         }
     };
 
@@ -227,22 +219,36 @@ const AddPills = () => {
                 <Loading size={hp(14)} />
             </View>
         );
+    //xacs dinh list hien tai la newPillList hay la existingPillList dua tren prescriptionData
+    const currentPillList = prescriptionData ? newPillList : existingPillList;
 
     return (
         <View style={{ backgroundColor: theme.colors.accent }} className="flex-1 px-6 pt-8">
             {/* Header */}
             <View className="flex-row items-center mb-4">
                 <TouchableOpacity onPress={() => {
-                    if (pillList.length > 0) {
-                        setWarningModalVisible(true);
-                    } else {
-                        router.replace('/homePage');
+                    if (prescriptionData) { //truong hop addPrescription
+                        if (newPillList.length > 0) {
+                            setWarningModalVisible(true);
+                        } else {
+                            router.replace('/homePage');
+                        }
+                    } else { //truong hop updatePrescription
+                        if (existingPillList.length > 0) {
+                            setWarningModalVisible(true);
+                        } else {
+                            router.replace('/homePage');
+                        }
                     }
                 }}>
                     <Ionicons name="chevron-back" size={30} color="black" />
                 </TouchableOpacity>
 
-                <Text style={{ fontSize: hp(2.5) }} className="text-center font-semibold ml-2">Prescription pill list</Text>
+                <Text
+                    style={{ fontSize: hp(2.5) }}
+                    className="text-center font-semibold ml-2">
+                    {prescriptionData ? "Add Prescription Pills" : "Update Prescription Pills"}
+                </Text>
             </View>
 
             {/* Illustration */}
@@ -252,25 +258,17 @@ const AddPills = () => {
             </View>
 
             {/* Title */}
-            <Text style={{ fontSize: hp(3) }} className="font-semibold ml-2 mb-5">Manage pills</Text>
+            <Text style={{ fontSize: hp(3) }} className="font-semibold ml-2 mb-5">
+                {prescriptionData ? "Add new pills" : "Manage existing pills"}
+            </Text>
 
-            {/* Pill List */}
-            {/* <View style={{ maxHeight: hp(55) }} className="bg-white rounded-2xl overflow-hidden mb-6">
-                    <FlatList
-                        data={pillList}
-                        renderItem={renderItem}
-                        keyExtractor={(item) => item.id}
-                        showsVerticalScrollIndicator={true}
-                        contentContainerStyle={{ paddingVertical: 16 }}
-                    />
-                </View> */}
             {/* Pill List */}
             <View
                 style={{ maxHeight: hp(55) }}
                 className="bg-white rounded-2xl overflow-hidden mb-6"
             >
                 <FlatList
-                    data={pillList}
+                    data={currentPillList}
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id}
                     showsVerticalScrollIndicator={true}
@@ -305,6 +303,7 @@ const AddPills = () => {
                 }
             </View>
 
+            {/* Delete Confirmation Modal */}
             <ReactNativeModal isVisible={isAlertVisible}>
                 <CustomAlert
                     title="Delete Pill"
@@ -312,10 +311,11 @@ const AddPills = () => {
                     btnConfirm="Delete"
                     confirmTextColor="text-red-500"
                     onCancel={() => setIsAlertVisible(false)}
-                    onConfirm={deletePill}
+                    onConfirm={() => deletePill(pillId)}
                 />
             </ReactNativeModal>
 
+            {/* Add Confirmation Modal */}
             <ReactNativeModal
                 isVisible={isModalVisible}
                 onBackdropPress={() => setIsModalVisible(false)}
@@ -337,7 +337,9 @@ const AddPills = () => {
                 }}>
                     {/* Header */}
                     <View className="bg-teal-500 py-5 px-6">
-                        <Text className="text-white text-2xl font-bold text-center">Add Pill</Text>
+                        <Text className="text-white text-2xl font-bold text-center">
+                            {prescriptionData ? "Add New Pill" : "Update Pill"}
+                        </Text>
                     </View>
 
                     {/* Body */}
@@ -382,6 +384,7 @@ const AddPills = () => {
                 </View>
             </ReactNativeModal>
 
+            {/* Success/Error Message Modal */}
             <MessageModal
                 visible={messageModalVisible}
                 onClose={() => {
@@ -395,6 +398,7 @@ const AddPills = () => {
             >
             </MessageModal>
 
+            {/* Exit Warning Modal */}
             <ReactNativeModal
                 isVisible={warningModalVisible}
                 onBackdropPress={() => setWarningModalVisible(false)}
@@ -412,7 +416,7 @@ const AddPills = () => {
                         Warning
                     </Text>
                     <Text className="text-center text-base text-gray-600">
-                        Are you sure you want to exit? Your unsaved prescription will be lost.
+                        Are you sure you want to exit? Your unsaved changes will be lost.
                     </Text>
 
                     <View className="w-full mt-6 space-y-3">
