@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Alert, Share } from "react-native";
 import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 import {
   FontAwesome,
@@ -25,10 +25,21 @@ const HomePage = () => {
     time: "",
     note: "",
   });
+
+  const [selectedPrescriptionFull, setSelectedPrescriptionFull] = useState({
+    id: "",
+    name: "",
+    time: [],
+    frequency: 0,
+    startDate: null,
+    note: "",
+  });
+
+
   const [pills, setPills] = useState<
     { id: string; name: string; type: string; dosage: string }[]
   >([]);
-  const { fetchPillsData, deletePrescription } = useCrud();
+  const { fetchPillsData, deletePrescription, getPrescriptionPills, fetchPrescriptionById } = useCrud();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const selectedPrescriptionId = selectedPrescription?.id ?? null;
@@ -60,6 +71,24 @@ const HomePage = () => {
 
   useEffect(() => {
     fetchPills();
+
+    const fetchSelectedPrescription = async () => {
+      if (!selectedPrescriptionId) return;
+
+      const prescription = await fetchPrescriptionById(selectedPrescriptionId);
+      if (prescription) {
+        setSelectedPrescriptionFull({
+          id: prescription.id,
+          name: prescription.name,
+          time: prescription.time || [],
+          frequency: prescription.frequency ?? 0,
+          startDate: prescription.startDate || null,
+          note: prescription.note || "",
+        });
+      }
+    };
+
+    fetchSelectedPrescription();
   }, [selectedPrescriptionId]);
 
   const fetchPills = async () => {
@@ -73,7 +102,94 @@ const HomePage = () => {
     console.log("Selected prescription:", selectedPrescription);
     console.log("Fetched pills data:", data);
     setIsModalVisible(true);
-  };  
+  };
+
+  const getFrequencyText = (frequency: number) => {
+    switch (frequency) {
+      case 0: return "No repeat";
+      case 1: return "Every day";
+      case 7: return "Every week";
+      default: return `Every ${frequency} day(s)`;
+    }
+  };
+
+  const formatDateFlexible = (dateValue: any) => {
+    let dateObj: Date;
+
+    if (!dateValue) return "Unknown start date";
+
+    // Trường hợp Firestore Timestamp { seconds, nanoseconds }
+    if (typeof dateValue === "object" && "seconds" in dateValue) {
+      dateObj = new Date(dateValue.seconds * 1000);
+    }
+    // Trường hợp có phương thức toDate()
+    else if (typeof dateValue?.toDate === "function") {
+      dateObj = dateValue.toDate();
+    }
+    // Trường hợp là đối tượng Date
+    else if (dateValue instanceof Date) {
+      dateObj = dateValue;
+    }
+    // Trường hợp là chuỗi parse được
+    else {
+      const parsed = new Date(dateValue);
+      if (!isNaN(parsed.getTime())) {
+        dateObj = parsed;
+      } else {
+        return "Invalid date";
+      }
+    }
+
+    return dateObj.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+
+  const onShare = async () => {
+    try {
+      if (!selectedPrescriptionId) {
+        Alert.alert("No prescription selected.");
+        return;
+      }
+
+      const pillsData = await getPrescriptionPills(selectedPrescriptionId);
+
+      const pillsText = pillsData.length
+        ? pillsData.map((pill, index) =>
+          `${index + 1}. ${pill.name} - ${pill.dosage} (${pill.type})`
+        ).join("\n")
+        : "No pills listed for this prescription.";
+
+      const timeText = selectedPrescriptionFull.time.length
+        ? selectedPrescriptionFull.time.join(", ")
+        : "No time set.";
+
+      const frequencyText = getFrequencyText(selectedPrescriptionFull.frequency);
+      const startDateText = formatDateFlexible(selectedPrescriptionFull.startDate);
+
+      const message = `📋 Prescription: ${selectedPrescriptionFull.name}
+  🗓️ Started date: ${startDateText}
+  🔁 Frequency: ${frequencyText}
+  🕐 Time(s): ${timeText}
+  📝 Note: ${selectedPrescriptionFull.note || "No note for this prescription!!"}
+💊 Pills list:
+${pillsText}
+📲 Check out PillPall - your pill reminder & medication manager!`;
+
+      const result = await Share.share({ message });
+
+      if (result.action === Share.sharedAction) {
+        // optionally handle shared
+      } else if (result.action === Share.dismissedAction) {
+        // optionally handle dismissed
+      }
+    } catch (error: any) {
+      Alert.alert(error.message);
+    }
+  };
 
   return (
     <View
@@ -139,6 +255,9 @@ const HomePage = () => {
             <View className="flex-row justify-between items-center">
               <TouchableOpacity onPress={moveToUpdatePrescription}>
                 <FontAwesome name="pencil" size={24} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={onShare}>
+                <FontAwesome name="share" size={24} color="white" className="ml-5" />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setIsAlertVisible(true)}

@@ -28,7 +28,7 @@ const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ time, title, note, 
             <View className={`${isTaken ? 'visible' : 'invisible'}`}>
               <View className="flex-row items-center mr-2">
                 <Entypo name="check" size={25} color="green" />
-                <Text style={{ fontSize: hp(2.1) }} className="text-green-700 font-bold">{currentTime} TAKEN</Text>
+                <Text style={{ fontSize: hp(2.1) }} className="text-green-700 font-bold">{currentTime} Taken</Text>
               </View>
             </View>
           </View>
