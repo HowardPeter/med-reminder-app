@@ -150,6 +150,15 @@ export default function UserSettings() {
                     <AntDesign name="arrowright" size={24} color="gray" />
                 </TouchableOpacity>
 
+               
+                <TouchableOpacity
+                className="flex-row items-center p-6 border-b border-gray-300"
+                 onPress={() => router.push('/consultingDoctors')}>
+                     <MaterialCommunityIcons name="doctor" size={24} color="black" />
+                      <Text className="text-xl ml-4 flex-1">Consulting doctors</Text>
+                        <AntDesign name="arrowright" size={24} color="gray" />
+                        </TouchableOpacity>
+
                 <View className="items-center mt-10">
                     <Image
                         source={images.userSettings}
