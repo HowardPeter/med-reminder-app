@@ -7,7 +7,7 @@ import {
   Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Ionicons, Fontisto, EvilIcons, FontAwesome } from "@expo/vector-icons";
+import { Ionicons, EvilIcons, FontAwesome } from "@expo/vector-icons";
 import { images } from "@/constants";
 import CustomKeyboardView from "@/components/CustomKeyboardView";
 import Loading from "@/components/loading";
@@ -19,6 +19,7 @@ import { doc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
 import theme from "@/config/theme";
 import { db } from "@/firebaseConfig";
 import { format } from "date-fns";
+import DatePickerField from "@/components/DatePickerField";
 
 export default function UpdatePrescription() {
   const [name, setName] = useState("");
@@ -40,7 +41,7 @@ export default function UpdatePrescription() {
         // Lấy dữ liệu prescription chính
         const prescriptionRef = doc(db, "prescriptions", prescriptionId);
         const prescriptionSnap = await getDoc(prescriptionRef);
-        
+
         //Lấy dữ liệu prescription chính
         if (prescriptionSnap.exists()) {
           const prescriptionData = prescriptionSnap.data();
@@ -50,20 +51,20 @@ export default function UpdatePrescription() {
 
           // Kiểm tra và chuyển đổi nếu cần
           let convertedDate: Date | null = null;
-        
+
           if (rawStartDate instanceof Timestamp) {
             convertedDate = rawStartDate.toDate();
           } else if (rawStartDate?.seconds) {
             // Nếu là plain object { seconds, nanoseconds }
             convertedDate = new Timestamp(rawStartDate.seconds, rawStartDate.nanoseconds).toDate();
           }
-        
+
           // Nếu có ngày hợp lệ thì format
           if (convertedDate) {
             setStartDate(format(convertedDate, "dd/MM/yyyy"));
           } else {
             setStartDate(""); // hoặc giữ nguyên nếu không hợp lệ
-          } 
+          }
           const numberOfFrequency = prescriptionData.frequency?.toString();
           if (numberOfFrequency === "0") {
             setSelectedFrequency("No repeat");
@@ -99,8 +100,8 @@ export default function UpdatePrescription() {
       selectedFrequency === "No repeat"
         ? 0
         : selectedFrequency === "Every week"
-        ? 7
-        : 1;
+          ? 7
+          : 1;
     const newDataArray: string[] = [name, startDate, number.toString(), note];
     if (
       JSON.stringify(oldData) === JSON.stringify(newDataArray) &&
@@ -130,8 +131,8 @@ export default function UpdatePrescription() {
           selectedFrequency === "No repeat"
             ? 0
             : selectedFrequency === "Every week"
-            ? 7
-            : 1,
+              ? 7
+              : 1,
       });
       Alert.alert("Success", "Prescription updated successfully!");
       setOldData(newDataArray);
@@ -188,6 +189,7 @@ export default function UpdatePrescription() {
 
     return true;
   };
+
   function convertToTimestamp(dateString: string): Timestamp | null {
     try {
       // Tách ngày, tháng, năm từ chuỗi
@@ -208,6 +210,7 @@ export default function UpdatePrescription() {
       return null;
     }
   }
+
   return (
     <CustomKeyboardView>
       <View className="bg-[#E8F3F2]">
@@ -261,21 +264,18 @@ export default function UpdatePrescription() {
               </View>
             </View>
           </View>
-          {/* Day */}
-          <View className="mt-3">
-            <View className="w-full">
+          {/* Start date */}
+          <View className="mt-5 items-center">
+            <View className="w-[370]">
               <Text className="text-1xl font-bold text-black">Start date</Text>
             </View>
-            <View>
-              <View className="bg-white flex-row items-center border border-gray-400 rounded-[10] h-[50] w-[370] mt-2 px-4">
-                <Fontisto name="date" size={24} color="black" />
-                <TextInput
-                  value={startDate}
-                  onChangeText={setStartDate}
-                  placeholder="01/01/2025"
-                  className="px-3 pr-3 text-black text-1xl w-full"
-                ></TextInput>
-              </View>
+            <View className="w-[370]">
+              <DatePickerField
+                initialDate={startDate}
+                onDateChange={(formattedDate) => {
+                  setStartDate(formattedDate);
+                }}
+              />
             </View>
           </View>
           {/* Time */}
