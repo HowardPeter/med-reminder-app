@@ -180,6 +180,14 @@ export default function UserSettings() {
 
                     <TouchableOpacity
                         className="flex-row items-center p-6 border-b border-gray-300"
+                        onPress={() => router.push('/consultingDoctors')}>
+                        <MaterialCommunityIcons name="doctor" size={24} color="black" />
+                        <Text className="text-xl ml-4 flex-1">Consulting doctors</Text>
+                        <AntDesign name="arrowright" size={24} color="gray" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        className="flex-row items-center p-6 border-b border-gray-300"
                         onPress={onShare}
                     >
                         <FontAwesome name="share" size={24} color="black" />
@@ -417,6 +425,6 @@ export default function UserSettings() {
                     </TouchableOpacity>
                 </View>
             </ScrollView>
-        </KeyboardAvoidingView>
+        </KeyboardAvoidingView >
     );
 }

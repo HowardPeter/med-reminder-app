@@ -32,3 +32,4 @@ export const db = getFirestore(app);
 export const userRef = collection(db, "users");
 export const otpRef = collection(db, 'otps')
 export const prescriptionsRef = collection(db, 'prescriptions')
+export const doctorsRef = collection(db, "doctors");
