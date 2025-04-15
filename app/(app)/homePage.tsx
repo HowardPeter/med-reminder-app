@@ -15,8 +15,8 @@ import PillList from "@/components/PillList";
 import CustomAlert from "@/components/CustomAlert";
 import { router } from "expo-router";
 import { useCrud } from "@/hooks/useCrud";
-import * as Notifications from 'expo-notifications';
 import { useNotification } from '@/hooks/useNotification';
+import { useAuth } from "@/hooks/useAuth";
 
 export default function HomePage() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -30,8 +30,11 @@ export default function HomePage() {
   const [pills, setPills] = useState<
     { id: string; name: string; type: string; dosage: string }[]
   >([]);
-  const { fetchPillsData, deletePrescription } = useCrud();
+  const { fetchPillsData, fetchPrescriptionData, deletePrescription } = useCrud();
+  const { user } = useAuth();
+  const userId = user?.userId ?? null;
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [prescriptions, setPrescriptions] = useState<any>();
   const { scheduleNotification } = useNotification();
 
   const selectedPrescriptionId = selectedPrescription?.id ?? null;
@@ -65,6 +68,18 @@ export default function HomePage() {
     fetchPills();
   }, [selectedPrescriptionId]);
 
+  useEffect(() => {
+    fetchPrescriptions();
+  }, [userId]);
+
+  const fetchPrescriptions = async () => {
+    if(!userId) return;
+    const data = await fetchPrescriptionData(userId);
+    setPrescriptions(data);
+  }
+
+  scheduleNotification(prescriptions);
+
   const fetchPills = async () => {
     if (!selectedPrescriptionId) {
       console.log("No prescription ID selected.");
@@ -79,7 +94,7 @@ export default function HomePage() {
   };
 
   const handleShowNotification = () => {
-      scheduleNotification();
+    scheduleNotification();
   };
 
   return (
@@ -118,15 +133,6 @@ export default function HomePage() {
         className="absolute bottom-20 right-5 bg-orange-500 rounded-full items-center justify-center shadow-strong"
       >
         <Text style={{ fontSize: hp(4) }} className="text-white">+</Text>
-      </TouchableOpacity>
-
-      {/* Floating Notification Button */}
-      <TouchableOpacity
-        onPress={handleShowNotification}
-        style={{ width: hp(7), height: hp(6) }}
-        className="absolute bottom-20 right-24 bg-orange-500 rounded-2xl items-center justify-center shadow-strong"
-      >
-        <Text className="text-white">Notification</Text>
       </TouchableOpacity>
 
       {/* Bottom Navigation Bar */}

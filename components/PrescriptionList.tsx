@@ -69,7 +69,7 @@ const PrescriptionList: React.FC<PrescriptionListProps> = ({ selectedDate, onSel
     const [refreshing, setRefreshing] = useState(false);
     const [prescriptions, setPrescriptions] = useState<PrescriptionProps[]>([]);
 
-    const userId = user?.userId ?? null;    
+    const userId = user?.userId ?? null;
 
     useEffect(() => {
         if (!userId) return;
