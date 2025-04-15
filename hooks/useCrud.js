@@ -31,6 +31,44 @@ export const useCrud = () => {
       return [];
     }
   }, []);
+  const fetchPrescriptionDataForSearch = useCallback(
+    async (userId, keyWord, number) => {
+      try {
+        const prescriptionsRef = collection(db, COLLECTION_NAME);
+        const q = query(prescriptionsRef, where("userId", "==", userId)); // chỉ lọc userId
+
+        const snapshot = await getDocs(q);
+
+        const prescriptions = snapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+          .filter((item) => {
+            if (keyWord != "") {
+              const lowerKeyword = keyWord.toLowerCase();
+              const nameMatch = item.name?.toLowerCase().includes(lowerKeyword);
+              return nameMatch;
+            }
+
+            if (number === 1 || number === 0 || number === 7) {
+              const numberMatch = number.toString().toLowerCase();
+              const frequencyMatch = item.frequency
+                ?.toString()
+                .toLowerCase()
+                .includes(numberMatch);
+              return frequencyMatch;
+            }
+          });
+
+        return prescriptions;
+      } catch (error) {
+        console.error("Error fetching prescriptions:", error);
+        return [];
+      }
+    },
+    []
+  );
 
   const fetchPillsData = useCallback(async (prescriptionId) => {
     try {
@@ -53,40 +91,51 @@ export const useCrud = () => {
 
   const addPrescription = async (prescriptionData: any) => {
     try {
-      const docRef = await addDoc(collection(db, COLLECTION_NAME), prescriptionData);
-      console.log('Document written with ID: ', docRef.id);
+      const docRef = await addDoc(
+        collection(db, COLLECTION_NAME),
+        prescriptionData
+      );
+      console.log("Document written with ID: ", docRef.id);
       return docRef.id;
     } catch (error) {
-      console.error('Error adding document: ', error);
+      console.error("Error adding document: ", error);
       throw error;
     }
   };
 
-  const addPillToPrescription = async (prescriptionId: string, pillData: any) => {
+  const addPillToPrescription = async (
+    prescriptionId: string,
+    pillData: any
+  ) => {
     try {
       //lay reference toi collection prescriptions/{id}/pill, nghia la them data vao collection pill co ma id la prescri
-      const pillCollectionRef = collection(db, COLLECTION_NAME, prescriptionId, "pills");
+      const pillCollectionRef = collection(
+        db,
+        COLLECTION_NAME,
+        prescriptionId,
+        "pills"
+      );
       const pillDocRef = await addDoc(pillCollectionRef, pillData);
-      console.log('Pill added with ID:', pillDocRef.id);
+      console.log("Pill added with ID:", pillDocRef.id);
       return pillDocRef.id;
     } catch (error) {
-      console.error('Error adding pill:', error);
+      console.error("Error adding pill:", error);
       throw error;
     }
   };
 
   const getPillsByPrescriptionId = async (prescriptionId: string) => {
     try {
-      const pillsRef = collection(db, 'prescriptions', prescriptionId, 'pills');
+      const pillsRef = collection(db, "prescriptions", prescriptionId, "pills");
       const snapshot = await getDocs(pillsRef);
-      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
-      console.error('Phat Error fetching pills: ', error);
+      console.error("Phat Error fetching pills: ", error);
       throw error;
     }
   };
 
-  const updatePrescription = () => { };
+  const updatePrescription = () => {};
 
   const deletePrescription = async (prescriptionId) => {
     const prescriptionRef = doc(db, "prescriptions", prescriptionId);
@@ -185,5 +234,6 @@ export const useCrud = () => {
     deletePrescription,
     getPrescriptionPills,
     deletePillById,
+    fetchPrescriptionDataForSearch,
   };
 };

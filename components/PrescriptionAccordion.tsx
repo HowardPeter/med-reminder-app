@@ -35,7 +35,7 @@ const PrescriptionAccordion: React.FC<Props> = ({ name, time, frequency, note, p
     }
 
     return (
-        <View className="bg-white rounded-xl p-4 mb-4 mx-4 shadow-xl">
+        <View className="bg-white rounded-xl p-4 mb-4 mx-3 shadow-xl">
             <TouchableOpacity onPress={() => setExpanded(!expanded)} className="flex-row justify-between items-center mb-2">
                 <View>
                     <Text style={{fontSize: hp(2.1)}} className="text-xl font-bold">{name}</Text>

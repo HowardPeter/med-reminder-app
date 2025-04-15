@@ -223,7 +223,7 @@ export default function AddPrescription() {
                                 onTimesChange={setTime}
                             //onTimesChange={handleTimesChange}
                             />
-                            <Text style={{ fontSize: hp(1.8) }} className='italic text-base text-center'>Note: Times must be at least 1 hour apart</Text>
+                            <Text style={{ fontSize: hp(1.5) }} className='italic text-base text-center'>Note: Please press the time to update {'\n'} or hold to delete.</Text>
                         </View>
                     </View>
                     {/* Frequency */}
@@ -277,11 +277,11 @@ export default function AddPrescription() {
                         </View>
                     </View>
                     {/* Button Update */}
-                    <View className='self-end w-full mt-2'>
+                    <View className='items-center mt-2'>
                         {isLoading ?
                             <Loading size={hp(7)} />
                             :
-                            <View className="items-end mr-5">
+                            <View className="items-end">
                                 <TouchableOpacity
                                     style={{ backgroundColor: theme.colors.primary }}
                                     className="flex rounded-[20] h-[50] w-[140] justify-center mt-5"

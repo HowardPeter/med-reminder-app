@@ -23,6 +23,7 @@ import pill2 from "@/assets/images/pill2.png";
 import injection from "@/assets/images/injection.png";
 import inhaler from "@/assets/images/inhaler.png";
 import thinking from "@/assets/images/thinking.json";
+import vectorHistoryPrescription from "@/assets/images/Tiny pharmacists with prescription drugs for patients.jpg";
 
 export const images = {
     logo,
@@ -48,6 +49,7 @@ export const images = {
     pill2,
     injection,
     inhaler,
+    vectorHistoryPrescription,
 }
 
 export const animations = {
