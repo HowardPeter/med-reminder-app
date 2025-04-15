@@ -245,9 +245,9 @@ export default function SignUp() {
               </View>
 
               <View className="flex-row justify-between mt-[170px] pb-11">
-                <TouchableOpacity>
+                {/* <TouchableOpacity>
                   <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="font-bold">Resend</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <TouchableOpacity onPress={checkVerification}>
                   <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="font-bold">CONFIRM</Text>
                 </TouchableOpacity>
@@ -270,8 +270,8 @@ export default function SignUp() {
               <Text style={{ fontSize: wp(5.5) }} className='text-white font-bold text-center'>Verified!</Text>
               <Text style={{ fontSize: wp(4.2) }} className='text-white font-medium text-center text-lg mt-2'>Congratulation! You have successfully verify your email.</Text>
             </View>
-            <TouchableOpacity onPress={() => router.replace('/(app)/homePage')} className='bg-white py-4 px-[100px] rounded-3xl items-center mt-10'>
-              <Text style={{ fontSize: wp(4), color: theme.colors.primary }} className='font-semibold'>Go to Home</Text>
+            <TouchableOpacity onPress={() => router.replace('/(auth)/signIn')} className='bg-white py-4 px-[100px] rounded-3xl items-center mt-10'>
+              <Text style={{ fontSize: wp(4), color: theme.colors.primary }} className='font-semibold'>Go to Sign In</Text>
             </TouchableOpacity>
           </View>
         </ReactNativeModal>

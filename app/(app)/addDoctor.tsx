@@ -32,7 +32,7 @@ export default function AddDoctorScreen() {
 
     const newDoctor = {
       name,
-      specialty,  
+      specialty,
       phone,
       email,
       address,
