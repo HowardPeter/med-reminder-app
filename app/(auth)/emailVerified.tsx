@@ -47,18 +47,18 @@ export default function ForgetPasswordScreen() {
       const formattedTime = expiresAt.toLocaleTimeString(); //format lai thoi gian cho no dep
 
       // chay bang EmailJS that
-      // await emailjs.send(
-      //   'service_ljqfo7p',
-      //   'template_rf7va6r',
-      //   {
-      //     passcode: otp, //ghep cac truong tuong ung voi template
-      //     email: email,
-      //     time: formattedTime //thoi gian het han
-      //   },
-      //   {
-      //     publicKey: 'ZCUdPPfiDnWbrPeWO',
-      //   }
-      // );
+      await emailjs.send(
+        'service_ljqfo7p',
+        'template_rf7va6r',
+        {
+          passcode: otp, //ghep cac truong tuong ung voi template
+          email: email,
+          time: formattedTime //thoi gian het han
+        },
+        {
+          publicKey: 'ZCUdPPfiDnWbrPeWO',
+        }
+      );
 
       // chay Test bang Alert
       console.log('Your OTP is:', otp);
