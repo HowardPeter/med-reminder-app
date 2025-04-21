@@ -34,13 +34,14 @@ jobs:
       shell: bash
       
     - name: Build app in Android
-      run: eas build --profile preview --platform android --non-interactive --local --output ${{ github.workspace }}/pill-pal-release.apk
-      
-    - name: Upload Build Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: pill-pal-release
-        path: ${{ github.workspace }}/pill-pal-release.apk
+      run: eas build --profile preview --platform android --non-interactive
 
-    - name: Successful deploy
-      run: echo "Deploy successfully"
+    - name: Get latest build URL
+      id: get-url
+      run: |
+        url=$(eas build:list --platform android --limit 1 --json | jq -r '.[0].artifacts.buildUrl')
+        echo "APK_URL=$url" >> $GITHUB_ENV
+
+    - name: Show deploy URL
+      run: |
+        echo "✅ APK file available at: $APK_URL"
