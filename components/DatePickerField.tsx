@@ -14,7 +14,7 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({
 }) => {
   const [showPicker, setShowPicker] = useState(false);
   const [date, setDate] = useState<Date>(new Date());
-  const [startDate, setStartDate] = useState(initialDate || '');
+  const [startDate, setStartDate] = useState(initialDate ?? '');
 
   useEffect(() => {
     if (initialDate) {

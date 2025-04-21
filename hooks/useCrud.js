@@ -154,8 +154,6 @@ export const useCrud = () => {
     }
   };
 
-  const updatePrescription = () => {};
-
   const deletePrescription = async (prescriptionId) => {
     const prescriptionRef = doc(db, "prescriptions", prescriptionId);
 
@@ -251,7 +249,6 @@ export const useCrud = () => {
     addPrescription,
     addPillToPrescription,
     getPillsByPrescriptionId,
-    updatePrescription,
     deletePrescription,
     getPrescriptionPills,
     deletePillById,

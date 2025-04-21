@@ -87,12 +87,7 @@ export default function ActivePrescriptions() {
       return;
     }
     //Chuyển đổi tần suất thành số để tìm kiếm
-    const frequencySelected =
-      selectedFrequency === "No repeat"
-        ? 0
-        : selectedFrequency === "Every day"
-        ? 1
-        : 7;
+    const frequencySelected = selectedFrequency === "No repeat" ? 0 : selectedFrequency === "Every day" ? 1 : 7;
     try {
       setLoading(true);
       const prescriptions = await fetchPrescriptionDataForSearch(
@@ -213,7 +208,8 @@ export default function ActivePrescriptions() {
               <Picker
                 selectedValue={selectedFrequency}
                 onValueChange={(itemValue) => {
-                  handleSelect(itemValue), setSelectedFrequency(itemValue);
+                  handleSelect(itemValue);
+                  setSelectedFrequency(itemValue);
                 }} // Cập nhật giá trị khi chọn
                 style={{ width: "160", height: "50", color: "#000000" }}
                 mode="dropdown" // Có thể chọn hiển thị theo kiểu dropdown

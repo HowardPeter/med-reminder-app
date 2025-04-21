@@ -1,8 +1,8 @@
-import { View, Image, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Image, Text, TextInput, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import "../../global.css";
-import { Feather, Fontisto } from "@expo/vector-icons"
+import { Fontisto } from "@expo/vector-icons"
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth'
 import { doc, setDoc, serverTimestamp, deleteDoc, Timestamp, getDoc } from "firebase/firestore";

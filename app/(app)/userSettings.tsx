@@ -1,6 +1,6 @@
-import { View, Text, TouchableOpacity, Image, TextInput, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { AntDesign, FontAwesome, MaterialIcons, Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { View, Text, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { FontAwesome, MaterialIcons, Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useRouter } from 'expo-router';
 import { images } from '@/constants';
@@ -8,7 +8,6 @@ import ReactNativeModal from 'react-native-modal';
 import { useAuth } from '@/hooks/useAuth';
 import theme from '@/config/theme';
 import MessageModal from '@/components/MessageModal';
-import CustomKeyboardView from '@/components/CustomKeyboardView';
 
 export default function UserSettings() {
     const { logout, user, updateUserImage } = useAuth();
@@ -21,7 +20,7 @@ export default function UserSettings() {
     const [modalType, setModalType] = useState('Error');
 
     const [warningModalVisible, setWarningModalVisible] = useState(false);
-    const options = 'https://github.com/HowardPeter/med-reminder-app.git'
+    // const options = 'https://github.com/HowardPeter/med-reminder-app.git'
 
     // const onShare = async () => {
     //     try {
@@ -106,6 +105,7 @@ export default function UserSettings() {
 
         } catch (error) {
             showErrorModal('Failed to verify image. Please try another URL.');
+            console.error('Error verifying image URL:', error);
         }
     };
 
