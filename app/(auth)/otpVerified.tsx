@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, Image, TextInput } from 'react-native';
 import React, { useRef, useState } from 'react';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { AntDesign, Feather, Ionicons } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import MessageModal from '../../components/MessageModal';
 import { db } from '../../firebaseConfig';

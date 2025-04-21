@@ -18,7 +18,6 @@ export default function ConsultingDoctors() {
           <Ionicons name="arrow-back" size={28} color="#0f766e" />
         </TouchableOpacity>
       </View>
-
       
       <View className="flex-1">
         <DoctorList onEditDoctor={handleEditDoctor} />

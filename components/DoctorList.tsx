@@ -12,6 +12,8 @@ import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { useRouter } from 'expo-router';
 import DoctorCard from './DoctorCard';
+import ReactNativeModal from 'react-native-modal';
+import CustomAlert from './CustomAlert';
 
 interface Doctor {
   id: string;
@@ -29,6 +31,8 @@ const DoctorList = ({ onEditDoctor }: Props) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
 
   const fetchDoctors = async () => {
     setLoading(true);
@@ -54,29 +58,11 @@ const DoctorList = ({ onEditDoctor }: Props) => {
     }
   };
 
-  const confirmDelete = (id: string) => {
-    Alert.alert(
-      'You are sure to delete this doctor',
-      'Are you sure you want to delete this doctor?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => handleDelete(id),
-        },
-      ],
-      { cancelable: true }
-    );
-  };
-
   const handleDelete = async (id: string) => {
     try {
       await deleteDoc(doc(db, 'doctors', id));
       fetchDoctors();
+      setIsAlertVisible(false);
     } catch (error) {
       console.error('Error deleting doctor:', error);
       setError('Failed to delete doctor. Please try again.');
@@ -101,7 +87,7 @@ const DoctorList = ({ onEditDoctor }: Props) => {
         <ActivityIndicator size="large" color="#0f766e" />
       </View>
     );
-  }
+  }  
 
   return (
     <View style={{ flex: 1, paddingHorizontal: 16, backgroundColor: '#ffffff' }}>
@@ -134,11 +120,11 @@ const DoctorList = ({ onEditDoctor }: Props) => {
           />
           <Text style={{ fontSize: 25, fontWeight: 'bold', marginTop: 16, color: '#0f766e' }}>
             List your doctors
-            </Text>
+          </Text>
 
-            <Text style={{ textAlign: 'center', color: '#6B7280', marginTop: 8, fontSize: 16 }}>
-                 You currently do not have any doctors. Please add more doctors for easy contact.
-            </Text>
+          <Text style={{ textAlign: 'center', color: '#6B7280', marginTop: 8, fontSize: 16 }}>
+            You currently do not have any doctors. Please add more doctors for easy contact.
+          </Text>
 
         </View>
       ) : (
@@ -151,12 +137,25 @@ const DoctorList = ({ onEditDoctor }: Props) => {
                 name={item.name}
                 specialty={item.specialty}
                 gender={item.gender}
-                onDelete={() => confirmDelete(item.id)}
+                onDelete={() => {
+                  setSelectedDoctorId(item.id);
+                  setIsAlertVisible(true);
+                }}
               />
             </TouchableOpacity>
           )}
         />
       )}
+      <ReactNativeModal isVisible={isAlertVisible}>
+        <CustomAlert
+          title="Delete doctor contact"
+          message='Are you sure you want to delete this doctor contact information?'
+          btnConfirm="Delete"
+          confirmTextColor="text-red-500"
+          onCancel={() => setIsAlertVisible(false)}
+          onConfirm={() => selectedDoctorId && handleDelete(selectedDoctorId)}
+        />
+      </ReactNativeModal>
     </View>
   );
 };

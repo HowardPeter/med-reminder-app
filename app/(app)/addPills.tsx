@@ -227,18 +227,18 @@ const AddPills = () => {
             {/* Header */}
             <View className="flex-row items-center mb-4">
                 <TouchableOpacity onPress={() => {
-                    if (prescriptionData) { //truong hop addPrescription
+                    if (prescriptionData) {
+                        // truong hop addPrescription
                         if (newPillList.length > 0) {
                             setWarningModalVisible(true);
                         } else {
                             router.replace('/homePage');
                         }
-                    } else { //truong hop updatePrescription
-                        if (existingPillList.length > 0) {
-                            setWarningModalVisible(true);
-                        } else {
-                            router.replace('/homePage');
-                        }
+                    } else if (existingPillList.length > 0) {
+                        // truong hop updatePrescription
+                        setWarningModalVisible(true);
+                    } else {
+                        router.replace('/homePage');
                     }
                 }}>
                     <Ionicons name="chevron-back" size={30} color="black" />

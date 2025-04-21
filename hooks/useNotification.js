@@ -48,23 +48,26 @@ export const useNotification = () => {
           scheduleTime = scheduleTime.add(1, 'day');
         }
 
-        const trigger = new Date(scheduleTime.valueOf());
+        const trigger = {
+          type: 'date',
+          timestamp: scheduleTime.valueOf(),
+        };
 
         const id = await Notifications.scheduleNotificationAsync({
           content: {
-            title: '💊 Uống thuốc',
-            body: `Đã đến lúc uống thuốc: ${name}`,
+            title: `💊 Hey, it's time to take your medicine!`,
+            body: `Prescription: ${name}`,
             sound: 'default',
           },
           trigger,
         });
 
-        //console.log(`[🔔 Scheduled for ${name} at ${timeString}] ID:`, id);
+        console.log(`[🔔 Scheduled for ${name} at ${timeString}]`, {
+          id,
+          triggerTime: scheduleTime.format('YYYY-MM-DD HH:mm:ss'),
+        });
       }
     }
-
-    // const all = await Notifications.getAllScheduledNotificationsAsync();
-    // console.log('[📅 All scheduled notifications]:', all);
   };
 
   return {

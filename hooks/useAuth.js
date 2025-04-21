@@ -71,17 +71,17 @@ export const AuthContextProvider = ({ children }) => {
                 await user.reload();
                 if (!user.emailVerified) {
                     await deleteUser(user);
-                    console.log('user is not verified');
-                } else {
-                    await setDoc(doc(db, "users", user.uid), {
-                        username,
-                        userId: user.uid,
-                        userEmail: user.email,
-                        userImage: 'https://pin.it/2da4Xbylp',
-                    });
-                    console.log('User created:', user);
                 }
-            }, 1 * 60 * 1000);
+            }, 3 * 60 * 1000);
+
+            await setDoc(doc(db, "users", user.uid), {
+                username,
+                userId: user.uid,
+                userEmail: user.email,
+                userImage: 'https://pin.it/2da4Xbylp',
+            });
+            console.log('User created:', user);
+
             return { success: true, data: user };
         } catch (error) {
             let msg = error.message;

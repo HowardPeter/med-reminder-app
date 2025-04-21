@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 import {
   FontAwesome,
@@ -45,10 +45,11 @@ export default function HomePage() {
   const { user } = useAuth();
   const userId = user?.userId ?? null;
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [prescriptions, setPrescriptions] = useState<any>();
   const { scheduleNotification } = useNotification();
 
   const selectedPrescriptionId = selectedPrescription?.id ?? null;
+
+  console.log("User ID:", userId);
 
   const moveToAddPresctiption = () => {
     setIsModalVisible(false);
@@ -87,7 +88,7 @@ export default function HomePage() {
           id: prescription.id,
           name: prescription.name,
           time: prescription.time || [],
-          frequency: prescription.frequency ?? 0,
+          frequency: prescription.frequency || 0,
           startDate: prescription.startDate || null,
           note: prescription.note || "",
         });
@@ -104,10 +105,9 @@ export default function HomePage() {
   const fetchPrescriptions = async () => {
     if (!userId) return;
     const data = await fetchPrescriptionData(userId);
-    setPrescriptions(data);
+    scheduleNotification(data);
   }
 
-  scheduleNotification(prescriptions);
 
   const fetchPills = async () => {
     if (!selectedPrescriptionId) {
@@ -122,49 +122,48 @@ export default function HomePage() {
     setIsModalVisible(true);
   };
 
-  const getFrequencyText = (frequency: number) => {
-    switch (frequency) {
-      case 0: return "No repeat";
-      case 1: return "Every day";
-      case 7: return "Every week";
-      default: return `Every ${frequency} day(s)`;
-    }
-  };
+  // const getFrequencyText = (frequency: number) => {
+  //   switch (frequency) {
+  //     case 0: return "No repeat";
+  //     case 1: return "Every day";
+  //     case 7: return "Every week";
+  //     default: return `Every ${frequency} day(s)`;
+  //   }
+  // };
 
-  const formatDateFlexible = (dateValue: any) => {
-    let dateObj: Date;
+  // const formatDateFlexible = (dateValue: any) => {
+  //   let dateObj: Date;
 
-    if (!dateValue) return "Unknown start date";
+  //   if (!dateValue) return "Unknown start date";
 
-    // Trường hợp Firestore Timestamp { seconds, nanoseconds }
-    if (typeof dateValue === "object" && "seconds" in dateValue) {
-      dateObj = new Date(dateValue.seconds * 1000);
-    }
-    // Trường hợp có phương thức toDate()
-    else if (typeof dateValue?.toDate === "function") {
-      dateObj = dateValue.toDate();
-    }
-    // Trường hợp là đối tượng Date
-    else if (dateValue instanceof Date) {
-      dateObj = dateValue;
-    }
-    // Trường hợp là chuỗi parse được
-    else {
-      const parsed = new Date(dateValue);
-      if (!isNaN(parsed.getTime())) {
-        dateObj = parsed;
-      } else {
-        return "Invalid date";
-      }
-    }
+  //   // Trường hợp Firestore Timestamp { seconds, nanoseconds }
+  //   if (typeof dateValue === "object" && "seconds" in dateValue) {
+  //     dateObj = new Date(dateValue.seconds * 1000);
+  //   }
+  //   // Trường hợp có phương thức toDate()
+  //   else if (typeof dateValue?.toDate === "function") {
+  //     dateObj = dateValue.toDate();
+  //   }
+  //   // Trường hợp là đối tượng Date
+  //   else if (dateValue instanceof Date) {
+  //     dateObj = dateValue;
+  //   }
+  //   // Trường hợp là chuỗi parse được
+  //   else {
+  //     const parsed = new Date(dateValue);
+  //     if (!isNaN(parsed.getTime())) {
+  //       dateObj = parsed;
+  //     } else {
+  //       return "Invalid date";
+  //     }
+  //   }
 
-    return dateObj.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
-  };
-
+  //   return dateObj.toLocaleDateString("en-GB", {
+  //     day: "2-digit",
+  //     month: "long",
+  //     year: "numeric",
+  //   });
+  // };
 
   //   const onShare = async () => {
   //     try {

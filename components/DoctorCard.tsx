@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { images } from '@/constants';
 
 interface DoctorCardProps {
   name: string;
@@ -33,21 +34,17 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ name, specialty, gender, onDele
             width: 50,
             height: 50,
             borderRadius: 25,
-            backgroundColor: 'white', 
+            backgroundColor: 'white',
             justifyContent: 'center',
             alignItems: 'center',
             marginRight: 15,
             borderWidth: 2,
-            borderColor: '#4CA89A', 
+            borderColor: '#4CA89A',
           }}
         >
           <Image
-            source={
-              gender === 'female'
-                ? require('@/assets/images/doctor-nu.png')
-                : require('@/assets/images/doctor-nam.png')
-            }
-            style={{ width: 40, height: 40, borderRadius: 20 }} 
+            source={gender === 'female' ? images.doctorNu : images.doctorNam}
+            style={{ width: 40, height: 40, borderRadius: 20 }}
           />
         </View>
 
