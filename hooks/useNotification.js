@@ -48,6 +48,11 @@ export const useNotification = () => {
           scheduleTime = scheduleTime.add(1, 'day');
         }
 
+        // Nếu thời gian cách hiện tại < 1 giây → lùi lại 1 giây
+        if (scheduleTime.diff(now, 'seconds') < 1) {
+          scheduleTime.add(1, 'second');
+        }
+
         const trigger = {
           type: 'date',
           timestamp: scheduleTime.valueOf(),
