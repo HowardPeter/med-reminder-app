@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 import {
@@ -17,17 +17,19 @@ import { router } from "expo-router";
 import { useCrud } from "@/hooks/useCrud";
 import { useNotification } from '@/hooks/useNotification';
 import { useAuth } from "@/hooks/useAuth";
+import moment from "moment";
 
 export default function HomePage() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  // const [todayPrescriptions, setTodayPrescriptions] = useState<any>([]);
   const [selectedPrescription, setSelectedPrescription] = useState({
     id: "",
     name: "",
     time: "",
     note: "",
   });
-
   const [selectedPrescriptionFull, setSelectedPrescriptionFull] = useState({
     id: "",
     name: "",
@@ -36,17 +38,15 @@ export default function HomePage() {
     startDate: null,
     note: "",
   });
-
-
   const [pills, setPills] = useState<
     { id: string; name: string; type: string; dosage: string }[]
   >([]);
+
   const { fetchPillsData, deletePrescription, getPrescriptionPills, fetchPrescriptionById, fetchPrescriptionData } = useCrud();
   const { user } = useAuth();
-  const userId = user?.userId ?? null;
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const { scheduleNotification } = useNotification();
 
+  const userId = user?.userId ?? null;
   const selectedPrescriptionId = selectedPrescription?.id ?? null;
 
   console.log("User ID:", userId);
@@ -102,12 +102,46 @@ export default function HomePage() {
     fetchPrescriptions();
   }, [userId]);
 
-  const fetchPrescriptions = async () => {
-    if (!userId) return;
-    const data = await fetchPrescriptionData(userId);
-    scheduleNotification(data);
-  }
+  // Lọc các đơn thuốc cần uống trong ngày hôm nay
+  const filterTodayPrescriptions = (prescriptions: any) => {
+    if (!prescriptions || prescriptions.length === 0) return [];
+    const today = moment().startOf('day');
 
+    return prescriptions.filter((prescription: any) => {
+      const frequency = prescription?.frequency;
+      const startDate = moment.unix(prescription.startDate?.seconds || 0).startOf('day');
+
+      switch (frequency) {
+        case 0:
+          // Uống đúng ngày startDate
+          return today.isSame(startDate, 'day');
+
+        case 1:
+          // Uống mỗi ngày
+          return today.isSameOrAfter(startDate, 'day');
+
+        case 7:
+          // Uống mỗi tuần (7 ngày 1 lần)
+          const diffWeeks = today.diff(startDate, 'weeks');
+          return today.isoWeekday() === startDate.isoWeekday() && diffWeeks >= 0;
+
+        default:
+          return false;
+      }
+    });
+  };
+
+
+  const hasScheduledRef = useRef(false);
+
+  const fetchPrescriptions = async () => {
+    if (!userId || hasScheduledRef.current) return;
+    const data = await fetchPrescriptionData(userId);
+    const todayPrescriptions = filterTodayPrescriptions(data);
+    scheduleNotification(todayPrescriptions);
+    console.log("Today prescriptions:", todayPrescriptions);
+    hasScheduledRef.current = true;
+  }
 
   const fetchPills = async () => {
     if (!selectedPrescriptionId) {
