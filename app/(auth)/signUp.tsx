@@ -270,8 +270,8 @@ export default function SignUp() {
               <Text style={{ fontSize: wp(5.5) }} className='text-white font-bold text-center'>Verified!</Text>
               <Text style={{ fontSize: wp(4.2) }} className='text-white font-medium text-center text-lg mt-2'>Congratulation! You have successfully verify your email.</Text>
             </View>
-            <TouchableOpacity onPress={() => router.replace('/(auth)/signIn')} className='bg-white py-4 px-[100px] rounded-3xl items-center mt-10'>
-              <Text style={{ fontSize: wp(4), color: theme.colors.primary }} className='font-semibold'>Go to Sign In</Text>
+            <TouchableOpacity onPress={() => router.replace('/(app)/homePage')} className='bg-white py-4 px-[100px] rounded-3xl items-center mt-10'>
+              <Text style={{ fontSize: wp(4), color: theme.colors.primary }} className='font-semibold'>Go to Home Page</Text>
             </TouchableOpacity>
           </View>
         </ReactNativeModal>

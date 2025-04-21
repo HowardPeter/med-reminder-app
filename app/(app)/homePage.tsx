@@ -50,6 +50,8 @@ export default function HomePage() {
 
   const selectedPrescriptionId = selectedPrescription?.id ?? null;
 
+  console.log("User ID:", userId);
+  
   const moveToAddPresctiption = () => {
     setIsModalVisible(false);
     setIsAlertVisible(false);
@@ -164,7 +166,6 @@ export default function HomePage() {
       year: "numeric",
     });
   };
-
 
   //   const onShare = async () => {
   //     try {
