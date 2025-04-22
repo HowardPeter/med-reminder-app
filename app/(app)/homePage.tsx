@@ -49,8 +49,6 @@ export default function HomePage() {
   const userId = user?.userId ?? null;
   const selectedPrescriptionId = selectedPrescription?.id ?? null;
 
-  console.log("User ID:", userId);
-
   const moveToAddPresctiption = () => {
     setIsModalVisible(false);
     setIsAlertVisible(false);
@@ -142,7 +140,7 @@ export default function HomePage() {
 
   const fetchPills = async () => {
     if (!selectedPrescriptionId) {
-      console.log("No prescription ID selected.");
+      // console.log("No prescription ID selected.");
       return;
     }
     const data = await fetchPillsData(selectedPrescriptionId);

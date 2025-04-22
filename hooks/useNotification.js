@@ -13,6 +13,8 @@ Notifications.setNotificationHandler({
 });
 
 export const useNotification = () => {
+  const { fetchPillsData } = useCrud();
+
   useEffect(() => {
     requestPermission();
   }, []);
@@ -26,32 +28,21 @@ export const useNotification = () => {
       finalStatus = status;
     }
 
-    console.log('[Notification Permission Status]:', finalStatus);
+    // console.log('[Notification Permission Status]:', finalStatus);
 
     if (finalStatus !== 'granted') {
       console.warn('Không có quyền gửi thông báo.');
     }
   };
 
-  const getPills = async (prescriptionId) => {
-    if (!prescriptionId) {
-      console.log('[Notification] prescriptionId is undefined or null');
-      return [];
-    };
-
-    const { fetchPillsData } = useCrud();
-    const pills = await fetchPillsData(prescriptionId);
-    return pills;
-  }
-
   const scheduleNotification = async (prescriptions = []) => {
-    await Notifications.cancelAllScheduledNotificationsAsync(); // Reset notification cũ trước khi set mới
-
+    await Notifications.cancelAllScheduledNotificationsAsync(); // Reset cũ trước khi set mới
+    
     for (const prescription of prescriptions) {
       const { id, name, time = [] } = prescription;
-      const pills = await getPills(id);
-      const pillInfo = pills.map(pill => `- ${pill?.name} (${pill?.dosage})`).join("\n");
-
+      const pills = await fetchPillsData(id);
+      const pillInfo = pills.map(pill => `- ${pill?.name} - Dosage: ${pill?.dosage}`).join("\n"); 
+            
       for (const timeString of time) {
         const [hour, minute] = timeString.split(':').map(Number);
         const now = moment();
@@ -67,7 +58,6 @@ export const useNotification = () => {
           scheduleTime.add(1, 'second');
         }
 
-        // const trigger = new Date(scheduleTime.valueOf());
         const trigger = {
           type: 'date',
           timestamp: scheduleTime.valueOf(),
@@ -75,8 +65,8 @@ export const useNotification = () => {
 
         const id = await Notifications.scheduleNotificationAsync({
           content: {
-            title: `💊 Hey, it's time to take your medicine!`,
-            body: `Prescription: ${name}\n${pillInfo}`,
+            title: `💊 HEY, IT'S TIME TO TAKE YOUR MEDICINE!`,
+            body: `📝 Prescription: ${name}\n${pillInfo}`,
             sound: 'default',
           },
           trigger,
