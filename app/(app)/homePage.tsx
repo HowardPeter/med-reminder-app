@@ -23,7 +23,7 @@ export default function HomePage() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAlertVisible, setIsAlertVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  // const [todayPrescriptions, setTodayPrescriptions] = useState<any>([]);
+  const hasScheduledRef = useRef(false);
   const [selectedPrescription, setSelectedPrescription] = useState({
     id: "",
     name: "",
@@ -131,9 +131,6 @@ export default function HomePage() {
     });
   };
 
-
-  const hasScheduledRef = useRef(false);
-
   const fetchPrescriptions = async () => {
     if (!userId || hasScheduledRef.current) return;
     const data = await fetchPrescriptionData(userId);
@@ -148,7 +145,6 @@ export default function HomePage() {
       console.log("No prescription ID selected.");
       return;
     }
-    console.log(`Prescription id: ${selectedPrescriptionId}`)
     const data = await fetchPillsData(selectedPrescriptionId);
     setPills(data);
     console.log("Selected prescription:", selectedPrescription);

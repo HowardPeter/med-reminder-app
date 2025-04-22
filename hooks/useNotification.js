@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
 import moment from 'moment';
+import { useCrud } from './useCrud';
 
 // Cấu hình foreground notification
 Notifications.setNotificationHandler({
@@ -32,11 +33,24 @@ export const useNotification = () => {
     }
   };
 
+  const getPills = async (prescriptionId) => {
+    if (!prescriptionId) {
+      console.log('[Notification] prescriptionId is undefined or null');
+      return [];
+    };
+
+    const { fetchPillsData } = useCrud();
+    const pills = await fetchPillsData(prescriptionId);
+    return pills;
+  }
+
   const scheduleNotification = async (prescriptions = []) => {
-    await Notifications.cancelAllScheduledNotificationsAsync(); // Reset cũ trước khi set mới
+    await Notifications.cancelAllScheduledNotificationsAsync(); // Reset notification cũ trước khi set mới
 
     for (const prescription of prescriptions) {
-      const { name, time = [] } = prescription;
+      const { id, name, time = [] } = prescription;
+      const pills = await getPills(id);
+      const pillInfo = pills.map(pill => `- ${pill?.name} (${pill?.dosage})`).join("\n");
 
       for (const timeString of time) {
         const [hour, minute] = timeString.split(':').map(Number);
@@ -53,6 +67,7 @@ export const useNotification = () => {
           scheduleTime.add(1, 'second');
         }
 
+        // const trigger = new Date(scheduleTime.valueOf());
         const trigger = {
           type: 'date',
           timestamp: scheduleTime.valueOf(),
@@ -61,7 +76,7 @@ export const useNotification = () => {
         const id = await Notifications.scheduleNotificationAsync({
           content: {
             title: `💊 Hey, it's time to take your medicine!`,
-            body: `Prescription: ${name}`,
+            body: `Prescription: ${name}\n${pillInfo}`,
             sound: 'default',
           },
           trigger,
