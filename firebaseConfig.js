@@ -33,3 +33,4 @@ export const userRef = collection(db, "users");
 export const otpRef = collection(db, 'otps')
 export const prescriptionsRef = collection(db, 'prescriptions')
 export const doctorsRef = collection(db, "doctors");
+export const takenPrescriptions = collection(db, "takenPrescriptions");

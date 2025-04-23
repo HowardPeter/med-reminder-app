@@ -37,12 +37,12 @@ export const useNotification = () => {
 
   const scheduleNotification = async (prescriptions = []) => {
     await Notifications.cancelAllScheduledNotificationsAsync(); // Reset cũ trước khi set mới
-    
+
     for (const prescription of prescriptions) {
       const { id, name, time = [] } = prescription;
       const pills = await fetchPillsData(id);
-      const pillInfo = pills.map(pill => `- ${pill?.name} - Dosage: ${pill?.dosage}`).join("\n"); 
-            
+      const pillInfo = pills.map(pill => `- ${pill?.name} - Dosage: ${pill?.dosage}`).join("\n");
+
       for (const timeString of time) {
         const [hour, minute] = timeString.split(':').map(Number);
         const now = moment();
@@ -58,10 +58,11 @@ export const useNotification = () => {
           scheduleTime.add(1, 'second');
         }
 
-        const trigger = {
-          type: 'date',
-          timestamp: scheduleTime.valueOf(),
-        };
+        // const trigger = {
+        //   type: 'date',
+        //   timestamp: scheduleTime.valueOf(),
+        // };
+        const trigger = new Date(scheduleTime.valueOf());
 
         const id = await Notifications.scheduleNotificationAsync({
           content: {
