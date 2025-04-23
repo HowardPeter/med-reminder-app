@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { Entypo, FontAwesome } from "@expo/vector-icons";
 import theme from "@/config/theme";
-import moment from "moment";
 import { useTaken } from "@/hooks/useTaken";
 
 interface PrescriptionCardProps {
@@ -18,8 +17,8 @@ interface PrescriptionCardProps {
 
 const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ time, title, note, onToggle, prescriptionId, userId, date }) => {
   const [isTaken, setIsTaken] = useState(false);
-  const { markPrescriptionTaken, unmarkPrescriptionTaken, checkPrescriptionTaken } = useTaken()
-  const currentTime = moment().format("HH:mm");
+  const { markPrescriptionTaken, unmarkPrescriptionTaken, checkPrescriptionTaken, getTakenPrescription } = useTaken()
+  const [takenHour, setTakenHour] = useState("");
 
   useEffect(() => {
     const checkTaken = async () => {
@@ -28,6 +27,16 @@ const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ time, title, note, 
     };
     checkTaken();
   }, [userId, prescriptionId, date, time]);
+
+  useEffect(() => {
+    if (!isTaken) return;
+    const getTakenHour = async () => {
+      const taken = await getTakenPrescription(userId, prescriptionId, date, time);
+      const takenTime = taken?.docs[0]?.data()?.time; 
+      setTakenHour(takenTime);
+    }
+    getTakenHour();
+  },[isTaken]);
 
   const handleTake = async () => {
     if (isTaken) return;
@@ -53,7 +62,7 @@ const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ time, title, note, 
             <View className={`${isTaken ? 'visible' : 'invisible'}`}>
               <View className="flex-row items-center mr-2">
                 <Entypo name="check" size={25} color="green" />
-                <Text style={{ fontSize: hp(2.1) }} className="text-green-700 font-bold">{currentTime} Taken</Text>
+                <Text style={{ fontSize: hp(2.1) }} className="text-green-700 font-bold">{takenHour} Taken</Text>
               </View>
             </View>
           </View>

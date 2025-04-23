@@ -59,9 +59,26 @@ export const useTaken = () => {
         }
     };
 
+    const getTakenPrescription = async (userId, prescriptionId, date, time) => {
+        try {
+            const takenRef = collection(db, "takenPrescriptions");
+            const q = query(takenRef,
+                where("userId", "==", userId),
+                where("prescriptionId", "==", prescriptionId),
+                where("date", "==", date),
+                where("time", "==", time)
+            );
+            const snapshot = await getDocs(q);
+            return snapshot;
+        } catch (error) {
+            console.error("Error fetching taken prescriptions:", error);
+        }
+    }
+
     return {
         markPrescriptionTaken,
         unmarkPrescriptionTaken,
         checkPrescriptionTaken,
+        getTakenPrescription,
     };
 }
