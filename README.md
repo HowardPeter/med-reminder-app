@@ -3,8 +3,10 @@
 ## 📖 Introduction
 **Pill Pal** is a mobile application that helps users remember to take their medications on time. With a user-friendly interface and a smart notification system, Pill Pal improves medication adherence and supports better health management.
 
-![Home Screen](./assets/images/homescreen1.png)
-![Home Screen](./assets/images/homescreen2.png)
+<p align="center">
+  <img src="./assets/images/homescreen1.png" alt="Home Screen 1" width="30%" />
+  <img src="./assets/images/homescreen2.png" alt="Home Screen 2" width="30%" />
+</p>
 
 ## ✨ Features
 - Send **main notifications** right at the scheduled medication times, showing detailed prescription info.
