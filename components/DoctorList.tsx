@@ -8,12 +8,11 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, query, where } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
+import { getAuth } from 'firebase/auth';
 import { useRouter } from 'expo-router';
 import DoctorCard from './DoctorCard';
-import ReactNativeModal from 'react-native-modal';
-import CustomAlert from './CustomAlert';
 
 interface Doctor {
   id: string;
@@ -31,14 +30,25 @@ const DoctorList = ({ onEditDoctor }: Props) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const [isAlertVisible, setIsAlertVisible] = useState(false);
-  const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
 
   const fetchDoctors = async () => {
     setLoading(true);
     setError(null);
+
     try {
-      const querySnapshot = await getDocs(collection(db, 'doctors'));
+      const auth = getAuth();
+      const userId = auth.currentUser?.uid;
+
+      if (!userId) {
+        setError('User not authenticated.');
+        setLoading(false);
+        return;
+      }
+
+      const doctorsRef = collection(db, 'doctors');
+      const q = query(doctorsRef, where('userId', '==', userId));
+      const querySnapshot = await getDocs(q);
+
       const list: Doctor[] = [];
       querySnapshot.forEach((docSnap) => {
         const data = docSnap.data();
@@ -49,6 +59,7 @@ const DoctorList = ({ onEditDoctor }: Props) => {
           gender: data.gender || 'male',
         });
       });
+
       setDoctors(list);
     } catch (error) {
       console.error('Error fetching doctors:', error);
@@ -58,11 +69,22 @@ const DoctorList = ({ onEditDoctor }: Props) => {
     }
   };
 
+  const confirmDelete = (id: string) => {
+    Alert.alert(
+      'Delete Doctor',
+      'Are you sure you want to delete this doctor?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => handleDelete(id) },
+      ],
+      { cancelable: true }
+    );
+  };
+
   const handleDelete = async (id: string) => {
     try {
       await deleteDoc(doc(db, 'doctors', id));
-      fetchDoctors();
-      setIsAlertVisible(false);
+      fetchDoctors(); // Refresh list after delete
     } catch (error) {
       console.error('Error deleting doctor:', error);
       setError('Failed to delete doctor. Please try again.');
@@ -87,11 +109,11 @@ const DoctorList = ({ onEditDoctor }: Props) => {
         <ActivityIndicator size="large" color="#0f766e" />
       </View>
     );
-  }  
+  }
 
   return (
     <View style={{ flex: 1, paddingHorizontal: 16, backgroundColor: '#ffffff' }}>
-      {/* Header - chỉ hiện nếu có bác sĩ */}
+      {/* Header */}
       {doctors.length > 0 && (
         <View className="mb-8">
           <Text style={{ fontSize: 32, fontWeight: '600', color: '#0f766e' }}>
@@ -103,14 +125,14 @@ const DoctorList = ({ onEditDoctor }: Props) => {
         </View>
       )}
 
-      {/* Error Message */}
+      {/* Error message */}
       {error && (
         <View style={{ alignItems: 'center', marginVertical: 16 }}>
           <Text style={{ color: 'red', fontSize: 16 }}>{error}</Text>
         </View>
       )}
 
-      {/* Empty List Message */}
+      {/* Empty list */}
       {doctors.length === 0 ? (
         <View style={{ alignItems: 'center', marginVertical: 24 }}>
           <Image
@@ -121,11 +143,9 @@ const DoctorList = ({ onEditDoctor }: Props) => {
           <Text style={{ fontSize: 25, fontWeight: 'bold', marginTop: 16, color: '#0f766e' }}>
             List your doctors
           </Text>
-
           <Text style={{ textAlign: 'center', color: '#6B7280', marginTop: 8, fontSize: 16 }}>
             You currently do not have any doctors. Please add more doctors for easy contact.
           </Text>
-
         </View>
       ) : (
         <FlatList
@@ -137,25 +157,12 @@ const DoctorList = ({ onEditDoctor }: Props) => {
                 name={item.name}
                 specialty={item.specialty}
                 gender={item.gender}
-                onDelete={() => {
-                  setSelectedDoctorId(item.id);
-                  setIsAlertVisible(true);
-                }}
+                onDelete={() => confirmDelete(item.id)}
               />
             </TouchableOpacity>
           )}
         />
       )}
-      <ReactNativeModal isVisible={isAlertVisible}>
-        <CustomAlert
-          title="Delete doctor contact"
-          message='Are you sure you want to delete this doctor contact information?'
-          btnConfirm="Delete"
-          confirmTextColor="text-red-500"
-          onCancel={() => setIsAlertVisible(false)}
-          onConfirm={() => selectedDoctorId && handleDelete(selectedDoctorId)}
-        />
-      </ReactNativeModal>
     </View>
   );
 };

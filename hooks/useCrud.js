@@ -74,7 +74,7 @@ export const useCrud = () => {
     try {
       const prescriptionRef = doc(db, COLLECTION_NAME, prescriptionId);
       const docSnap = await getDoc(prescriptionRef);
-  
+
       if (docSnap.exists()) {
         return {
           id: docSnap.id,
@@ -89,7 +89,7 @@ export const useCrud = () => {
       return null;
     }
   }, []);
-  
+
 
   const fetchPillsData = useCallback(async (prescriptionId) => {
     try {
@@ -108,42 +108,7 @@ export const useCrud = () => {
     }
   }, []);
 
-  const addPrescription = async (prescriptionData: any) => {
-    try {
-      const docRef = await addDoc(
-        collection(db, COLLECTION_NAME),
-        prescriptionData
-      );
-      console.log("Document written with ID: ", docRef.id);
-      return docRef.id;
-    } catch (error) {
-      console.error("Error adding document: ", error);
-      throw error;
-    }
-  };
-
-  const addPillToPrescription = async (
-    prescriptionId: string,
-    pillData: any
-  ) => {
-    try {
-      //lay reference toi collection prescriptions/{id}/pill, nghia la them data vao collection pill co ma id la prescri
-      const pillCollectionRef = collection(
-        db,
-        COLLECTION_NAME,
-        prescriptionId,
-        "pills"
-      );
-      const pillDocRef = await addDoc(pillCollectionRef, pillData);
-      console.log("Pill added with ID:", pillDocRef.id);
-      return pillDocRef.id;
-    } catch (error) {
-      console.error("Error adding pill:", error);
-      throw error;
-    }
-  };
-
-  const getPillsByPrescriptionId = async (prescriptionId: string) => {
+  const getPillsByPrescriptionId = async (prescriptionId) => {
     try {
       const pillsRef = collection(db, "prescriptions", prescriptionId, "pills");
       const snapshot = await getDocs(pillsRef);
@@ -151,36 +116,6 @@ export const useCrud = () => {
     } catch (error) {
       console.error("Phat Error fetching pills: ", error);
       throw error;
-    }
-  };
-
-  const deletePrescription = async (prescriptionId) => {
-    const prescriptionRef = doc(db, "prescriptions", prescriptionId);
-
-    try {
-      // thu muc con
-      const subCollectionNames = ["pill"];
-      // thu muc con cua thu muc con
-      for (const subCollection of subCollectionNames) {
-        const subCollectionRef = collection(
-          db,
-          "prescriptions",
-          prescriptionId,
-          subCollection
-        );
-        const subDocsSnap = await getDocs(subCollectionRef);
-
-        const deleteSubDocs = subDocsSnap.docs.map((doc) => deleteDoc(doc.ref));
-        await Promise.all(deleteSubDocs);
-      }
-
-      await deleteDoc(prescriptionRef);
-
-      console.log(
-        `Đã xóa đơn thuốc ${prescriptionId} và các collection con của nó`
-      );
-    } catch (error) {
-      console.error("Lỗi khi xóa đơn thuốc:", error);
     }
   };
 
@@ -215,11 +150,70 @@ export const useCrud = () => {
       throw error; // Hoặc xử lý lỗi theo cách khác
     }
   }
-  
-  async function deletePillById(
-    prescriptionId: string,
-    pillId: string
-  ): Promise<void> {
+
+  const addPrescription = async (prescriptionData: any) => {
+    try {
+      const docRef = await addDoc(
+        collection(db, COLLECTION_NAME),
+        prescriptionData
+      );
+      console.log("Document written with ID: ", docRef.id);
+      return docRef.id;
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      throw error;
+    }
+  };
+
+  const addPillToPrescription = async (prescriptionId, pillData) => {
+    try {
+      //lay reference toi collection prescriptions/{id}/pill, nghia la them data vao collection pill co ma id la prescri
+      const pillCollectionRef = collection(
+        db,
+        COLLECTION_NAME,
+        prescriptionId,
+        "pills"
+      );
+      const pillDocRef = await addDoc(pillCollectionRef, pillData);
+      console.log("Pill added with ID:", pillDocRef.id);
+      return pillDocRef.id;
+    } catch (error) {
+      console.error("Error adding pill:", error);
+      throw error;
+    }
+  };
+
+  const deletePrescription = async (prescriptionId) => {
+    const prescriptionRef = doc(db, "prescriptions", prescriptionId);
+
+    try {
+      // thu muc con
+      const subCollectionNames = ["pill"];
+      // thu muc con cua thu muc con
+      for (const subCollection of subCollectionNames) {
+        const subCollectionRef = collection(
+          db,
+          "prescriptions",
+          prescriptionId,
+          subCollection
+        );
+        const subDocsSnap = await getDocs(subCollectionRef);
+
+        const deleteSubDocs = subDocsSnap.docs.map((doc) => deleteDoc(doc.ref));
+        await Promise.all(deleteSubDocs);
+      }
+
+      await deleteDoc(prescriptionRef);
+
+      console.log(
+        `Đã xóa đơn thuốc ${prescriptionId} và các collection con của nó`
+      );
+    } catch (error) {
+      console.error("Lỗi khi xóa đơn thuốc:", error);
+    }
+  };
+
+  async function deletePillById(prescriptionId, pillId): Promise<void> {
     try {
       // 1. Tạo reference đến document cần xóa
       const pillDocRef = doc(

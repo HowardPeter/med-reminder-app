@@ -23,21 +23,21 @@ export default function HomePage() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAlertVisible, setIsAlertVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  // const [todayPrescriptions, setTodayPrescriptions] = useState<any>([]);
+  const hasScheduledRef = useRef(false);
   const [selectedPrescription, setSelectedPrescription] = useState({
     id: "",
     name: "",
     time: "",
     note: "",
   });
-  const [selectedPrescriptionFull, setSelectedPrescriptionFull] = useState({
-    id: "",
-    name: "",
-    time: [],
-    frequency: 0,
-    startDate: null,
-    note: "",
-  });
+  // const [selectedPrescriptionFull, setSelectedPrescriptionFull] = useState({
+  //   id: "",
+  //   name: "",
+  //   time: [],
+  //   frequency: 0,
+  //   startDate: null,
+  //   note: "",
+  // });
   const [pills, setPills] = useState<
     { id: string; name: string; type: string; dosage: string }[]
   >([]);
@@ -48,8 +48,6 @@ export default function HomePage() {
 
   const userId = user?.userId ?? null;
   const selectedPrescriptionId = selectedPrescription?.id ?? null;
-
-  console.log("User ID:", userId);
 
   const moveToAddPresctiption = () => {
     setIsModalVisible(false);
@@ -79,23 +77,23 @@ export default function HomePage() {
   useEffect(() => {
     fetchPills();
 
-    const fetchSelectedPrescription = async () => {
-      if (!selectedPrescriptionId) return;
+    // const fetchSelectedPrescription = async () => {
+    //   if (!selectedPrescriptionId) return;
 
-      const prescription = await fetchPrescriptionById(selectedPrescriptionId);
-      if (prescription) {
-        setSelectedPrescriptionFull({
-          id: prescription.id,
-          name: prescription.name,
-          time: prescription.time || [],
-          frequency: prescription.frequency || 0,
-          startDate: prescription.startDate || null,
-          note: prescription.note || "",
-        });
-      }
-    };
+    //   const prescription = await fetchPrescriptionById(selectedPrescriptionId);
+    //   if (prescription) {
+    //     setSelectedPrescriptionFull({
+    //       id: prescription.id,
+    //       name: prescription.name,
+    //       time: prescription.time || [],
+    //       frequency: prescription.frequency || 0,
+    //       startDate: prescription.startDate || null,
+    //       note: prescription.note || "",
+    //     });
+    //   }
+    // };
 
-    fetchSelectedPrescription();
+    // fetchSelectedPrescription();
   }, [selectedPrescriptionId]);
 
   useEffect(() => {
@@ -109,7 +107,7 @@ export default function HomePage() {
 
     return prescriptions.filter((prescription: any) => {
       const frequency = prescription?.frequency;
-      const startDate = moment.unix(prescription.startDate?.seconds || 0).startOf('day');
+      const startDate = moment.unix(prescription.startDate?.seconds ?? 0).startOf('day');
 
       switch (frequency) {
         case 0:
@@ -120,19 +118,16 @@ export default function HomePage() {
           // Uống mỗi ngày
           return today.isSameOrAfter(startDate, 'day');
 
-        case 7:
+        case 7: {
           // Uống mỗi tuần (7 ngày 1 lần)
           const diffWeeks = today.diff(startDate, 'weeks');
           return today.isoWeekday() === startDate.isoWeekday() && diffWeeks >= 0;
-
+        }
         default:
           return false;
       }
     });
   };
-
-
-  const hasScheduledRef = useRef(false);
 
   const fetchPrescriptions = async () => {
     if (!userId || hasScheduledRef.current) return;
@@ -145,10 +140,9 @@ export default function HomePage() {
 
   const fetchPills = async () => {
     if (!selectedPrescriptionId) {
-      console.log("No prescription ID selected.");
+      // console.log("No prescription ID selected.");
       return;
     }
-    console.log(`Prescription id: ${selectedPrescriptionId}`)
     const data = await fetchPillsData(selectedPrescriptionId);
     setPills(data);
     console.log("Selected prescription:", selectedPrescription);
