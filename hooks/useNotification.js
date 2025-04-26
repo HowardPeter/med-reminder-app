@@ -30,8 +30,6 @@ export const useNotification = () => {
       finalStatus = status;
     }
 
-    // console.log('[Notification Permission Status]:', finalStatus);
-
     if (finalStatus !== 'granted') {
       console.warn('Không có quyền gửi thông báo.');
     }
@@ -101,7 +99,7 @@ export const useNotification = () => {
         if (scheduleTime.diff(now, 'seconds') < 1) {
           scheduleTime.add(1, 'second');
         }
-        
+
         const trigger = new Date(scheduleTime.valueOf());
 
         const notifiId = await Notifications.scheduleNotificationAsync({

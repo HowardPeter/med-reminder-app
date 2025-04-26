@@ -4,21 +4,21 @@ import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { images } from '@/constants';
 
 interface DoctorFormProps {
-    name: string;
-    setName: (value: string) => void;
-    specialty: string;
-    setSpecialty: (value: string) => void;
-    phone: string;
-    setPhone: (value: string) => void;
-    email: string;
-    setEmail: (value: string) => void;
-    address: string;
-    setAddress: (value: string) => void;
-    selectedGender: 'male' | 'female';
-    setSelectedGender: (value: 'male' | 'female') => void;
-    focusedInput: string;
-    setFocusedInput: (value: string) => void;
-    onSubmit: () => void;
+    readonly name: string;
+    readonly setName: (value: string) => void;
+    readonly specialty: string;
+    readonly setSpecialty: (value: string) => void;
+    readonly phone: string;
+    readonly setPhone: (value: string) => void;
+    readonly email: string;
+    readonly setEmail: (value: string) => void;
+    readonly address: string;
+    readonly setAddress: (value: string) => void;
+    readonly selectedGender: 'male' | 'female';
+    readonly setSelectedGender: (value: 'male' | 'female') => void;
+    readonly focusedInput: string;
+    readonly setFocusedInput: (value: string) => void;
+    readonly onSubmit: () => void;
 }
 
 export default function DoctorForm({

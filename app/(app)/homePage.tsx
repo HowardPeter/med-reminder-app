@@ -107,7 +107,7 @@ export default function HomePage() {
 
     return prescriptions.filter((prescription: any) => {
       const frequency = prescription?.frequency;
-      const startDate = moment.unix(prescription.startDate?.seconds || 0).startOf('day');
+      const startDate = moment.unix(prescription.startDate?.seconds ?? 0).startOf('day');
 
       switch (frequency) {
         case 0:
@@ -118,11 +118,11 @@ export default function HomePage() {
           // Uống mỗi ngày
           return today.isSameOrAfter(startDate, 'day');
 
-        case 7:
+        case 7: {
           // Uống mỗi tuần (7 ngày 1 lần)
           const diffWeeks = today.diff(startDate, 'weeks');
           return today.isoWeekday() === startDate.isoWeekday() && diffWeeks >= 0;
-
+        }
         default:
           return false;
       }
