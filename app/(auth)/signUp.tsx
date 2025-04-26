@@ -244,10 +244,7 @@ export default function SignUp() {
                 <Text style={{ fontSize: wp(4.3) }} className='text-gray-500 text-center text-lg mt-2'>Check your email and click on the confirmation link to continue.</Text>
               </View>
 
-              <View className="flex-row justify-between mt-[170px] pb-11">
-                {/* <TouchableOpacity>
-                  <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="font-bold">Resend</Text>
-                </TouchableOpacity> */}
+              <View className="flex-row justify-end mt-[170px] pb-11">
                 <TouchableOpacity onPress={checkVerification}>
                   <Text style={{ fontSize: wp(4.3), color: theme.colors.primary }} className="font-bold">CONFIRM</Text>
                 </TouchableOpacity>

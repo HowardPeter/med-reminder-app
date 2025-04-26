@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { Entypo, FontAwesome } from "@expo/vector-icons";
 import theme from "@/config/theme";
 import { useTaken } from "@/hooks/useTaken";
+import moment from "moment";
 
 interface PrescriptionCardProps {
   time: string;
@@ -17,8 +18,9 @@ interface PrescriptionCardProps {
 
 const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ time, title, note, onToggle, prescriptionId, userId, date }) => {
   const [isTaken, setIsTaken] = useState(false);
-  const { markPrescriptionTaken, unmarkPrescriptionTaken, checkPrescriptionTaken, getTakenPrescription } = useTaken()
-  const [takenHour, setTakenHour] = useState("");
+  const { markPrescriptionTaken, unmarkPrescriptionTaken, checkPrescriptionTaken } = useTaken()
+  const today = moment().format("YYYY-MM-DD");
+  const selectedDate = moment(date).format("YYYY-MM-DD");
 
   useEffect(() => {
     const checkTaken = async () => {
@@ -28,18 +30,15 @@ const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ time, title, note, 
     checkTaken();
   }, [userId, prescriptionId, date, time]);
 
-  useEffect(() => {
-    if (!isTaken) return;
-    const getTakenHour = async () => {
-      const taken = await getTakenPrescription(userId, prescriptionId, date, time);
-      const takenTime = taken?.docs[0]?.data()?.time; 
-      setTakenHour(takenTime);
-    }
-    getTakenHour();
-  },[isTaken]);
-
   const handleTake = async () => {
     if (isTaken) return;
+    if (selectedDate < today) {
+      Alert.alert("There are some mistakes", "Hmm, this prescription is in the past, maybe you skipped it!");
+      return;
+    } else if (selectedDate > today) {
+      Alert.alert("There are some mistakes", "You cannot take the prescription in the future!");
+      return;
+    }
     await markPrescriptionTaken(userId, prescriptionId, date, time);
     setIsTaken(true);
   };
@@ -62,7 +61,7 @@ const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ time, title, note, 
             <View className={`${isTaken ? 'visible' : 'invisible'}`}>
               <View className="flex-row items-center mr-2">
                 <Entypo name="check" size={25} color="green" />
-                <Text style={{ fontSize: hp(2.1) }} className="text-green-700 font-bold">{takenHour} Taken</Text>
+                <Text style={{ fontSize: hp(2.1) }} className="text-green-700 font-bold">Taken</Text>
               </View>
             </View>
           </View>

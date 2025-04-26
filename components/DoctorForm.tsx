@@ -1,4 +1,3 @@
-// components/DoctorForm.js
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
