@@ -30,14 +30,14 @@ export default function HomePage() {
     time: "",
     note: "",
   });
-  const [selectedPrescriptionFull, setSelectedPrescriptionFull] = useState({
-    id: "",
-    name: "",
-    time: [],
-    frequency: 0,
-    startDate: null,
-    note: "",
-  });
+  // const [selectedPrescriptionFull, setSelectedPrescriptionFull] = useState({
+  //   id: "",
+  //   name: "",
+  //   time: [],
+  //   frequency: 0,
+  //   startDate: null,
+  //   note: "",
+  // });
   const [pills, setPills] = useState<
     { id: string; name: string; type: string; dosage: string }[]
   >([]);
@@ -77,23 +77,23 @@ export default function HomePage() {
   useEffect(() => {
     fetchPills();
 
-    const fetchSelectedPrescription = async () => {
-      if (!selectedPrescriptionId) return;
+    // const fetchSelectedPrescription = async () => {
+    //   if (!selectedPrescriptionId) return;
 
-      const prescription = await fetchPrescriptionById(selectedPrescriptionId);
-      if (prescription) {
-        setSelectedPrescriptionFull({
-          id: prescription.id,
-          name: prescription.name,
-          time: prescription.time || [],
-          frequency: prescription.frequency || 0,
-          startDate: prescription.startDate || null,
-          note: prescription.note || "",
-        });
-      }
-    };
+    //   const prescription = await fetchPrescriptionById(selectedPrescriptionId);
+    //   if (prescription) {
+    //     setSelectedPrescriptionFull({
+    //       id: prescription.id,
+    //       name: prescription.name,
+    //       time: prescription.time || [],
+    //       frequency: prescription.frequency || 0,
+    //       startDate: prescription.startDate || null,
+    //       note: prescription.note || "",
+    //     });
+    //   }
+    // };
 
-    fetchSelectedPrescription();
+    // fetchSelectedPrescription();
   }, [selectedPrescriptionId]);
 
   useEffect(() => {
