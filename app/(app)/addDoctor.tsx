@@ -6,6 +6,7 @@ import { db } from '@/firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import theme from '@/config/theme';
 import DoctorForm from '@/components/DoctorForm';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function AddDoctorScreen() {
   const router = useRouter();
@@ -17,10 +18,17 @@ export default function AddDoctorScreen() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
+  const { user } = useAuth();
+  const userId = user?.userId ?? null;
 
   const handleDone = async () => {
     if (!name || !specialty || !phone) {
       Alert.alert('Validation Error', 'Please fill in all fields.');
+      return;
+    }
+    
+    if (!userId) {
+      Alert.alert('Error', 'User not authenticated.');
       return;
     }
 
@@ -30,13 +38,14 @@ export default function AddDoctorScreen() {
       phone,
       email,
       address,
-      gender: selectedGender
+      gender: selectedGender,
+      userId,
     };
 
     try {
       await addDoc(collection(db, 'doctors'), newDoctor);
       Alert.alert('Success', 'Doctor added successfully!');
-      router.replace('/consultingDoctors');
+      router.push('/consultingDoctors');
     } catch (error) {
       console.error('Error saving to Firebase:', error);
       Alert.alert('Error', 'Could not save doctor. Try again.');
