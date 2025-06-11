@@ -26,7 +26,7 @@ runs:
 
     - name: Caching CI dependencies
       if: inputs.is-deploy == 'false'
-      id: cache
+      id: cacheci
       uses: actions/cache@v4
       with:
         path: ~/.npm
@@ -36,7 +36,7 @@ runs:
 
     - name: Caching deployment dependencies
       if: inputs.is-deploy == 'true'
-      id: cache
+      id: cachedeploy
       uses: actions/cache@v4
       with:
         path: node_modules
@@ -45,11 +45,11 @@ runs:
           ${{ runner.os }}-node-
 
     - name: Install CI dependencies
-      if: steps.cache.outputs.cache-hit != 'true' && inputs.is-deploy == 'false'
+      if: steps.cacheci.outputs.cache-hit != 'true' && inputs.is-deploy == 'false'
       run: npm ci
       shell: bash
 
     - name: Install deployment dependencies
-      if: steps.cache.outputs.cache-hit != 'true' && inputs.is-deploy == 'true'
+      if: steps.cachedeploy.outputs.cache-hit != 'true' && inputs.is-deploy == 'true'
       run: npm ci
       shell: bash
