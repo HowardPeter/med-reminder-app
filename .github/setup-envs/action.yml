@@ -23,8 +23,9 @@ runs:
         expo-version: latest
         expo-cache: true
         token: ${{ inputs.expo-token }}
-        
-    - name: Caching dependencies
+
+    - name: Caching CI dependencies
+      if: inputs.is-deploy == 'false'
       id: cache
       uses: actions/cache@v4
       with:
@@ -32,8 +33,23 @@ runs:
         key: npm-cache-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
         restore-keys: |
           npm-cache-${{ runner.os }}-
-        
-    - name: Install dependencies
-      if: steps.cache.outputs.cache-hit != 'true'
+
+    - name: Caching deployment dependencies
+      if: inputs.is-deploy == 'true'
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: Install CI dependencies
+      if: steps.cache.outputs.cache-hit != 'true' && inputs.is-deploy == 'false'
+      run: npm ci
+      shell: bash
+
+    - name: Install deployment dependencies
+      if: steps.cache.outputs.cache-hit != 'true' && inputs.is-deploy == 'true'
       run: npm ci
       shell: bash
