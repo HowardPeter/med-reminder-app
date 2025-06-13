@@ -9,7 +9,7 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Setup & Install dependencies
-      uses: ./.github/setup-envs/action.yml
+      uses: ./.github/setup-envs
       with:
         expo-token: ${{ secrets.EXPO_TOKEN }}
         is-deploy: 'true'
