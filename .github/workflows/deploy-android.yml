@@ -13,7 +13,7 @@ jobs:
       with:
         expo-token: ${{ secrets.EXPO_TOKEN }}
         is-deploy: 'true'
-      
+        
     - name: Build app in Android
       run: eas build --profile preview --platform android --non-interactive
 
